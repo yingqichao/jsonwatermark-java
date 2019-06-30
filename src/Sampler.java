@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Sampler {
-    private double DEFAULT_C = 0.1;
-    private double DEFAULT_DELTA = 0.5;
+
     private int PRNG_A = 16807;
     private int PRNG_M = (1 << 31) - 1;
     private int PRNG_MAX_RAND = PRNG_M - 1;
@@ -89,7 +88,7 @@ public class Sampler {
         return index + 1;
     }
 
-    public void set_seed(int seed){ this.state = seed;}
+    public void setSeed(int seed){ this.state = seed;}
 
     public List<Integer> get_src_blocks(Integer seed){
 //        Returns the indices of a set of `d` source blocks
