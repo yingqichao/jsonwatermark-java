@@ -2,8 +2,7 @@ import javax.print.attribute.IntegerSyntax;
 import java.util.*;
 
 public class Encoder {
-    private static double DEFAULT_C = 0.1;
-    private static double DEFAULT_DELTA = 0.5;
+
     public int blocksize;
     public int seed;
     public double c;
@@ -31,7 +30,7 @@ public class Encoder {
     }
 
     public Encoder(String f_bytes){
-        this(1,1,DEFAULT_C,DEFAULT_DELTA,30,f_bytes);
+        this(1,1, Util.DEFAULT_C, Util.DEFAULT_DELTA,30,f_bytes);
     }
 
     public void split_file(){

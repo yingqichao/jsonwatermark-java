@@ -1,11 +1,14 @@
-import java.util.List;
+import java.util.*;
 
 public class CheckNode {
-    public List<Integer> src_nodes;
-    public boolean check;
+    public Set<Integer> src_nodes;
+    public int check;
 
-    public CheckNode(List<Integer> src_nodes, boolean check) {
+    public CheckNode(Set<Integer> src_nodes, int check) {
         this.src_nodes = src_nodes;
         this.check = check;
     }
+
+
+
 }

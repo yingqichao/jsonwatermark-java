@@ -40,9 +40,10 @@ public class JSONHelper {
 //
     //construct json from String and resolve it.
     public static String jsonTest2() throws JSONException {
+        String str = "{\"loginname\":\"zhangfan\",\"password\":\"userpass\",\"email\":\"10371443@qq.com\"}";
         String jsonString="{\"users\":[{\"loginname\":\"zhangfan\",\"password\":\"userpass\",\"email\":\"10371443@qq.com\"},{\"loginname\":\"zf\",\"password\":\"userpass\",\"email\":\"822393@qq.com\"}]}";
         JSONObject json= new JSONObject();
-        JSONObject jsonObject = json.getJSONObject(jsonString);
+        JSONObject jsonObject = json.getJSONObject(str);
         JSONArray jsonArray=json.getJSONArray("users");
         String loginNames="loginname list:";
 //        for(int i=0;i<jsonArray.length();i++){

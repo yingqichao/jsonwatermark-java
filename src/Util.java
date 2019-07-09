@@ -4,6 +4,11 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Util {
+    public static double DEFAULT_C = 0.1;
+    public static double DEFAULT_DELTA = 0.5;
+    public static int DEFAULT_STRLEN = 7;
+    public static int DEFAULT_DATALEN = 5;
+
     public static boolean isNumeric(String str){
         return str.matches("-?[0-9]+.*[0-9]*");
     }
@@ -67,8 +72,35 @@ public class Util {
 
     }
 
-    public static int BKDRHash(String str,int seed){
-        int hash = 0;
+//    # // BKDR
+//            # Hash
+//# Function
+//# unsigned
+//# int
+//# BKDRHash(char * str)
+//# {
+//#     unsigned
+//# int
+//# seed = 131; // 31
+//# 131
+//# 1313
+//# 13131
+//# 131313
+//# etc..
+//#     unsigned
+//# int
+//# hash = 0;
+//#
+//# while (*str)
+//#     {
+//#         hash = hash * seed + (*str + +);
+//#     }
+//#
+//#     return (hash & 0x7FFFFFFF);
+//# }
+
+    public static int BKDRHash(String str,Integer seed){
+        int hash = 0;if(seed==null) seed = 131;
         for(char ch:str.toCharArray()){
             int ans = 0;
             if(ch>='a' && ch<='z'){

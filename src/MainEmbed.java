@@ -18,7 +18,7 @@ public class MainEmbed {
         encoder.run(JSON);
 
 
-        Map<String,String> watermarkedJSON = Util.readFakeJSON("src/fakeJSON.txt");
+        Map<String,String> watermarkedJSON = Util.readFakeJSON("src/watermarkedJSON.txt");
 
     }
 
