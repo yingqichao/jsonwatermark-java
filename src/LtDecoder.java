@@ -83,14 +83,17 @@ public class LtDecoder {
         Set<Integer> duplicateSet = new HashSet<>(0);int ind = 0;
         while(ind<strlen){
             int num = prng.get_next() % lt_block.length();
-            if(!duplicateSet.contains(num)){
+            if(!duplicateSet.contains(num)) {
                 duplicateSet.add(num);
-                if(ind<Util.DEFAULT_DATALEN){
-                    extracted *= 2;
-                    extracted += (lt_block.charAt(num) % 2);// * pow(2, ind)
+                char ori = lt_block.charAt(num);
+                if ((ori >= 97 && ori <=122)||(ori >= 65 && ori <= 90) ||(ori >= 48 && ori <= 57)){
+                    if (ind < Util.DEFAULT_DATALEN) {
+                        extracted *= 2;
+                        extracted += (ori % 2);// * pow(2, ind)
+                    }
+                    verify += ori % 2;
+                    ind += 1;
                 }
-                verify += lt_block.charAt(num) % 2;
-                ind += 1;
             }
 
         }

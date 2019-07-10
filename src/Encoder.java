@@ -1,4 +1,5 @@
-import javax.print.attribute.IntegerSyntax;
+import com.google.gson.*;
+
 import java.util.*;
 
 public class Encoder {
@@ -15,6 +16,10 @@ public class Encoder {
     public Sampler solitionGenerator;
     public Map<String,String> JSON = new HashMap<>();
     public Map<String,String> watermarkedJSON = new HashMap<>();
+
+    public static int sum = 0;
+    public static int valid = 0;
+    public static int updated = 0;
 
     public Encoder(int blocksize, int seed, double c, double delta, int numpacks, String f_bytes) {
         this.blocksize = blocksize;
@@ -46,19 +51,26 @@ public class Encoder {
         //modify the value to embed data
         Character first = null;boolean negative = false;int dotIndex = -1;
         StringBuilder newvalue = new StringBuilder(value);
-
+        int startFrom = 0;
         //preprocess
         if(Util.isInteger(value)){
             int value_int = Integer.parseInt(value);
             negative = value_int<0;
-            if(negative)    newvalue.deleteCharAt(0);
-            first = value.charAt(0);newvalue.deleteCharAt(0);
+            if(negative)  {
+                newvalue.deleteCharAt(startFrom);
+                startFrom++;
+            }
+            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
         }else if(Util.isNumeric(value)){
             double value_double = Double.parseDouble(value);
             negative = value_double<0;
-            if(negative)    newvalue.deleteCharAt(0);
-            first = value.charAt(0);newvalue.deleteCharAt(0);
-            dotIndex = value.indexOf('.');
+            if(negative)    {
+                newvalue.deleteCharAt(0);
+                startFrom++;
+            }
+            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
+            dotIndex = newvalue.indexOf(".");
+            newvalue.deleteCharAt(dotIndex);
         }
 
         Set<Integer> duplicateSet = new HashSet<>(0);int embedded = 0;
@@ -67,17 +79,22 @@ public class Encoder {
         crc_text += Util.crc_remainder(crc_text,null,null);
 
         while(embedded<crc_text.length()){
-            int num = this.solitionGenerator.get_next();
+            int num = this.solitionGenerator.get_next() % newvalue.length();
+            if(num==-1)
+                break;
             if(!duplicateSet.contains(num)){
                 duplicateSet.add(num);
                 char ori = newvalue.charAt(num);
-                if ((ori >= 'a' && ori <= 'z') || (ori >= 'A' && ori <= 'Z'))
+                if ((ori >= 'a' && ori <= 'z') || (ori >= 'A' && ori <= 'Z')) {
                     //对于小写大写字母：统一向上取结果
-                    newvalue.setCharAt(num,(char)(ori + ori % 2 - crc_text.charAt(embedded) + '0'));
-                else
+                    newvalue.setCharAt(num, (char) (ori + ori % 2 - crc_text.charAt(embedded) + '0'));
+                    embedded ++;
+                }
+                else {
                     //对于数字：统一向下取结果
-                    newvalue.setCharAt(num,(char)(ori - ori % 2 + crc_text.charAt(embedded) - '0'));
-                embedded ++;
+                    newvalue.setCharAt(num, (char) (ori - ori % 2 + crc_text.charAt(embedded) - '0'));
+                    embedded ++;
+                }
             }
         }
 
@@ -104,37 +121,119 @@ public class Encoder {
 
     }
 
-    public void eliminateLevels(){
-        int sum = 0,valid = 0;
-        for(String key:this.JSON.keySet()){
-            String value = this.JSON.get(key);
-            if(value.replaceAll("[^0-9a-zA-Z]","" ).length()>=7){
-                String newValue = encoder(key,value);
-                watermarkedJSON.put(key,newValue);
-                valid += 1;
-            }else{
-                watermarkedJSON.put(key,value);
-            }
-            sum += 1;
-        }
-
-    }
-
-    public Map<String,String> run(Map<String,String> JSON){
+    public JsonElement run(JsonObject object){
         System.out.println("-----------------------------Embedding---------------------------------------");
         try {
-            this.eliminateLevels();
+            // 解析string
+            JSON = eliminateLevels(object);
 
-            Util.writeFromJSON(watermarkedJSON);
+            //Embedment
+            for(String key:this.JSON.keySet()){
+                String newValue = encoder(key,this.JSON.get(key));
+                watermarkedJSON.put(key,newValue);
+            }
+
+            JsonElement newJsonElement = JsonUpdating(object);
+//            FileOutputStream out=new FileOutputStream("src//embedded.json");
+//            Util.writeJsonStream(out,object);
+
+//            Util.writeFromJSON(watermarkedJSON);
+            // Writing Json
+
+
+
             System.out.println("-----------------Embedding was conducted successfully...--------------------");
 
-
+            return newJsonElement;
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return watermarkedJSON;
+        return null;
 
     }
+
+    //    public void eliminateLevels(){
+////        int sum = 0,valid = 0;
+//        for(String key:this.JSON.keySet()){
+////            String value = this.JSON.get(key);
+////            if(value.replaceAll("[^0-9a-zA-Z]","" ).length()>=7){
+//                String newValue = encoder(key,value);
+//                watermarkedJSON.put(key,newValue);
+////                valid += 1;
+////            }else{
+////                watermarkedJSON.put(key,value);
+////            }
+////            sum += 1;
+//        }
+//
+//    }
+
+    public Map<String,String> eliminateLevels(JsonObject object){
+        // clear
+        JSON = new HashMap<>();
+        sum = 0;valid = 0;
+
+        recursiveEliminateHelper(object,"");
+
+        System.out.println("Sum of KEYS: " + sum + ". Sum of Valid: " + valid);
+        return JSON;
+    }
+
+    public void recursiveEliminateHelper(JsonElement object, String prefix){
+        if(object instanceof JsonObject){
+            // continue the recursion
+            for(Map.Entry<String, JsonElement> entry:((JsonObject) object).entrySet()){
+                recursiveEliminateHelper(entry.getValue(),prefix+entry.getKey());
+            }
+        }else if(object instanceof JsonArray){
+            for (Iterator<JsonElement> iter = ((JsonArray) object).iterator(); iter.hasNext();){
+                recursiveEliminateHelper(iter.next(),prefix);
+            }
+        }else if(!(object instanceof JsonNull)){
+            // instance of JsonPrimitive
+            String value = ((JsonPrimitive)object).getAsString();
+            if (value.replaceAll("![A-Za-z0-9]","").length() > Util.DEFAULT_MINLEN){
+                //valid
+                JSON.put(prefix,value);
+                valid++;
+            }
+            sum++;
+        }
+    }
+
+    public static JsonElement JsonUpdating(JsonObject object){
+        Map<String,String> map = new HashMap<>();
+        map.put("dataversion","1.314");
+        JsonElement jsonElement = Util.replaceKey(object,map,"","");
+
+        System.out.println("Successfully updated!......");
+
+        return jsonElement;
+
+    }
+
+//    public void recursiveUpdatingHelper(JsonElement object, String prefix){
+//        if(object instanceof JsonObject){
+//            // continue the recursion
+//            for(Map.Entry<String, JsonElement> entry:((JsonObject) object).entrySet()){
+//                recursiveEliminateHelper(entry.getValue(),prefix+entry.getKey());
+//            }
+//        }else if(object instanceof JsonArray){
+//            for (Iterator<JsonElement> iter = ((JsonArray) object).iterator(); iter.hasNext();){
+//                recursiveEliminateHelper(iter.next(),prefix);
+//            }
+//        }else{
+//            // instance of JsonPrimitive
+//            String value = ((JsonPrimitive)object).getAsString();
+//            if (watermarkedJSON.containsKey(prefix)){
+//                //update
+//                JsonPrimitive jsonPrimitive = (JsonPrimitive)object;
+//                jsonPrimitive.setValue(watermarkedJSON.get(prefix));
+//                updated++;
+//            }
+//            sum++;
+//        }
+//    }
 
 }

@@ -12,7 +12,7 @@ public class Sampler {
     private int K;
     private double delta;
     private double c;
-    private int state;
+    private long state;
     private double[] cdf;
 
     public Sampler(int K, double delta, double c) {
@@ -23,7 +23,7 @@ public class Sampler {
         this.cdf = gen_rsd_cdf(K, delta, c);
     }
 
-    public double[] gen_tau(double S, int K, double delta) {
+    public double[] gen_tau(double S, int K, double delta) { // Correct
         //The Robust part of the RSD, we precompute an array for speed
 
         int pivot = (int)Math.floor(K / S);
@@ -73,17 +73,19 @@ public class Sampler {
     public int get_next(){
         //Executes the next iteration of the PRNG evolution process, and returns the result
         this.state = PRNG_A * this.state % PRNG_M;
-        return this.state;
+        if(this.state<0)
+            this.state += PRNG_M;
+        return (int)this.state;
     }
 
     public int sample_d(){
         //Samples degree given the precomputed distributions above and the linear PRNG output
-        double p = this.get_next() / PRNG_MAX_RAND;
+        double p = ((double)this.get_next()) / PRNG_MAX_RAND;
         int index = 0;
         for(double v:this.cdf) {
             if (v > p)
                 return index + 1;
-            index ++;
+            index++;
         }
         return index + 1;
     }
@@ -96,7 +98,7 @@ public class Sampler {
 //        `d` is sampled from the RSD described above.
         List<Integer> res = new LinkedList<>();
         if(seed!=null)  this.state = seed;
-        int blockseed = this.state;
+        int blockseed = (int)this.state;
         int d = sample_d();
         int have = 0;
         Set<Integer> nums = new HashSet<>();

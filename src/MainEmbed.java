@@ -1,34 +1,52 @@
+import com.alibaba.fastjson.JSON;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.FileOutputStream;
 import java.util.*;
 import java.io.FileReader;
 
 public class MainEmbed {
     public static void main(String[] args) throws Exception{
-//        //fastJsonTest
-//        System.out.println(Util.isNumeric("12.345"));
-//        System.out.println(Util.isNumeric("12345"));
-//        System.out.println(Util.isNumeric("-12.345"));
-//        System.out.println(Util.isInteger("12.345"));
-//        System.out.println(Util.isInteger("-123345"));
-//        System.out.println(Util.isInteger("-12.345"));
-//        System.out.println(Util.toBinary(2,5));
+        // Test
+//        JsonParser parser = new JsonParser() ;
+//        JsonObject object = (JsonObject)parser.parse(new FileReader("src//simpleJsonTest.json"));
+//        JsonElement newJsonElement = JsonUpdating(object);
+//
+//        FileOutputStream out=new FileOutputStream("src//embedded.json");
+//        Util.writeJsonStream(out,newJsonElement);
+        //End Test
+
+
+
 
 //        Map<String,String> JSON = Util.readFakeJSON("src/fakeJSON.txt");
         JsonParser parser = new JsonParser() ;
         JsonObject object = (JsonObject)parser.parse(new FileReader("src//test.json"));
-        // 解析string
-        Map<String,String> map = Util.eliminateLevels(object);
+
+
+//        // 解析string
+//        Map<String,String> map = Util.eliminateLevels(object);
 
         String watermark = Util.readWatermark("src/watermark.txt");
         Encoder encoder = new Encoder(watermark);
-//        encoder.run(JSON);
+        JsonElement jsonElement = encoder.run(object);
 
-
-        Map<String,String> watermarkedJSON = Util.readFakeJSON("src/watermarkedJSON.txt");
+        FileOutputStream out=new FileOutputStream("src//embedded.json");
+        Util.writeJsonStream(out,jsonElement);
 
     }
+
+//    // Test Correct
+//    public static JsonElement JsonUpdating(JsonObject object){
+//        Map<String,String> map = new HashMap<>();
+//        map.put("dataversion","1.314");
+//        JsonElement jsonElement = Util.replaceKey(object,map,"","");
+//
+//        return jsonElement;
+//
+//    }
 
 
 

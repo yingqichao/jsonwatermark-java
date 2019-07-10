@@ -1,8 +1,6 @@
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.*;
 
@@ -16,9 +14,6 @@ public class Util {
     public static int DEFAULT_MINLEN = 9;
     public static int DEFAULT_DATALEN = 5;
 
-    public static Map<String,String> JsonMap = new HashMap<>();
-    public static int sum = 0;
-    public static int valid = 0;
 
     public static boolean isNumeric(String str){
         return str.matches("-?[0-9]+.*[0-9]*");
@@ -45,7 +40,7 @@ public class Util {
         int len_input = input_bitstring.length();
         String initial_padding = "";
         for(int i=0;i<polynomial_bitstring.length()-1;i++)
-            initial_filler += polynomial_bitstring;
+            initial_padding += initial_filler;
         StringBuilder input_padded_array = new StringBuilder(input_bitstring + initial_padding);
 
         for(int i=0;i<input_padded_array.length();i++){
@@ -149,6 +144,47 @@ public class Util {
 
     }
 
+    public static JsonElement replaceKey(JsonElement source,Map<String, String> rep,String prefix,String curr) {
+        if (source == null || source.isJsonNull()) {
+            return JsonNull.INSTANCE;
+        }
+        if (source.isJsonPrimitive()) {
+            JsonElement value = source.getAsJsonPrimitive();
+            if (rep.containsKey(prefix)) {
+                String newKey = rep.get(prefix);
+                JsonPrimitive newJsonObj = new JsonPrimitive(newKey);
+                return newJsonObj;
+            }
+            return source;
+        }
+        if (source.isJsonArray()) {
+            JsonArray jsonArr = source.getAsJsonArray();
+            JsonArray jsonArray = new JsonArray();
+            for(JsonElement item:jsonArr){
+                jsonArray.add(replaceKey(item, rep,prefix,curr));
+            }
+            return jsonArray;
+        }
+        if (source.isJsonObject()) {
+            JsonObject jsonObj = source.getAsJsonObject();
+            Iterator<Map.Entry<String, JsonElement>> iterator = jsonObj.entrySet().iterator();
+            JsonObject newJsonObj = new JsonObject();
+            for (; iterator.hasNext();){
+                Map.Entry<String, JsonElement> item = iterator.next();
+                String key = item.getKey();
+                JsonElement value = item.getValue();
+//                if (rep.containsKey(prefix+key)) {
+//                    String newKey = rep.get(prefix+key);
+//                    key = newKey;
+//                }
+                newJsonObj.add(key, replaceKey(value, rep,prefix+key,key));
+            }
+
+            return newJsonObj;
+        }
+        return JsonNull.INSTANCE;
+    }
+
     public static String readWatermark(String filename){
         String str = null;
         try {
@@ -176,39 +212,15 @@ public class Util {
         bw.close();
     }
 
-    public static Map<String,String> eliminateLevels(JsonObject object){
-        sum = 0;valid = 0;
+    public static void writeJsonStream(OutputStream out, JsonElement object) throws IOException {
+        JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
+        writer.setIndent(" ");
+        Gson gson = new Gson();
+        gson.toJson(object,writer);
+        // print the result
+        gson.toJson(object,System.out);
 
-        recursiveHelper(object,"");
-
-        System.out.println("Sum of KEYS: " + sum + ". Sum of Valid: " + valid);
-        return JsonMap;
-    }
-
-    public static void recursiveHelper(JsonElement object,String prefix){
-        if(object instanceof JsonObject){
-            // continue the recursion
-            for(Map.Entry<String, JsonElement> entry:((JsonObject) object).entrySet()){
-                recursiveHelper(entry.getValue(),prefix+entry.getKey());
-            }
-
-
-        }else if(object instanceof JsonArray){
-
-            for (Iterator<JsonElement> iter = ((JsonArray) object).iterator(); iter.hasNext();){
-                recursiveHelper(iter.next(),prefix);
-            }
-        }else{
-            // instance of JsonPrimitive
-            String value = ((JsonPrimitive)object).getAsString();
-            if (value.replaceAll("[A-Za-z0-9]","").length() > DEFAULT_MINLEN){
-                //valid
-                JsonMap.put(prefix,value);
-                valid++;
-            }
-            sum++;
-
-        }
+        writer.close();
     }
 
 
