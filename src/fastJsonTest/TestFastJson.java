@@ -1,4 +1,4 @@
-package Test;
+package fastJsonTest;
 
 import java.util.ArrayList;
 import java.util.List;

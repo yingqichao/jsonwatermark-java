@@ -1,3 +1,9 @@
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.internal.LinkedTreeMap;
+
 import java.io.*;
 
 import java.util.*;
@@ -7,7 +13,12 @@ public class Util {
     public static double DEFAULT_C = 0.1;
     public static double DEFAULT_DELTA = 0.5;
     public static int DEFAULT_STRLEN = 7;
+    public static int DEFAULT_MINLEN = 9;
     public static int DEFAULT_DATALEN = 5;
+
+    public static Map<String,String> JsonMap = new HashMap<>();
+    public static int sum = 0;
+    public static int valid = 0;
 
     public static boolean isNumeric(String str){
         return str.matches("-?[0-9]+.*[0-9]*");
@@ -163,6 +174,41 @@ public class Util {
             bw.newLine();
         }
         bw.close();
+    }
+
+    public static Map<String,String> eliminateLevels(JsonObject object){
+        sum = 0;valid = 0;
+
+        recursiveHelper(object,"");
+
+        System.out.println("Sum of KEYS: " + sum + ". Sum of Valid: " + valid);
+        return JsonMap;
+    }
+
+    public static void recursiveHelper(JsonElement object,String prefix){
+        if(object instanceof JsonObject){
+            // continue the recursion
+            for(Map.Entry<String, JsonElement> entry:((JsonObject) object).entrySet()){
+                recursiveHelper(entry.getValue(),prefix+entry.getKey());
+            }
+
+
+        }else if(object instanceof JsonArray){
+
+            for (Iterator<JsonElement> iter = ((JsonArray) object).iterator(); iter.hasNext();){
+                recursiveHelper(iter.next(),prefix);
+            }
+        }else{
+            // instance of JsonPrimitive
+            String value = ((JsonPrimitive)object).getAsString();
+            if (value.replaceAll("[A-Za-z0-9]","").length() > DEFAULT_MINLEN){
+                //valid
+                JsonMap.put(prefix,value);
+                valid++;
+            }
+            sum++;
+
+        }
     }
 
 

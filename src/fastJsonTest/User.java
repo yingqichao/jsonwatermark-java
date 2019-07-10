@@ -1,4 +1,4 @@
-package Test;
+package fastJsonTest;
 
 /**
  * User测试类
