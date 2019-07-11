@@ -87,6 +87,12 @@ public class Util {
 
         try{
 
+            while(input_padded_array.substring(len_input).indexOf("1")!=-1){
+                int cur_shift = input_padded_array.indexOf("1");
+                for(int j=0;j<polynomial_bitstring.length();j++){
+                    input_padded_array.setCharAt(cur_shift+j,(polynomial_bitstring.charAt(j) != input_padded_array.charAt(cur_shift + j))?'1':'0');
+                }
+            }
 
 // Wrong
 //            for(int i=0;i<input_padded_array.length();i++){

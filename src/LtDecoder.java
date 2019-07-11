@@ -80,9 +80,12 @@ public class LtDecoder {
             lt_block.deleteCharAt(lt_block.indexOf("."));
         }
 
+        int buff = -1;
+
         Set<Integer> duplicateSet = new HashSet<>(0);int ind = 0;
         while(ind<strlen){
             int num = prng.get_next() % lt_block.length();
+            if(ind==0)  buff = num;
             if(!duplicateSet.contains(num)) {
                 duplicateSet.add(num);
                 char ori = lt_block.charAt(num);
@@ -98,7 +101,7 @@ public class LtDecoder {
 
         }
 
-        System.out.println("Debug Extract: " + extracted + " " + ori_block);
+        System.out.println("Debug Extract: " + extracted + " " + buff + " " + ori_block);
         list.add(extracted);list.add(verify);
         return list;
     }

@@ -62,6 +62,8 @@ public class BlockGraph{
             checks.remove(node);
         }
 
+        System.out.println("-- Eliminated: "+eliminated.size());
+
         //Pass messages to all associated checks
         if(others!=null) {
             for (CheckNode check : others) {
