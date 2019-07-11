@@ -63,12 +63,14 @@ public class BlockGraph{
         }
 
         //Pass messages to all associated checks
-        for(CheckNode check:others){
-            check.check ^= data;
-            check.src_nodes.removeAll(nodes);
+        if(others!=null) {
+            for (CheckNode check : others) {
+                check.check ^= data;
+                check.src_nodes.removeAll(nodes);
 
-            //Yield all nodes that can now be resolved
-            res.add(check);
+                //Yield all nodes that can now be resolved
+                res.add(check);
+            }
         }
 
         return res;

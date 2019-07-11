@@ -68,7 +68,7 @@ public class LtDecoder {
 
         //preprocess
         if(Util.isInteger(ori_block)){
-            int value_int = Integer.parseInt(ori_block);
+            long value_int = Long.parseLong(ori_block);
             negative = value_int<0;
             if(negative)    lt_block.deleteCharAt(0);
             lt_block.deleteCharAt(0);

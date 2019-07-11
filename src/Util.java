@@ -14,9 +14,25 @@ public class Util {
     public static int DEFAULT_MINLEN = 9;
     public static int DEFAULT_DATALEN = 5;
 
+    public static boolean isJSON(String jsonStr) {
+        JsonElement jsonElement;
+        try {
+            jsonElement = new JsonParser().parse(jsonStr);
+        } catch (Exception e) {
+            return false;
+        }
+        if (jsonElement == null) {
+            return false;
+        }
+        if (!jsonElement.isJsonObject()) {
+            return false;
+        }
+        return true;
+    }
+
 
     public static boolean isNumeric(String str){
-        return str.matches("-?[0-9]+.*[0-9]*");
+        return str.matches("-?[0-9]+\\.[0-9]*");
     }
 
     public static boolean isInteger(String str) {
@@ -43,13 +59,21 @@ public class Util {
             initial_padding += initial_filler;
         StringBuilder input_padded_array = new StringBuilder(input_bitstring + initial_padding);
 
-        for(int i=0;i<input_padded_array.length();i++){
-            if(input_padded_array.charAt(i)=='1'){
-                for(int j=0;j<polynomial_bitstring.length();j++){
-                    input_padded_array.setCharAt(i+j,(polynomial_bitstring.charAt(j) != input_padded_array.charAt(i + j))?'1':'0');
-                }
-            }else break;
+        while(input_padded_array.substring(len_input).indexOf("1")!=-1){
+            int cur_shift = input_padded_array.indexOf("1");
+            for(int j=0;j<polynomial_bitstring.length();j++){
+                    input_padded_array.setCharAt(cur_shift+j,(polynomial_bitstring.charAt(j) != input_padded_array.charAt(cur_shift + j))?'1':'0');
+            }
         }
+
+// wrong
+//        for(int i=0;i<input_padded_array.length();i++){
+//            if(input_padded_array.charAt(i)=='1'){
+//                for(int j=0;j<polynomial_bitstring.length();j++){
+//                    input_padded_array.setCharAt(i+j,(polynomial_bitstring.charAt(j) != input_padded_array.charAt(i + j))?'1':'0');
+//                }
+//            }else break;
+//        }
         return input_padded_array.substring(len_input).toString();
     }
 
@@ -62,13 +86,16 @@ public class Util {
         StringBuilder input_padded_array = new StringBuilder(input_bitstring);
 
         try{
-            for(int i=0;i<input_padded_array.length();i++){
-                if(input_padded_array.charAt(i)=='1'){
-                    for(int j=0;j<polynomial_bitstring.length();j++){
-                        input_padded_array.setCharAt(i+j,(polynomial_bitstring.charAt(j) != input_padded_array.charAt(i + j))?'1':'0');
-                    }
-                }else break;
-            }
+
+
+// Wrong
+//            for(int i=0;i<input_padded_array.length();i++){
+//                if(input_padded_array.charAt(i)=='1'){
+//                    for(int j=0;j<polynomial_bitstring.length();j++){
+//                        input_padded_array.setCharAt(i+j,(polynomial_bitstring.charAt(j) != input_padded_array.charAt(i + j))?'1':'0');
+//                    }
+//                }else break;
+//            }
 
             return (input_padded_array.substring(len_input).indexOf('1')<0);
         }catch(Exception e){

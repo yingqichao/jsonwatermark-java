@@ -47,14 +47,14 @@ public class Encoder {
         }
     }
 
-    public String modify(String value,Integer waterSeq){
+    public String modify(String value,String keyname,Integer waterSeq){
         //modify the value to embed data
         Character first = null;boolean negative = false;int dotIndex = -1;
         StringBuilder newvalue = new StringBuilder(value);
         int startFrom = 0;
         //preprocess
         if(Util.isInteger(value)){
-            int value_int = Integer.parseInt(value);
+            long value_int = Long.parseLong(value);
             negative = value_int<0;
             if(negative)  {
                 newvalue.deleteCharAt(startFrom);
@@ -90,7 +90,7 @@ public class Encoder {
                     newvalue.setCharAt(num, (char) (ori + ori % 2 - crc_text.charAt(embedded) + '0'));
                     embedded ++;
                 }
-                else {
+                else if(ori >= '0' && ori <= '9') {
                     //对于数字：统一向下取结果
                     newvalue.setCharAt(num, (char) (ori - ori % 2 + crc_text.charAt(embedded) - '0'));
                     embedded ++;
@@ -99,11 +99,11 @@ public class Encoder {
         }
 
         //recovery
-        if(Util.isNumeric(value)) newvalue.insert(dotIndex,'.');
+        if(dotIndex!=-1) newvalue.insert(dotIndex,'.');
         if(first!=null) newvalue.insert(0,first);
         if(negative)    newvalue.insert(0,'-');
 
-        System.out.println("Debug Embed: " + waterSeq + " " + newvalue);
+        System.out.println("Debug Embed: " + waterSeq + " " + keyname + " " + newvalue);
         return newvalue.toString();
 
     }
@@ -117,7 +117,7 @@ public class Encoder {
         for(int i=2;i<list.size();i++)
             block_data ^= this.blocks[list.get(i)];
 
-        return this.modify(value,block_data);
+        return this.modify(value,key,block_data);
 
     }
 
@@ -193,7 +193,8 @@ public class Encoder {
         }else if(!(object instanceof JsonNull)){
             // instance of JsonPrimitive
             String value = ((JsonPrimitive)object).getAsString();
-            if (value.replaceAll("![A-Za-z0-9]","").length() > Util.DEFAULT_MINLEN){
+
+            if (!Util.isJSON(value) && value.replaceAll("![A-Za-z0-9]","").length() > Util.DEFAULT_MINLEN){
                 //valid
                 JSON.put(prefix,value);
                 valid++;
@@ -202,10 +203,8 @@ public class Encoder {
         }
     }
 
-    public static JsonElement JsonUpdating(JsonObject object){
-        Map<String,String> map = new HashMap<>();
-        map.put("dataversion","1.314");
-        JsonElement jsonElement = Util.replaceKey(object,map,"","");
+    public JsonElement JsonUpdating(JsonObject object){
+        JsonElement jsonElement = Util.replaceKey(object,watermarkedJSON,"","");
 
         System.out.println("Successfully updated!......");
 
