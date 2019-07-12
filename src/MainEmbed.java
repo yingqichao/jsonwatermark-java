@@ -1,4 +1,4 @@
-import com.alibaba.fastjson.JSON;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -19,21 +19,20 @@ public class MainEmbed {
         //End Test
 
 
-
+        String filename = "test";
 
 //        Map<String,String> JSON = Util.readFakeJSON("src/fakeJSON.txt");
         JsonParser parser = new JsonParser() ;
-        JsonObject object = (JsonObject)parser.parse(new FileReader("src//test.json"));
-
+        JsonObject object = (JsonObject)parser.parse(new FileReader("src//resources//"+filename+".json"));
 
 //        // 解析string
 //        Map<String,String> map = Util.eliminateLevels(object);
 
-        String watermark = Util.readWatermark("src/watermark.txt");
+        String watermark = Util.readWatermark("src//watermark.txt");
         Encoder encoder = new Encoder(watermark);
         JsonElement jsonElement = encoder.run(object);
 
-        FileOutputStream out=new FileOutputStream("src//embedded.json");
+        FileOutputStream out=new FileOutputStream("src//embedded_results//"+filename+"_data_"+watermark+".json");
         Util.writeJsonStream(out,jsonElement);
 
     }

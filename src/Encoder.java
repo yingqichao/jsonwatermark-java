@@ -14,8 +14,8 @@ public class Encoder {
     public int[] blocks;
     public int K;
     public Sampler solitionGenerator;
-    public Map<String,String> JSON = new HashMap<>();
-    public Map<String,String> watermarkedJSON = new HashMap<>();
+    public TreeMap<String,String> JSON = new TreeMap<>();
+    public TreeMap<String,String> watermarkedJSON = new TreeMap<>();
 
     public static int sum = 0;
     public static int valid = 0;
@@ -47,7 +47,7 @@ public class Encoder {
         }
     }
 
-    public String modify(String value,String keyname,Integer waterSeq){
+    public String modify(String value,String keyname,Integer waterSeq,List<Integer> blocks){
         //modify the value to embed data
         Character first = null;boolean negative = false;int dotIndex = -1;
         StringBuilder newvalue = new StringBuilder(value);
@@ -77,11 +77,12 @@ public class Encoder {
 
         String crc_text = Util.toBinary(waterSeq,5);
         crc_text += Util.crc_remainder(crc_text,null,null);
+        int debug = 0;
 
         while(embedded<crc_text.length()){
             int num = this.solitionGenerator.get_next() % newvalue.length();
-            if(num==-1)
-                break;
+            if(embedded==0)
+                debug = num;
             if(!duplicateSet.contains(num)){
                 duplicateSet.add(num);
                 char ori = newvalue.charAt(num);
@@ -103,7 +104,7 @@ public class Encoder {
         if(first!=null) newvalue.insert(0,first);
         if(negative)    newvalue.insert(0,'-');
 
-        System.out.println("Debug Embed: " + waterSeq + " " + keyname + " " + newvalue);
+        System.out.println("Debug Embed: data->" + waterSeq + " seed->" + debug +" " + keyname + " " + newvalue);
         return newvalue.toString();
 
     }
@@ -117,7 +118,7 @@ public class Encoder {
         for(int i=2;i<list.size();i++)
             block_data ^= this.blocks[list.get(i)];
 
-        return this.modify(value,key,block_data);
+        return this.modify(value,key,block_data,list);
 
     }
 
@@ -169,12 +170,17 @@ public class Encoder {
 //
 //    }
 
-    public Map<String,String> eliminateLevels(JsonObject object){
+    public TreeMap<String,String> eliminateLevels(JsonObject object){
         // clear
-        JSON = new HashMap<>();
+        JSON = new TreeMap<>();
         sum = 0;valid = 0;
 
         recursiveEliminateHelper(object,"");
+
+        for(String key:JSON.keySet())
+            System.out.println(key+"   "+JSON.get(key));
+
+        System.out.println("-------------------------------------------------");
 
         System.out.println("Sum of KEYS: " + sum + ". Sum of Valid: " + valid);
         return JSON;
@@ -194,9 +200,9 @@ public class Encoder {
             // instance of JsonPrimitive
             String value = ((JsonPrimitive)object).getAsString();
 
-            if (!Util.isJSON(value) && value.replaceAll("![A-Za-z0-9]","").length() > Util.DEFAULT_MINLEN){
+            if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Util.DEFAULT_MINLEN){
                 //valid
-                JSON.put(prefix,value);
+                JSON.put(prefix.replaceAll("[^A-Za-z0-9]",""),value);
                 valid++;
             }
             sum++;

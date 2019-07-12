@@ -183,8 +183,8 @@ public class Util {
         }
         if (source.isJsonPrimitive()) {
             JsonElement value = source.getAsJsonPrimitive();
-            if (rep.containsKey(prefix)) {
-                String newKey = rep.get(prefix);
+            if (rep.containsKey(prefix.replaceAll("[^A-Za-z0-9]",""))) {
+                String newKey = rep.get(prefix.replaceAll("[^A-Za-z0-9]",""));
                 JsonPrimitive newJsonObj = new JsonPrimitive(newKey);
                 return newJsonObj;
             }

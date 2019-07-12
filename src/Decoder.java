@@ -79,9 +79,9 @@ public class Decoder {
             // instance of JsonPrimitive
             String value = ((JsonPrimitive)object).getAsString();
 
-            if (!Util.isJSON(value) && value.replaceAll("![A-Za-z0-9]","").length() > Util.DEFAULT_MINLEN){
+            if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Util.DEFAULT_MINLEN){
                 //valid
-                JSON.put(prefix,value);
+                JSON.put(prefix.replaceAll("[^A-Za-z0-9]",""),value);
                 valid++;
             }
             sum++;

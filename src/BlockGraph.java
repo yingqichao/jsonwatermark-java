@@ -27,12 +27,17 @@ public class BlockGraph{
             }
         }else{
             //Pass messages from already-resolved source nodes
-            for(int node:nodes){
+            List<Integer> templist = new LinkedList<>(nodes);int index = 0;
+            while(index<templist.size()){
+                int node = templist.get(index);
                 if(eliminated.containsKey(node)){
-                    nodes.remove(node);
+                    templist.remove(templist.indexOf(node));
                     data^=eliminated.get(node);
+                }else{
+                    index++;
                 }
             }
+            nodes = new HashSet<>(templist);
             //Resolve if we are left with a single non-resolved source node
             if(nodes.size()==1){
                 return add_block(nodes,data);

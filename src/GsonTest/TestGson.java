@@ -57,7 +57,7 @@ public class TestGson {
         }else if(object instanceof JsonPrimitive){
             // instance of JsonPrimitive
             String value = ((JsonPrimitive)object).getAsString();
-            if (value.replaceAll("![A-Za-z0-9]","").length() > DEFAULT_MINLEN){
+            if (value.replaceAll("[^A-Za-z0-9]","").length() > DEFAULT_MINLEN){
                 //valid
                 JsonMap.put(prefix,value);
                 valid++;
