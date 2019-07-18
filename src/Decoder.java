@@ -59,21 +59,32 @@ public class Decoder {
         JSON = new HashMap<>();
         sum = 0;valid = 0;
 
-        recursiveEliminateHelper(object,"");
+        recursiveEliminateHelper(object,"",false);
 
         System.out.println("Sum of KEYS: " + sum + ". Sum of Valid: " + valid);
         return JSON;
     }
 
-    public void recursiveEliminateHelper(JsonElement object, String prefix){
+    public void recursiveEliminateHelper(JsonElement object, String prefix,boolean isArray){
+        if(isArray){
+            //indicates parent is an array, then the object must contains a addW key showing the index
+
+        }
         if(object instanceof JsonObject){
             // continue the recursion
+            if(isArray){
+                int index = ((JsonObject) object).get(Util.newTagName).getAsInt();
+                prefix += index;
+            }
             for(Map.Entry<String, JsonElement> entry:((JsonObject) object).entrySet()){
-                recursiveEliminateHelper(entry.getValue(),prefix+entry.getKey());
+                recursiveEliminateHelper(entry.getValue(),prefix+entry.getKey(),false);
             }
         }else if(object instanceof JsonArray){
+            if(isArray){
+                System.out.println("[Warning] Recursive structure of JsonArray is currently under tests.");
+            }
             for (Iterator<JsonElement> iter = ((JsonArray) object).iterator(); iter.hasNext();){
-                recursiveEliminateHelper(iter.next(),prefix);
+                recursiveEliminateHelper(iter.next(),prefix,true);
             }
         }else if(!(object instanceof JsonNull)){
             // instance of JsonPrimitive

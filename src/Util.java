@@ -13,6 +13,7 @@ public class Util {
     public static int DEFAULT_STRLEN = 7;
     public static int DEFAULT_MINLEN = 9;
     public static int DEFAULT_DATALEN = 5;
+    public static String newTagName = "addw";
 
     public static boolean isJSON(String jsonStr) {
         JsonElement jsonElement;
@@ -177,11 +178,21 @@ public class Util {
 
     }
 
-    public static JsonElement replaceKey(JsonElement source,Map<String, String> rep,String prefix,String curr) {
+    public static JsonElement replaceKey(JsonElement source,Map<String, String> rep,String prefix,String curr,int arrayCount) {
+        if(arrayCount>0){
+            //which indicates the parent object is an array
+            //we assert that the child object of an JsonArray can only be either JsonArray or JsonObject
+            prefix += arrayCount;
+//            arrayCount = 0;
+        }
         if (source == null || source.isJsonNull()) {
             return JsonNull.INSTANCE;
         }
         if (source.isJsonPrimitive()) {
+            if(arrayCount!=0){
+                System.out.println("[Error] we assert that the child object of an JsonArray can only be either JsonArray or JsonObject. However, JsonPrimitive found.");
+                arrayCount = 0;
+            }
             JsonElement value = source.getAsJsonPrimitive();
             if (rep.containsKey(prefix.replaceAll("[^A-Za-z0-9]",""))) {
                 String newKey = rep.get(prefix.replaceAll("[^A-Za-z0-9]",""));
@@ -191,10 +202,16 @@ public class Util {
             return source;
         }
         if (source.isJsonArray()) {
+            if(arrayCount!=0){
+                System.out.println("[Warning] Recursive structure of JsonArray is currently under tests.");
+                arrayCount = 0;
+            }
+            int count = 1;
             JsonArray jsonArr = source.getAsJsonArray();
             JsonArray jsonArray = new JsonArray();
             for(JsonElement item:jsonArr){
-                jsonArray.add(replaceKey(item, rep,prefix,curr));
+                jsonArray.add(replaceKey(item, rep,prefix,curr,count));
+                count++;
             }
             return jsonArray;
         }
@@ -202,6 +219,10 @@ public class Util {
             JsonObject jsonObj = source.getAsJsonObject();
             Iterator<Map.Entry<String, JsonElement>> iterator = jsonObj.entrySet().iterator();
             JsonObject newJsonObj = new JsonObject();
+            if(arrayCount!=0){
+                newJsonObj.add(newTagName, new JsonPrimitive(arrayCount));
+                arrayCount = 0;
+            }
             for (; iterator.hasNext();){
                 Map.Entry<String, JsonElement> item = iterator.next();
                 String key = item.getKey();
@@ -210,7 +231,7 @@ public class Util {
 //                    String newKey = rep.get(prefix+key);
 //                    key = newKey;
 //                }
-                newJsonObj.add(key, replaceKey(value, rep,prefix+key,key));
+                newJsonObj.add(key, replaceKey(value, rep,prefix+key,key,arrayCount));
             }
 
             return newJsonObj;

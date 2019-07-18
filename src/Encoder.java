@@ -175,7 +175,7 @@ public class Encoder {
         JSON = new TreeMap<>();
         sum = 0;valid = 0;
 
-        recursiveEliminateHelper(object,"");
+        recursiveEliminateHelper(object,"",0);
 
         for(String key:JSON.keySet())
             System.out.println(key+"   "+JSON.get(key));
@@ -186,15 +186,22 @@ public class Encoder {
         return JSON;
     }
 
-    public void recursiveEliminateHelper(JsonElement object, String prefix){
+    public void recursiveEliminateHelper(JsonElement object, String prefix,int arrayCount){
+        if(arrayCount>0){
+            //which indicates the parent object is an array
+            prefix += arrayCount;
+            arrayCount = 0;
+        }
         if(object instanceof JsonObject){
             // continue the recursion
             for(Map.Entry<String, JsonElement> entry:((JsonObject) object).entrySet()){
-                recursiveEliminateHelper(entry.getValue(),prefix+entry.getKey());
+                recursiveEliminateHelper(entry.getValue(),prefix+entry.getKey(),arrayCount);
             }
         }else if(object instanceof JsonArray){
+            int count = 1;
             for (Iterator<JsonElement> iter = ((JsonArray) object).iterator(); iter.hasNext();){
-                recursiveEliminateHelper(iter.next(),prefix);
+                recursiveEliminateHelper(iter.next(),prefix,count);
+                count++;
             }
         }else if(!(object instanceof JsonNull)){
             // instance of JsonPrimitive
@@ -210,7 +217,7 @@ public class Encoder {
     }
 
     public JsonElement JsonUpdating(JsonObject object){
-        JsonElement jsonElement = Util.replaceKey(object,watermarkedJSON,"","");
+        JsonElement jsonElement = Util.replaceKey(object,watermarkedJSON,"","",0);
 
         System.out.println("Successfully updated!......");
 

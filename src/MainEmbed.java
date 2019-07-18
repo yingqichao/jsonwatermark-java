@@ -19,7 +19,7 @@ public class MainEmbed {
         //End Test
 
 
-        String filename = "test";
+        String filename = "array";
 
 //        Map<String,String> JSON = Util.readFakeJSON("src/fakeJSON.txt");
         JsonParser parser = new JsonParser() ;

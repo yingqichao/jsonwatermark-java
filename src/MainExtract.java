@@ -7,7 +7,7 @@ import java.util.*;
 public class MainExtract {
     public static void main(String[] args) throws Exception{
 
-        String filename = "test";
+        String filename = "array";
 
 //        Map<String,String> JSON = Util.readFakeJSON("src/watermarkedJSON.txt");
         JsonParser parser = new JsonParser() ;

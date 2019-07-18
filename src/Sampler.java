@@ -87,7 +87,7 @@ public class Sampler {
                 return index + 1;
             index++;
         }
-        return index + 1;
+        return Math.min(this.K,index + 1);
     }
 
     public void setSeed(int seed){ this.state = seed;}
