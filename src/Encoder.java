@@ -1,18 +1,20 @@
+import Utils.*;
 import com.google.gson.*;
 
 import java.util.*;
 
 public class Encoder {
 
-    public int blocksize;
+
     public int seed;
     public double c;
     public double delta;
-    public int numpacks;
+
     public String f_bytes;
     public int filesize;
     public int[] blocks;
     public int K;
+    public int minRequire;
     public Sampler solitionGenerator;
     public TreeMap<String,String> JSON = new TreeMap<>();
     public TreeMap<String,String> watermarkedJSON = new TreeMap<>();
@@ -21,33 +23,56 @@ public class Encoder {
     public static int valid = 0;
     public static int updated = 0;
 
-    public Encoder(int blocksize, int seed, double c, double delta, int numpacks, String f_bytes) {
-        this.blocksize = blocksize;
+    public Encoder( int seed, double c, double delta, String f_bytes) {
         this.seed = seed;
         this.c = c;
         this.delta = delta;
-        this.numpacks = numpacks;
         this.f_bytes = f_bytes;
         split_file();
         this.K = this.blocks.length;
+        this.minRequire = this.K*2;
+        System.out.println("packages: "+this.K+". Minimum required blocks: "+this.K*2);
         this.solitionGenerator = new Sampler(this.K,delta,c);// Seed is set by interfacing code using set_seed
 
     }
 
     public Encoder(String f_bytes){
-        this(1,1, Util.DEFAULT_C, Util.DEFAULT_DELTA,30,f_bytes);
+        this(1, Settings.DEFAULT_C, Settings.DEFAULT_DELTA,f_bytes);
     }
 
     public void split_file(){
         //Block file byte contents into blocksize chunks, padding last one if necessary
-        this.blocks = new int[f_bytes.length()];int i=0;
-        for(char c:this.f_bytes.toCharArray()){
-            blocks[i] = c-'a';
-            i++;
+        this.blocks = new int[f_bytes.length()/Settings.DEFAULT_DATALEN];
+        for(int i=0;i<f_bytes.length();i+=Settings.DEFAULT_DATALEN){
+            blocks[i/4] = Utils.StrBinaryTurn.binaryToDecimal(f_bytes.substring(i,i+Settings.DEFAULT_DATALEN));
         }
     }
 
-    public String modify(String value,String keyname,Integer waterSeq,List<Integer> blocks){
+    public String encoder(String key,String value){
+//        Generates an infinite sequence of blocks to transmit to the receiver
+        Set<Integer> duplicateSet = new HashSet<>();String res = value;
+        int innerPackage = value.replaceAll("[^A-Za-z0-9]","").length()/Settings.DEFAULT_MINLEN;
+        if(innerPackage>1)
+            System.out.println("-- This package is splitted to embed "+innerPackage+" packages --");
+        for(int ite=0;ite<innerPackage;ite++){
+            this.seed = Util.BKDRHash(key+((innerPackage>1)?ite:""),131);
+            this.solitionGenerator.setSeed(this.seed);
+            List<Integer> list = this.solitionGenerator.get_src_blocks(null);
+            int block_data = 0;
+            for(int i=2;i<list.size();i++)
+                block_data ^= this.blocks[list.get(i)];
+
+            res = modify(res,key,block_data,list,duplicateSet);
+
+        }
+
+
+
+        return res;
+
+    }
+
+    public String modify(String value,String keyname,Integer waterSeq,List<Integer> blocks,Set<Integer> duplicateSet){
         //modify the value to embed data
         Character first = null;boolean negative = false;int dotIndex = -1;
         StringBuilder newvalue = new StringBuilder(value);
@@ -73,10 +98,14 @@ public class Encoder {
             newvalue.deleteCharAt(dotIndex);
         }
 
-        Set<Integer> duplicateSet = new HashSet<>(0);int embedded = 0;
+//        Set<Integer> duplicateSet = new HashSet<>(0);
+        int embedded = 0;
 
-        String crc_text = Util.toBinary(waterSeq,5);
-        crc_text += Util.crc_remainder(crc_text,null,null);
+//        String crc_text = Util.toBinary(waterSeq,Settings.DEFAULT_DATALEN);
+//        crc_text += Util.crc_remainder(crc_text,null,null);
+
+        String crc_text = Util.dec2bin(cyclic.CyclicCoder.encode(waterSeq),Settings.DEFAULT_EMBEDLEN);
+
         int debug = 0;
 
         while(embedded<crc_text.length()){
@@ -96,6 +125,7 @@ public class Encoder {
                     newvalue.setCharAt(num, (char) (ori - ori % 2 + crc_text.charAt(embedded) - '0'));
                     embedded ++;
                 }
+                //其他的字符全都直接跳过
             }
         }
 
@@ -109,25 +139,15 @@ public class Encoder {
 
     }
 
-    public String encoder(String key,String value){
-//        Generates an infinite sequence of blocks to transmit to the receiver
-        this.seed = Util.BKDRHash(key,131);
-        this.solitionGenerator.setSeed(this.seed);
-        List<Integer> list = this.solitionGenerator.get_src_blocks(null);
-        int block_data = 0;
-        for(int i=2;i<list.size();i++)
-            block_data ^= this.blocks[list.get(i)];
-
-        return this.modify(value,key,block_data,list);
-
-    }
 
     public JsonElement run(JsonObject object){
         System.out.println("-----------------------------Embedding---------------------------------------");
         try {
             // 解析string
             JSON = eliminateLevels(object);
-
+            if(valid<this.minRequire){
+                throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the watermark sequence...");
+            }
             //Embedment
             for(String key:this.JSON.keySet()){
                 String newValue = encoder(key,this.JSON.get(key));
@@ -136,9 +156,9 @@ public class Encoder {
 
             JsonElement newJsonElement = JsonUpdating(object);
 //            FileOutputStream out=new FileOutputStream("src//embedded.json");
-//            Util.writeJsonStream(out,object);
+//            Utils.Util.writeJsonStream(out,object);
 
-//            Util.writeFromJSON(watermarkedJSON);
+//            Utils.Util.writeFromJSON(watermarkedJSON);
             // Writing Json
 
 
@@ -207,17 +227,17 @@ public class Encoder {
             // instance of JsonPrimitive
             String value = ((JsonPrimitive)object).getAsString();
 
-            if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Util.DEFAULT_MINLEN){
+            if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Settings.DEFAULT_MINLEN){
                 //valid
                 JSON.put(prefix.replaceAll("[^A-Za-z0-9]",""),value);
-                valid++;
+                valid+=value.replaceAll("[^A-Za-z0-9]","").length()/Settings.DEFAULT_MINLEN;
             }
             sum++;
         }
     }
 
     public JsonElement JsonUpdating(JsonObject object){
-        JsonElement jsonElement = Util.replaceKey(object,watermarkedJSON,"","",0);
+        JsonElement jsonElement = Util.replaceKey(object,watermarkedJSON,"","",0,Settings.newTagName,Settings.packageNumName,this.K);
 
         System.out.println("Successfully updated!......");
 

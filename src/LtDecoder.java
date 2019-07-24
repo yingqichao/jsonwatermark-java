@@ -1,4 +1,7 @@
+import Utils.Util;
+
 import java.util.*;
+import cyclic.*;
 
 public class LtDecoder {
     public int received_packs = 0;
@@ -31,39 +34,48 @@ public class LtDecoder {
 
     public boolean consume_block(int filesize,String key,String lt_block,Integer blocksize){
         if(blocksize==null) blocksize = 1;
-        int blockseed = Util.BKDRHash(key,null);
+        Set<Integer> duplicateSet = new HashSet<>(0);
 
-        if(!initialized){
-            this.filesize = filesize;
-            this.blocksize = blocksize;
-            this.K = (int)Math.ceil(filesize / blocksize);
-            this.block_graph = new BlockGraph(K);
-            this.prng = new Sampler(K,Util.DEFAULT_DELTA,Util.DEFAULT_C);
-            this.initialized = true;
+        int innerPackage = lt_block.replaceAll("[^A-Za-z0-9]","").length()/Settings.DEFAULT_MINLEN;
+        if(innerPackage>1)
+            System.out.println("-- This package is splitted to embed "+innerPackage+" packages --");
+        for(int ite=0;ite<innerPackage;ite++) {
 
+            if (!initialized) {
+                this.filesize = filesize;
+                this.blocksize = blocksize;
+                this.K = (int) Math.ceil(filesize / blocksize);
+                this.block_graph = new BlockGraph(K);
+                this.prng = new Sampler(K, Settings.DEFAULT_DELTA, Settings.DEFAULT_C);
+                this.initialized = true;
+            }
+
+            int blockseed = Util.BKDRHash(key+((innerPackage>1)?ite:""),null);
+
+            this.prng.setSeed(blockseed);
+            // Run PRNG with given seed to figure out which blocks were XORed to make received data
+            List<Integer> src_blocks = prng.get_src_blocks(null);// or seed=blockseed
+            src_blocks.remove(0);//blockseed
+            src_blocks.remove(0);//d
+            List<Object> blockAndVerify = extract(key, lt_block, duplicateSet);
+            String tmpstr = (String) blockAndVerify.get(1);
+            if (cyclic.CyclicCoder.decode(Integer.parseInt(tmpstr, 2)) != -1) {
+                // If BP is done, stop
+                System.out.println("Valid Package.");
+                this.done = handle_block(src_blocks, (int) blockAndVerify.get(0));
+//                return this.done;
+            } else {
+                System.out.println("Invalid Package.Skip...");
+//                return false;
+            }
         }
-
-        this.prng.setSeed(blockseed);
-        // Run PRNG with given seed to figure out which blocks were XORed to make received data
-        List<Integer> src_blocks = prng.get_src_blocks(null);// or seed=blockseed
-        src_blocks.remove(0);//blockseed
-        src_blocks.remove(0);//d
-        List<Object> blockAndVerify = extract(lt_block);
-        if(Util.crc_check((String)blockAndVerify.get(1),null)){
-            // If BP is done, stop
-            System.out.println("Valid Package.");
-            this.done = handle_block(src_blocks, (int)blockAndVerify.get(0));
-            return this.done;
-        }else{
-            System.out.println("Invalid Package.Skip...");
-            return false;
-        }
+        return this.done;
 
     }
 
-    public List<Object> extract(String ori_block){
+    public List<Object> extract(String key,String ori_block,Set<Integer> duplicateSet){
         List<Object> list = new LinkedList<>();
-        int strlen = Util.DEFAULT_STRLEN;boolean negative;String verify = "";
+        int strlen = Settings.DEFAULT_EMBEDLEN;boolean negative;String verify = "";
         int extracted = 0;StringBuilder lt_block = new StringBuilder(ori_block);
 
         //preprocess
@@ -82,7 +94,7 @@ public class LtDecoder {
 
         int buff = -1;
 
-        Set<Integer> duplicateSet = new HashSet<>(0);int ind = 0;
+        int ind = 0;
         while(ind<strlen){
             int num = prng.get_next() % lt_block.length();
             if(ind==0)  buff = num;
@@ -90,7 +102,7 @@ public class LtDecoder {
                 duplicateSet.add(num);
                 char ori = lt_block.charAt(num);
                 if ((ori >= 97 && ori <=122)||(ori >= 65 && ori <= 90) ||(ori >= 48 && ori <= 57)){
-                    if (ind < Util.DEFAULT_DATALEN) {
+                    if (ind < Settings.DEFAULT_DATALEN) {
                         extracted *= 2;
                         extracted += (ori % 2);// * pow(2, ind)
                     }
@@ -101,7 +113,7 @@ public class LtDecoder {
 
         }
 
-        System.out.println("Debug Extract: " + extracted + " " + buff + " " + ori_block);
+        System.out.println("Debug Extract: data->" + extracted + " seed->" + buff + " " + key + " " + ori_block);
         list.add(extracted);list.add(verify);
         return list;
     }

@@ -1,3 +1,5 @@
+package Utils;
+
 import com.google.gson.*;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.stream.JsonWriter;
@@ -8,12 +10,10 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Util {
-    public static double DEFAULT_C = 0.1;
-    public static double DEFAULT_DELTA = 0.5;
-    public static int DEFAULT_STRLEN = 7;
-    public static int DEFAULT_MINLEN = 9;
-    public static int DEFAULT_DATALEN = 5;
-    public static String newTagName = "addw";
+
+    public static void main(String[] args){
+        System.out.println(crc_remainder("1001",null,null));
+    }
 
     public static boolean isJSON(String jsonStr) {
         JsonElement jsonElement;
@@ -49,7 +49,7 @@ public class Util {
 
     public static String crc_remainder(String input_bitstring,String polynomial_bitstring, String initial_filler){
 //        Calculates the CRC remainder of a string of bits using a chosen polynomial. Initial_filler should be '1' or '0'.
-        if(polynomial_bitstring==null)  polynomial_bitstring="101";
+        if(polynomial_bitstring==null)  polynomial_bitstring="1011";
         if(initial_filler==null)  initial_filler="0";
 
         polynomial_bitstring  = polynomial_bitstring.replaceAll("^(0+)", "");
@@ -80,7 +80,7 @@ public class Util {
 
     public static boolean crc_check(String input_bitstring,String polynomial_bitstring){
 //        Calculates the CRC check of a string of bits using a chosen polynomial.
-        if(polynomial_bitstring==null)  polynomial_bitstring="101";
+        if(polynomial_bitstring==null)  polynomial_bitstring="1011";
 
         polynomial_bitstring  = polynomial_bitstring.replaceAll("^(0+)", "");
         int len_input = input_bitstring.length();
@@ -178,7 +178,7 @@ public class Util {
 
     }
 
-    public static JsonElement replaceKey(JsonElement source,Map<String, String> rep,String prefix,String curr,int arrayCount) {
+    public static JsonElement replaceKey(JsonElement source,Map<String, String> rep,String prefix,String curr,int arrayCount,String newTagName,String packageNumName,int isRoot) {
         if(arrayCount>0){
             //which indicates the parent object is an array
             //we assert that the child object of an JsonArray can only be either JsonArray or JsonObject
@@ -190,8 +190,9 @@ public class Util {
         }
         if (source.isJsonPrimitive()) {
             if(arrayCount!=0){
-                System.out.println("[Error] we assert that the child object of an JsonArray can only be either JsonArray or JsonObject. However, JsonPrimitive found.");
+                System.out.println("[Warning] we assert that the child object of an JsonArray can only be either JsonArray or JsonObject. However, JsonPrimitive found. The node is therefore skipped...");
                 arrayCount = 0;
+                return source;
             }
             JsonElement value = source.getAsJsonPrimitive();
             if (rep.containsKey(prefix.replaceAll("[^A-Za-z0-9]",""))) {
@@ -210,15 +211,18 @@ public class Util {
             JsonArray jsonArr = source.getAsJsonArray();
             JsonArray jsonArray = new JsonArray();
             for(JsonElement item:jsonArr){
-                jsonArray.add(replaceKey(item, rep,prefix,curr,count));
+                jsonArray.add(replaceKey(item, rep,prefix,curr,count,newTagName,packageNumName,0));
                 count++;
             }
             return jsonArray;
         }
         if (source.isJsonObject()) {
             JsonObject jsonObj = source.getAsJsonObject();
+
             Iterator<Map.Entry<String, JsonElement>> iterator = jsonObj.entrySet().iterator();
             JsonObject newJsonObj = new JsonObject();
+            if(isRoot>0)
+                newJsonObj.add(packageNumName, new JsonPrimitive(isRoot));
             if(arrayCount!=0){
                 newJsonObj.add(newTagName, new JsonPrimitive(arrayCount));
                 arrayCount = 0;
@@ -231,7 +235,7 @@ public class Util {
 //                    String newKey = rep.get(prefix+key);
 //                    key = newKey;
 //                }
-                newJsonObj.add(key, replaceKey(value, rep,prefix+key,key,arrayCount));
+                newJsonObj.add(key, replaceKey(value, rep,prefix+key,key,arrayCount,newTagName,packageNumName,0));
             }
 
             return newJsonObj;
@@ -255,16 +259,16 @@ public class Util {
         return str;
     }
 
-    public static void writeFromJSON(Map<String,String> JSON) throws IOException {
-        File fout = new File("src/watermarkedJSON.txt");
-        FileOutputStream fos = new FileOutputStream(fout);
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-        for (String value:JSON.keySet()) {
-            bw.write(JSON.get(value));
-            bw.newLine();
-        }
-        bw.close();
-    }
+//    public static void writeFromJSON(Map<String,String> JSON) throws IOException {
+//        File fout = new File("src/watermarkedJSON.txt");
+//        FileOutputStream fos = new FileOutputStream(fout);
+//        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+//        for (String value:JSON.keySet()) {
+//            bw.write(JSON.get(value));
+//            bw.newLine();
+//        }
+//        bw.close();
+//    }
 
     public static void writeJsonStream(OutputStream out, JsonElement object) throws IOException {
         JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
@@ -275,6 +279,36 @@ public class Util {
         gson.toJson(object,System.out);
 
         writer.close();
+    }
+
+    public static String StreamFromString(String str) {
+//        String str = "王雪";
+        char[] strChar=str.toCharArray();
+        String result="";
+        for(int i=0;i<strChar.length;i++){
+            String tmp = Integer.toBinaryString(strChar[i]);
+            for(int j=tmp.length();j<8;j++)
+                tmp = '0'+tmp;
+            result += tmp;
+        }
+//        System.out.println(result);
+        return result;
+    }
+
+    public static String dec2bin(int in,int digits){
+        StringBuilder str = new StringBuilder();
+        while(in!=0){
+            str.append(in%2);
+            in /= 2;
+        }
+        str.reverse();String res = str.toString();
+        for(int i=str.length();i<digits;i++){
+            res = "0" + res;
+        }
+
+        return res;
+
+
     }
 
 

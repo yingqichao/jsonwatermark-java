@@ -1,3 +1,4 @@
+import Utils.Util;
 import com.google.gson.*;
 
 import java.util.*;
@@ -15,7 +16,7 @@ public class Decoder {
     public static int updated = 0;
 
     public void decode(Map<String,String> JSON,int filesize){
-        decoder = new LtDecoder(Util.DEFAULT_C,Util.DEFAULT_DELTA);
+        decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
 
         for(String key:JSON.keySet()){
             String lt_block = JSON.get(key);
@@ -23,7 +24,7 @@ public class Decoder {
                 decoder.received_packs++;
                 if(decoder.is_done()){
                     success_time++;
-                    System.out.println("Decoded Successfully... "+success_time);
+                    System.out.println("--> Decoded Successfully <--... The watermark is now successfully retrieved. Time: "+success_time);
                     List<Integer> buff = decoder.bytes_dump();
                     String str = "";
                     for(int i=0;i<buff.size();i++) {
@@ -43,37 +44,41 @@ public class Decoder {
 
     }
 
-    public List<String> run(JsonObject object,int filesize){
+    public List<String> run(JsonObject object) throws Exception{
         //Reads from stream, applying the LT decoding algorithm to incoming encoded blocks until sufficiently many blocks have been received to reconstruct the entire file.
         System.out.println("-----------------------------Extraction---------------------------------------");
         // 解析string
-        JSON = eliminateLevels(object);
-//        modified_json= Util.eliminateLevels(JSON, "");
+        int filesize = eliminateLevels(object);
+//        modified_json= Utils.Util.eliminateLevels(JSON, "");
         decode(JSON, filesize);
 
         return this.secret_data;
     }
 
-    public Map<String,String> eliminateLevels(JsonObject object){
+    public int eliminateLevels(JsonObject object) throws Exception{
         // clear
         JSON = new HashMap<>();
         sum = 0;valid = 0;
+        //get num of packages. It is shown in the root node.
+        try {
+            int numpackage = ((JsonPrimitive) ((JsonObject) object).get(Settings.packageNumName)).getAsInt();
 
-        recursiveEliminateHelper(object,"",false);
 
-        System.out.println("Sum of KEYS: " + sum + ". Sum of Valid: " + valid);
-        return JSON;
+            recursiveEliminateHelper(object,"",false);
+
+            System.out.println("Sum of KEYS: " + sum + ". Sum of Valid: " + valid);
+            return numpackage;
+        }catch(NullPointerException e){
+            throw new Exception("[Error] No info of packageNum was found in this JSON!");
+        }
     }
 
     public void recursiveEliminateHelper(JsonElement object, String prefix,boolean isArray){
-        if(isArray){
-            //indicates parent is an array, then the object must contains a addW key showing the index
-
-        }
+        // if isArray is true, it indicates parent is an array, then the object must contains a addW key showing the index
         if(object instanceof JsonObject){
             // continue the recursion
             if(isArray){
-                int index = ((JsonObject) object).get(Util.newTagName).getAsInt();
+                int index = ((JsonObject) object).get(Settings.newTagName).getAsInt();
                 prefix += index;
             }
             for(Map.Entry<String, JsonElement> entry:((JsonObject) object).entrySet()){
@@ -90,7 +95,7 @@ public class Decoder {
             // instance of JsonPrimitive
             String value = ((JsonPrimitive)object).getAsString();
 
-            if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Util.DEFAULT_MINLEN){
+            if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Settings.DEFAULT_MINLEN){
                 //valid
                 JSON.put(prefix.replaceAll("[^A-Za-z0-9]",""),value);
                 valid++;
