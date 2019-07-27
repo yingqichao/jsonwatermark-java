@@ -26,5 +26,7 @@ public class MainExtract {
             System.out.println(str);
         }
 
+        System.out.println("-----------如果上面呈现乱码，那么很可能是嵌入的数据为中文，需要按照gbk编码规则读取------------");
+
     }
 }

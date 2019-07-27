@@ -26,14 +26,24 @@ public class Decoder {
                     success_time++;
                     System.out.println("--> Decoded Successfully <--... The watermark is now successfully retrieved. Time: "+success_time);
                     List<Integer> buff = decoder.bytes_dump();
+
+//                    //Test
+//                    for(int i=0;i<buff.size();i+=1){
+//                        System.out.print(Util.dec2bin(buff.get(i),4));
+//                    }
+
                     String str = "";
-                    for(int i=0;i<buff.size();i++) {
-                        int tmp = buff.get(i);
-                        if(tmp==-1)
-                            str+="?";
-                        else
-                            str += (char)('a'+tmp);
+                    for(int i=0;i<buff.size();i+=2){
+                        int code = buff.get(i)*16 + buff.get(i+1);
+                        str += (char)code;
                     }
+//                    for(int i=0;i<buff.size();i++) {
+//                        int tmp = buff.get(i);
+//                        if(tmp==-1)
+//                            str+="?";
+//                        else
+//                            str += (char)('a'+tmp);
+//                    }
                     secret_data.add(str);
                     decoder.succeed_and_init();
                 }else{
