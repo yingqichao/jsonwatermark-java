@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import java.io.FileReader;
 import java.util.*;
 
-
 public class MainExtract {
     public static void main(String[] args) throws Exception{
 
