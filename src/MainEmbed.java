@@ -12,21 +12,13 @@ public class MainEmbed {
 
     public static void main(String[] args) throws Exception{
 
-        // Test
-//        JsonParser parser = new JsonParser() ;
-//        JsonObject object = (JsonObject)parser.parse(new FileReader("src//simpleJsonTest.json"));
-//        JsonElement newJsonElement = JsonUpdating(object);
-//
-//        FileOutputStream out=new FileOutputStream("src//embedded.json");
-//        Utils.Util.writeJsonStream(out,newJsonElement);
-        //End Test
 
 
         String filename = "test";
 
 //        Map<String,String> JSON = Utils.Util.readFakeJSON("src/fakeJSON.txt");
         JsonParser parser = new JsonParser() ;
-        JsonObject object = (JsonObject)parser.parse(new FileReader("src//resources//"+filename+".json"));
+        JsonObject object = (JsonObject)parser.parse(new FileReader("src//resources//JSON//"+filename+".json"));
 
 //        // 解析string
 //        Map<String,String> map = Utils.Util.eliminateLevels(object);
