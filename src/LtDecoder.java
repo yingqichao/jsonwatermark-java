@@ -1,7 +1,7 @@
+import Setting.Settings;
 import Utils.Util;
 
 import java.util.*;
-import cyclic.*;
 
 public class LtDecoder {
     public int received_packs = 0;

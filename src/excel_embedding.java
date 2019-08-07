@@ -12,7 +12,7 @@ public class excel_embedding {
      * @param wmBin : 二进制的水印信息
      * @return : 返回嵌入的水印信息长度，嵌入失败返回 -1
      */
-    public static int embed(String filePath, String wmStr, String[] Keys){
+    public int embed(String filePath, String wmStr, String[] Keys){
         int msgLen = -1;
 
         WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
@@ -22,6 +22,9 @@ public class excel_embedding {
         //int msgLen = wmBin.size();
         //List<Integer> wmInt = embeddingUint.bin2Int(wmBin); // 将二进制水印转化成数字，方便嵌入
         msgLen = wmBin.size();
+
+        List<Integer> keyCols = embeddingUint.findKeyCol();
+        int keyCol = keyCols.get(0);keyCols.remove(0);
 
         List<List<Integer>> validCol = embeddingUint.findEmbeddingCols(Keys); // 寻找所有可能嵌入的浮点数列
         int cnt = 0;
@@ -61,7 +64,7 @@ public class excel_embedding {
      * @param embedColNum : 需要嵌入的浮点数列的个数，选择最前面的开始嵌入
      * @return : 返回嵌入的水印信息长度，嵌入失败返回 -1
      */
-    public static int embed(String filePath, String wmStr, int sheetIndex, int embedColNum, String [] Keys){
+    public int embed(String filePath, String wmStr, int sheetIndex, int embedColNum, String [] Keys){
         int msgLen = -1;
 
         WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
@@ -83,20 +86,20 @@ public class excel_embedding {
         return WatermarkUtils.geneRandom(seed, length, 2);
     }
 
-    public static void main(String args[]){
-        String filePath = "D:/360/360/data/ta_cb_person_heatmap_collect.xls";
-        String [] Keys = {"id", "name", "time", "phone", "date"};
-
-        WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
-
-        // create watermarking
-        List<Integer> wmBin = embeddingUint.geneRandom(123456+1,32, 2);
-        List<Integer> wmInt = embeddingUint.bin2Int(wmBin);
-        int msgLen = wmBin.size();
-
-        List<List<Integer>> validCol = embeddingUint.findEmbeddingCols(Keys);
-        embeddingUint.embed2OneCol(0, validCol.get(0).get(1), wmInt, 1);
-    }
+//    public static void main(String args[]){
+//        String filePath = "D:/360/360/data/ta_cb_person_heatmap_collect.xls";
+//        String [] Keys = {"id", "name", "time", "phone", "date"};
+//
+//        WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
+//
+//        // create watermarking
+//        List<Integer> wmBin = embeddingUint.geneRandom(123456+1,32, 2);
+//        List<Integer> wmInt = embeddingUint.bin2Int(wmBin);
+//        int msgLen = wmBin.size();
+//
+//        List<List<Integer>> validCol = embeddingUint.findEmbeddingCols(Keys);
+//        embeddingUint.embed2OneCol(0, validCol.get(0).get(1), wmInt, 1);
+//    }
 
 
 }

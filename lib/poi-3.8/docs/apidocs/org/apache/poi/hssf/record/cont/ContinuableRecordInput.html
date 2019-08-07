@@ -115,7 +115,7 @@ A decorated <A HREF="../../../../../../org/apache/poi/hssf/record/RecordInputStr
   Two  attachments to <a href="https://issues.apache.org/bugzilla/show_bug.cgi?id=50779">Bugzilla 50779</a>
   demonstrate that a CONTINUE break can appear right in between two bytes of a unicode character
   or between two bytes of a <code>short</code>. The problematic portion of the data is
-  in a Asian Phonetic Settings Block (ExtRst) of a UnicodeString.
+  in a Asian Phonetic Setting.Settings Block (ExtRst) of a UnicodeString.
  <p>
   <A HREF="../../../../../../org/apache/poi/hssf/record/RecordInputStream.html" title="class in org.apache.poi.hssf.record"><CODE>RecordInputStream</CODE></A> greedily requests the bytes to be read and stumbles on such files with a
   "Not enough data (1) to read requested (2) bytes" exception.  The <code>ContinuableRecordInput</code>

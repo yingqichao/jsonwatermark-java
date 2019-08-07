@@ -1,3 +1,5 @@
+package Setting;
+
 public class Settings {
     public static double DEFAULT_C = 0.1;
     public static double DEFAULT_DELTA = 0.5;

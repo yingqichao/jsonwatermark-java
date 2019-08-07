@@ -1,3 +1,4 @@
+import Setting.Settings;
 import Utils.*;
 import com.google.gson.*;
 
@@ -101,7 +102,7 @@ public class Encoder {
 //        Set<Integer> duplicateSet = new HashSet<>(0);
         int embedded = 0;
 
-//        String crc_text = Util.toBinary(waterSeq,Settings.DEFAULT_DATALEN);
+//        String crc_text = Util.toBinary(waterSeq,Setting.Settings.DEFAULT_DATALEN);
 //        crc_text += Util.crc_remainder(crc_text,null,null);
 
         String crc_text = Util.dec2bin(cyclic.CyclicCoder.encode(waterSeq),Settings.DEFAULT_EMBEDLEN);

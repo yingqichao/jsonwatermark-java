@@ -1,5 +1,6 @@
 package watermark.utils;
 
+import Setting.Settings;
 import watermark.excel.ExcelUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -275,14 +276,56 @@ public class WatermarkUtils {
     }
 
     /*
+     * 寻找主键与可以嵌入数据的col
+     * @return : 主键索引
+     */
+    public List<Integer> findKeyCol(){
+        //第一个数是作为键值的
+        int keyCol = 0;List<Integer> validCols = new LinkedList<>();
+        int sheetIndex = 0;//当前只允许嵌入在一页里，不考虑多页的情况
+        double thresh = 0.8;int valid = 0;double maxMatch = 0;
+
+        for(int colIndex = 0; colIndex < this.exclCol[sheetIndex]; colIndex++){
+            Set<String> objCol = new HashSet<>();double totalLen = 0;
+            List<Object> col = this.excl.getColValues(this.wb, sheetIndex, colIndex, 20);
+            for(Object object:col){
+                int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
+                totalLen += validLen;
+                if(validLen <= Setting.Settings.DEFAULT_MINLEN)
+                    //不足以嵌入信息，并且当前value没有出现过
+                    objCol.add(object.toString());
+            }
+            double aveLen = totalLen / col.size();
+            if(aveLen >= Settings.DEFAULT_MINLEN){
+                //说明可以用来嵌入数据
+                validCols.add(colIndex);
+            }
+            double match = ((double)objCol.size())/col.size();
+            if(match>=thresh){
+                valid++;
+                if(match>maxMatch){
+                    keyCol = colIndex;maxMatch = match;
+                }
+            }
+        }
+
+        validCols.add(0,keyCol);
+        System.out.println("The selected col is COL: "+keyCol+" with maxMatch "+maxMatch);
+
+        return validCols;
+    }
+
+    /*
      * 寻找所有可嵌入的浮点数列
      * @retuen : 所有sheet可以嵌入的浮点数列的索引
      */
     public List<List<Integer>> findEmbeddingCols(String[] Keys){
         List<List<Integer>> validCols = new LinkedList<>();
-        for(int sheetIndex = 0; sheetIndex < this.sheetNum; sheetIndex++){
+        int sheetIndex = 0;//当前只允许嵌入在一页里，不考虑多页的情况
+
+//        for(int sheetIndex = 0; sheetIndex < this.sheetNum; sheetIndex++){
             validCols.add(findEmbeddingCol(sheetIndex, Keys));
-        }
+//        }
         return validCols;
     }
 
@@ -292,7 +335,7 @@ public class WatermarkUtils {
      * @retuen : 当前sheet的可嵌入列索引
      */
     private List<Integer> findEmbeddingCol(int sheetIndex, String[] Keys){
-        List<Integer> objCol = new LinkedList<Integer>();
+        List<Integer> objCol = new LinkedList<>();
         for(int colIndex = 0; colIndex < this.exclCol[sheetIndex]; colIndex++){
             List<Object> col = this.excl.getColValues(this.wb, sheetIndex, colIndex, 20);
             if(isEmbeddingCol(col, Keys)){
