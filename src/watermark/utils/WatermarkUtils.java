@@ -138,45 +138,29 @@ public class WatermarkUtils {
      * @param colNo : 需要提取的浮点数列索引
      * @param wmInt : 十进制的水印信息
      */
-    public void embed2OneCol(int sheetNum, int colNo, List<Integer> wmIntO, int seed){
-        int rown = exclRow[sheetNum];
-        int ptLen = wmIntO.size()+2+2;
-        List<Object> colv = this.excl.getColValues(this.wb, sheetNum, colNo);
+    public void embed2OneRow(int colNo){
+        int rown = exclRow[0];//固定第一个sheet
+
+        List<Object> rowv = this.excl.getRowValues(this.wb, sheetNum, colNo);
         Utils ut = new Utils();
 
-        // 置乱
-        List<Integer> indx = new ArrayList<>();
-        for(int i = 0; i < wmIntO.size(); i++){
-            indx.add(i);
-        }
-        Random rand = new Random(seed);
-        Collections.shuffle(indx, rand);
-        List<Integer> wmInt = new ArrayList<>();
-        for(int i = 0; i < wmIntO.size(); i++){
-            wmInt.add(wmIntO.get(indx.get(i)));
-        }
-        wmInt.add(0,seed/10);
-        wmInt.add(0,seed%10);
-
-        List<Integer> wm = this.addHeader(wmInt);
-
-        // 跳过不是浮点数的行
-        int k = 0;
-        for ( Object t : colv ) {
-            if (null != t) {
-                if((ut.isDouble(colv.get(k).toString()))){
-                    break;
-                }
-            }
-            k++;
-        }
+//        // 跳过不是浮点数的行
+//        int k = 0;
+//        for ( Object t : rowv ) {
+//            if (null != t) {
+//                if((ut.isDouble(rowv.get(k).toString()))){
+//                    break;
+//                }
+//            }
+//            k++;
+//        }
 
         // 将水印嵌入到workbook指定位置
-        for(int i = k; i < rown; i++){
-            String t = colv.get(i).toString() + wm.get((i-k)%wm.size());
-            this.excl.writeWorkBookAt(this.wb,sheetNum, i, colNo, t);
-        }
-        this.excl.write2Excel(this.wb, this.file);
+//        for(int i = k; i < rown; i++){
+//            String t = colv.get(i).toString() + wm.get((i-k)%wm.size());
+//            this.excl.writeWorkBookAt(this.wb,sheetNum, i, colNo, t);
+//        }
+//        this.excl.write2Excel(this.wb, this.file);
     }
 
     /*
@@ -291,12 +275,12 @@ public class WatermarkUtils {
             for(Object object:col){
                 int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
                 totalLen += validLen;
-                if(validLen <= Setting.Settings.DEFAULT_MINLEN)
+                if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
                     //不足以嵌入信息，并且当前value没有出现过
                     objCol.add(object.toString());
             }
             double aveLen = totalLen / col.size();
-            if(aveLen >= Settings.DEFAULT_MINLEN){
+            if(aveLen >= Settings.DEFAULT_MINLEN_EXCEL){
                 //说明可以用来嵌入数据
                 validCols.add(colIndex);
             }
@@ -311,8 +295,46 @@ public class WatermarkUtils {
 
         validCols.add(0,keyCol);
         System.out.println("The selected col is COL: "+keyCol+" with maxMatch "+maxMatch);
+        System.out.println("Valid Rows: "+(validCols.size()-1));
 
         return validCols;
+    }
+
+    /*
+     * 寻找主键
+     * @return : 主键索引
+     */
+    public int findKeyIndex(){
+        //第一个数是作为键值的
+        int keyCol = -1;
+        int sheetIndex = 0;//当前只允许嵌入在一页里，不考虑多页的情况
+        double thresh = 0.8;int valid = 0;double maxMatch = 0;
+
+        for(int colIndex = 0; colIndex < this.exclCol[sheetIndex]; colIndex++){
+            Set<String> objCol = new HashSet<>();double totalLen = 0;
+            List<Object> col = this.excl.getColValues(this.wb, sheetIndex, colIndex, 20);
+            for(Object object:col){
+                int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
+                totalLen += validLen;
+                if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
+                    //不足以嵌入信息，并且当前value没有出现过
+                    objCol.add(object.toString());
+            }
+
+            double match = ((double)objCol.size())/col.size();
+            if(match>=thresh){
+                valid++;
+                if(match>maxMatch){
+                    keyCol = colIndex;maxMatch = match;
+                }
+            }
+        }
+
+
+        System.out.println("The selected col is COL: "+keyCol+" with maxMatch "+maxMatch);
+
+
+        return keyCol;
     }
 
     /*

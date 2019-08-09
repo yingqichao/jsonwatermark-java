@@ -136,6 +136,24 @@ public class ExcelUtil {
         return colValue ;
     }
 
+    public List<Object> getRowValues(Workbook wb, int sheetIndex, int posRow){
+        int row = wb.getSheetAt(sheetIndex).getPhysicalNumberOfRows();
+        List<Object> colValue = new LinkedList<Object>();
+
+        for(int i = 0; i < row; i++) {
+            Cell cell = wb.getSheetAt(sheetIndex).getRow(posRow).getCell(i);
+            colValue.add(getCellValue(wb, cell));
+        }
+        return colValue ;
+    }
+
+    public Object getExactValue(Workbook wb, int sheetIndex, int posRow,int posCol){
+        int row = wb.getSheetAt(sheetIndex).getPhysicalNumberOfRows();
+
+        Cell cell = wb.getSheetAt(sheetIndex).getRow(posRow).getCell(posCol);
+        return getCellValue(wb, cell);
+    }
+
     /*
      * 读取某一列的前cellNum个元数据
      * @param wb : woorkbook

@@ -26,7 +26,7 @@ public class MainEmbed {
         String watermark = Util.readWatermark("src//watermark.txt");
         String binarySeq = Util.StreamFromString(watermark);
         System.out.println("Bit Num: "+binarySeq.length());
-        Encoder encoder = new Encoder(binarySeq);
+        JSONEncoder encoder = new JSONEncoder(binarySeq);
         JsonElement jsonElement = encoder.run(object);
 
         FileOutputStream out=new FileOutputStream("src//embedded_results//"+filename+"_data_"+watermark+".json");
