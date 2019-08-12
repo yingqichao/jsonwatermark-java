@@ -9,7 +9,7 @@ import java.util.*;
  * @date 2019/8/8 14:47
  * @Description DEFAULT
  */
-public class JSONEncoder extends Encoder{
+public class JSONEncoder extends AbstractEncoder {
 
     public JSONEncoder(int seed, double c, double delta, String f_bytes) {
         super(seed, c, delta, f_bytes);
@@ -117,7 +117,7 @@ public class JSONEncoder extends Encoder{
             // 解析string
             JSON = eliminateLevels(object);
             if(valid<this.minRequire){
-                throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the watermark sequence...");
+                throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the ExcelWatermarkHelper sequence...");
             }
             //Embedment
             for(String key:this.JSON.keySet()){

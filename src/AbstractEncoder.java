@@ -1,10 +1,9 @@
+import GeneralHelper.Sampler;
 import Setting.Settings;
-import Utils.*;
-import com.google.gson.*;
 
 import java.util.*;
 
-public abstract class Encoder {
+public abstract class AbstractEncoder {
 
 
     public int seed;
@@ -17,14 +16,12 @@ public abstract class Encoder {
     public int K;
     public int minRequire;
     public Sampler solitionGenerator;
-    public TreeMap<String,String> JSON = new TreeMap<>();
-    public TreeMap<String,String> watermarkedJSON = new TreeMap<>();
 
     public static int sum = 0;
     public static int valid = 0;
     public static int updated = 0;
 
-    public Encoder( int seed, double c, double delta, String f_bytes) {
+    public AbstractEncoder(int seed, double c, double delta, String f_bytes) {
         this.seed = seed;
         this.c = c;
         this.delta = delta;
@@ -37,7 +34,7 @@ public abstract class Encoder {
 
     }
 
-    public Encoder(String f_bytes){
+    public AbstractEncoder(String f_bytes){
         this(1, Settings.DEFAULT_C, Settings.DEFAULT_DELTA,f_bytes);
     }
 

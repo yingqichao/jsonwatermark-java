@@ -1,7 +1,7 @@
-package watermark.utils;
+package ExcelWatermarkHelper.utils;
 
 import Setting.Settings;
-import watermark.excel.ExcelUtil;
+import ExcelWatermarkHelper.excel.ExcelUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.File;
@@ -106,7 +106,7 @@ public class WatermarkUtils {
             }
         }
 
-//        System.out.println(cnt + " watermark pattern is invalied");
+//        System.out.println(cnt + " ExcelWatermarkHelper pattern is invalied");
 
         // 判断完整水印阈值
         //int th = (int)(colv.size() / (wmIntLen+3) * 0.3);

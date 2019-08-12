@@ -1,4 +1,4 @@
-package watermark.excel;
+package ExcelWatermarkHelper.excel;
 
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -14,14 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
-
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import static java.lang.Math.min;
 
@@ -106,14 +98,12 @@ public class ExcelUtil {
      * @param wb : 需要保存的workbook
      * @param file : 需要写入的文件file流
      */
-    public static void write2Excel(Workbook wb, File file){
+    public static void write2Excel(Workbook wb, FileOutputStream outstream){
         try {
-            OutputStream outstream = new FileOutputStream(file);
+//            OutputStream outstream = new FileOutputStream(file);
             wb.write(outstream);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

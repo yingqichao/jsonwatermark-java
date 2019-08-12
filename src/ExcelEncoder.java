@@ -1,10 +1,10 @@
 import Setting.Settings;
 import org.apache.poi.ss.usermodel.Workbook;
-import watermark.excel.ExcelUtil;
-import watermark.utils.Utils;
-import watermark.utils.WatermarkUtils;
+import ExcelWatermarkHelper.excel.ExcelUtil;
+import ExcelWatermarkHelper.utils.WatermarkUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.*;
 
 import Utils.Util;
@@ -12,9 +12,10 @@ import Utils.Util;
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 
-public class ExcelEncoder extends Encoder{
+public class ExcelEncoder extends AbstractEncoder {
 
     File file;
+    FileOutputStream out;
     Workbook wb ;
     String fileVersion;
     ExcelUtil excl = new ExcelUtil();
@@ -24,6 +25,7 @@ public class ExcelEncoder extends Encoder{
     int[] exclRow = null;
     int[] exclCol = null;
     int sheetNum = -1;
+
 
     public ExcelEncoder(int seed, double c, double delta, String f_bytes,File file) {
         super(seed, c, delta, f_bytes);
@@ -89,7 +91,7 @@ public class ExcelEncoder extends Encoder{
      * @param wmBin : 二进制的水印信息
      * @return : 返回嵌入的水印信息长度，嵌入失败返回 -1
      */
-    public boolean run(String filePath,int startRow){
+    public boolean run(String filePath, int startRow, FileOutputStream out){
 
 //        try {
 
@@ -107,6 +109,8 @@ public class ExcelEncoder extends Encoder{
             for(int i=startRow;i<endRow;i++){
                 encoder(i);
             }
+
+            this.excl.write2Excel(this.wb, out);
 
             System.out.println("Embedding message into Excel Succeeded...");
 
@@ -139,6 +143,7 @@ public class ExcelEncoder extends Encoder{
             }
         }
         if(totalLen<Settings.DEFAULT_MINLEN){
+            //一般都不会执行的
             System.out.println("[SKIPPED PACK] Total length of row "+row+" is not enough!");
             return false;
         }
@@ -154,8 +159,6 @@ public class ExcelEncoder extends Encoder{
             beginInd += len;
             if(beginInd>=crc_text.length())    break;
         }
-
-        this.excl.write2Excel(this.wb, this.file);
 
         return true;
     }

@@ -1,4 +1,4 @@
-# Algorithm behind EXCEL watermark
+# Algorithm behind EXCEL ExcelWatermarkHelper
 
 ## version 1.0（original）
 
@@ -30,7 +30,7 @@
 ### Advanced
 同样，我们引入ban表，将那些不可以被修改的列出来
 
-# Algorithm behind JSON watermark
+# Algorithm behind JSON ExcelWatermarkHelper
 
 ## version 1.2
 2019.7.24

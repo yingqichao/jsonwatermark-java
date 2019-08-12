@@ -23,7 +23,7 @@ public class MainEmbed {
 //        // 解析string
 //        Map<String,String> map = Utils.Util.eliminateLevels(object);
 
-        String watermark = Util.readWatermark("src//watermark.txt");
+        String watermark = Util.readWatermark("src//ExcelWatermarkHelper.txt");
         String binarySeq = Util.StreamFromString(watermark);
         System.out.println("Bit Num: "+binarySeq.length());
         JSONEncoder encoder = new JSONEncoder(binarySeq);

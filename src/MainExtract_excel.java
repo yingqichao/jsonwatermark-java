@@ -12,16 +12,16 @@ public class MainExtract_excel {
 
         String[] Keys = {"id", "name", "time", "phone", "date"};
 
-        String wmStr = Util.readWatermark("src//watermark.txt");
+        String wmStr = Util.readWatermark("src//ExcelWatermarkHelper.txt");
         int embedMsgLen = 0;
 
         String filePath = "src//resources//EXCEL//"+filename;
-        excel_extraction extract = new excel_extraction();
+        ExcelDecoder extract = new ExcelDecoder();
         System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
         String[] extWmStr = extract.extract(filePath, embedMsgLen, Keys);
 
         if (extWmStr.length == 0)
-            System.out.println("there is no watermark embedded in this EXCEL file.");
+            System.out.println("there is no ExcelWatermarkHelper embedded in this EXCEL file.");
         else {
 
         }

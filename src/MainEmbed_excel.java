@@ -1,6 +1,8 @@
 import Utils.Util;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.rmi.server.ExportException;
 
 /**
  * @author Qichao Ying
@@ -11,21 +13,27 @@ public class MainEmbed_excel {
     public static void main(String args[]){
 //        String MODE = "EXTRACT";
 
-        String filename = "ta_cb_person_heatmap_collect_deleted.xls";
+        String filename = "ta_cb_person_heatmap_collect_deleted";
+        String append = ".xls";
 
 //        String[] Keys = {"id", "name", "time", "phone", "date"};
 
-        String wmStr = Util.readWatermark("src//watermark.txt");
+        String wmStr = Util.readWatermark("src//ExcelWatermarkHelper.txt");
         String binarySeq = Util.StreamFromString(wmStr);
         System.out.println("Bit Num: "+binarySeq.length());
 
-        System.out.println("embedded watermark : " + wmStr);int embedMsgLen = 0;
+        System.out.println("embedded ExcelWatermarkHelper : " + wmStr);int embedMsgLen = 0;
 
 
         String filePath = "C:\\Users\\admin\\Desktop\\ta_cb_person_heatmap_collect_deleted.xls";
         ExcelEncoder embed = new ExcelEncoder(binarySeq,new File(filePath));
-
-        embed.run(filePath,1);
+        try {
+            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
+            embed.run(filePath, 1,out);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
 
     }
 

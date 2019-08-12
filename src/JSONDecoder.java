@@ -1,13 +1,19 @@
+import GeneralHelper.LtDecoder;
 import Setting.Settings;
 import Utils.Util;
 import com.google.gson.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-public class Decoder {
-    public int success_time = 0;
-    public LtDecoder decoder = null;
-    public List<String> secret_data = new LinkedList<>();
+/**
+ * @author Qichao Ying
+ * @date 2019/8/12 16:38
+ * @Description DEFAULT
+ */
+public class JSONDecoder extends AbstractDecoder {
 
     public Map<String,String> JSON = new HashMap<>();
     public Map<String,String> watermarkedJSON = new HashMap<>();
@@ -25,7 +31,7 @@ public class Decoder {
                 decoder.received_packs++;
                 if(decoder.is_done()){
                     success_time++;
-                    System.out.println("--> Decoded Successfully <--... The watermark is now successfully retrieved. Time: "+success_time);
+                    System.out.println("--> Decoded Successfully <--... The ExcelWatermarkHelper is now successfully retrieved. Time: "+success_time);
                     List<Integer> buff = decoder.bytes_dump();
                     String str = "";
                     for(int i=0;i<buff.size();i++) {
@@ -74,7 +80,7 @@ public class Decoder {
         }
     }
 
-    public void recursiveEliminateHelper(JsonElement object, String prefix,boolean isArray){
+    public void recursiveEliminateHelper(JsonElement object, String prefix, boolean isArray){
         // if isArray is true, it indicates parent is an array, then the object must contains a addW key showing the index
         if(object instanceof JsonObject){
             // continue the recursion
@@ -104,7 +110,4 @@ public class Decoder {
             sum++;
         }
     }
-
-
-
 }

@@ -1,3 +1,5 @@
+package GeneralHelper;
+
 import java.util.Random;
 
 public class SolitionGenerator {
