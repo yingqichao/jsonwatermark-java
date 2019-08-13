@@ -76,12 +76,12 @@ public class LtDecoder {
 
     }
 
-    public boolean consume_block_excel(int filesize,String key,String lt_block,Integer blocksize){
-        //简化，没有拆子包的环节
+    public List<Integer> getSrcBlocks(int filesize,String key,Integer blocksize){
+        //简化，没有拆子包的环节，而且能够调用这个函数的string都是合法的，CRC的检验已经交给了ExcelDecoder
         if(blocksize==null) blocksize = 1;
-        Set<Integer> duplicateSet = new HashSet<>(0);
+//        Set<Integer> duplicateSet = new HashSet<>(0);
 
-        int innerPackage = lt_block.replaceAll("[^A-Za-z0-9]","").length()/Settings.DEFAULT_MINLEN;
+//        int innerPackage = lt_block.replaceAll("[^A-Za-z0-9]","").length()/Settings.DEFAULT_MINLEN;
 
 
         if (!initialized) {
@@ -100,24 +100,19 @@ public class LtDecoder {
         List<Integer> src_blocks = prng.get_src_blocks(null);// or seed=blockseed
         src_blocks.remove(0);//blockseed
         src_blocks.remove(0);//d
-        List<Object> blockAndVerify = extract(key, lt_block, duplicateSet);
-        String tmpstr = (String) blockAndVerify.get(1);
-        if (cyclic.CyclicCoder.decode(Integer.parseInt(tmpstr, 2)) != -1) {
-            // If BP is done, stop
-            System.out.println("Valid Package.");
-            this.done = handle_block(src_blocks, (int) blockAndVerify.get(0));
-//                return this.done;
-        } else {
-            System.out.println("Invalid Package.Skip...");
-//                return false;
-        }
 
+        return src_blocks;
+
+    }
+
+    public boolean consume_block_excel(List<Integer> src_blocks,int validValue){
+        this.done = handle_block(src_blocks, validValue);
         return this.done;
 
     }
 
     public int extract_excel(String key,String ori_block,int strlen){
-
+        //根据分配到的每个单元格的嵌入长度来做提取，没有检验的环节
         boolean negative;String verify = "";
         int extracted = 0;StringBuilder lt_block = new StringBuilder(ori_block);
 

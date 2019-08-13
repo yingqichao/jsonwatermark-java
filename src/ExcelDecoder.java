@@ -35,7 +35,7 @@ public class ExcelDecoder extends AbstractDecoder{
     public static int valid = 0;
     public static int updated = 0;
 
-    public ExcelDecoder(int seed, double c, double delta, String f_bytes,File file) {
+    public ExcelDecoder(File file) {
         this.file = file;
         this.fileVersion = file.getName().substring(file.getName().lastIndexOf("."));
         this.wb = excl.getWorkbook(file);
@@ -60,9 +60,10 @@ public class ExcelDecoder extends AbstractDecoder{
     }
 
     public void decode(int row,int filesize){
-        this.excl.getExactValue(this.wb, 0, row, col)
-
+        String key = this.excl.getExactValue(this.wb, 0, row, keyIndex).toString();
+        //init src_blocks and key for pseudo-random
         decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
+        List<Integer> src_blocks = decoder.getSrcBlocks(filesize,key,1);
         //get dynamically embedment: calculate total sum
         PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>((a,b)->(b.getValue().length()-a.getValue().length()));
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
@@ -74,95 +75,67 @@ public class ExcelDecoder extends AbstractDecoder{
             }
         }
         //data extraction
-        int beginInd = 0;
+        int remainLen = DEFAULT_EMBEDLEN;int decodeInt = 0;
         while(pq.size()!=0){
             Map.Entry<Integer,String> entry = pq.poll();
             //data embedment according to length of value
-            int len = (int)Math.ceil(DEFAULT_EMBEDLEN*entry.getValue().toString().length()/(double)totalLen);
+            int len = (int)Math.ceil(DEFAULT_EMBEDLEN*entry.getValue().length()/(double)totalLen);
 
-            String modified = modify(row,entry.getKey(),entry.getValue(),crc_text.substring(beginInd,Math.min(beginInd+len,crc_text.length())));
+            int retrieve = decoder.extract_excel(((Integer)row).toString(),entry.getValue(),len);
 
-            beginInd += len;
-            if(beginInd>=DEFAULT_EMBEDLEN)    break;
+            remainLen -= len;
+
+            retrieve <<= remainLen;
+
+            decodeInt += retrieve;
+
+            if(remainLen<=0)    break;
         }
 
-
-
-
-
-        for(String key:JSON.keySet()){
-            String lt_block = JSON.get(key);
-            if(decoder.consume_block(filesize,key,lt_block,1)){
+        if (cyclic.CyclicCoder.decode(decodeInt) != -1) {
+            System.out.println("Valid Package.");
+            if(decoder.consume_block_excel(src_blocks,decodeInt)) {
                 decoder.received_packs++;
-                if(decoder.is_done()){
+                if (decoder.is_done()) {
                     success_time++;
-                    System.out.println("--> Decoded Successfully <--... The ExcelWatermarkHelper is now successfully retrieved. Time: "+success_time);
+                    System.out.println("--> Decoded Successfully <--... The ExcelWatermarkHelper is now successfully retrieved. Time: " + success_time);
                     List<Integer> buff = decoder.bytes_dump();
                     String str = "";
-                    for(int i=0;i<buff.size();i++) {
+                    for (int i = 0; i < buff.size(); i++) {
                         int tmp = buff.get(i);
-                        if(tmp==-1)
-                            str+="?";
+                        if (tmp == -1)
+                            str += "?";
                         else
-                            str += (char)('a'+tmp);
+                            str += (char) ('a' + tmp);
                     }
                     secret_data.add(str);
                     decoder.succeed_and_init();
-                }else{
-                    System.out.println("Need more Packs...Received: "+decoder.received_packs);
+                } else {
+                    System.out.println("Need more Packs...Received: " + decoder.received_packs);
                 }
             }
+        }else{
+            System.out.println("Invalid Package.Skipped...");
         }
+
+
+
 
     }
 
-    public List<String> run(String filePath) throws Exception{
+    public List<String> run(String filePath, int startRow,int filesize) throws Exception{
         //Reads from stream, applying the LT decoding algorithm to incoming encoded blocks until sufficiently many blocks have been received to reconstruct the entire file.
         System.out.println("-----------------------------Extraction---------------------------------------");
 
-        WatermarkUtils watermarkUtils = new WatermarkUtils(new File(filePath));
+//        WatermarkUtils watermarkUtils = new WatermarkUtils(new File(filePath));
 
-//        // 解析string
-//        int filesize = eliminateLevels(object);
-////        modified_json= Utils.Util.eliminateLevels(JSON, "");
-        decode(JSON, filesize);
-//
-//        return this.secret_data;
-    }
-
-
-    /*
-     * 对filePath的Excel文件的所有sheet中的浮点数列进行水印提取
-     * @param filePath : Excel 文件路径
-     * @param msgLen : 二进制的水印长度
-     * @return : 返回嵌入的水印信息，包含所有成功提取出来的水印
-     */
-    public String[] extract(String filePath, int msgLen, String [] Keys){
-        List<List<Integer>> extWmBins = new LinkedList<>();
-        WatermarkUtils extractionUint = new WatermarkUtils(new File(filePath));
-
-        List<List<Integer>> validCol = extractionUint.findEmbeddingCols(Keys);
-        for(int sheet = 0; sheet < validCol.size(); sheet++){
-            for(int col = 0; col < validCol.get(sheet).size(); col++) {
-                List<Integer> extWmBin = extractionUint.extractFromOneCol(sheet, validCol.get(sheet).get(col), msgLen);
-                if(0 == extWmBin.size()){
-                    System.out.println("Warning : there is no watermarking in " + validCol.get(sheet).get(col) + "th column" +
-                            " of sheet : \"" + extractionUint.getSheetName(sheet) + "\"");
-                }else{
-                    System.out.println("There is some watermarking in " + validCol.get(sheet).get(col) + "th column" +
-                            " of sheet : \"" + extractionUint.getSheetName(sheet) + "\"");
-                    //System.out.println("\n======> Watermark : " + extWmBin);
-                    extWmBins.add(extWmBin);
-                }
-            }
-
+        int endRow = exclRow[0];//固定第一个sheet
+        //Embedment
+        for(int i=startRow;i<endRow;i++){
+            decode(i, filesize);
         }
-        String[] wmStr = new String[extWmBins.size()];
-        for(int i = 0; i < extWmBins.size(); i++){
-            wmStr[i] = extractionUint.Bin2String(extWmBins.get(i));
-        }
-        return wmStr;
-    }
 
+        return this.secret_data;
+    }
 
 }

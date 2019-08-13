@@ -11,6 +11,10 @@ import java.util.*;
  */
 public class JSONEncoder extends AbstractEncoder {
 
+    TreeMap<String,String> JSON = new TreeMap<>();
+    TreeMap<String,String> watermarkedJSON = new TreeMap<>();
+
+
     public JSONEncoder(int seed, double c, double delta, String f_bytes) {
         super(seed, c, delta, f_bytes);
     }
