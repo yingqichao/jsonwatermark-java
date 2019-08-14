@@ -27,41 +27,90 @@ public class ExcelDecoder extends AbstractDecoder{
     ExcelUtil excl = new ExcelUtil();
     List<Integer> keyCols = new LinkedList<>();
     int keyIndex = 0;
+    int startRow = 0;
+
+
+    //for CSV only
+    List<String> csvData = new ArrayList<>();
+
+    String[][] csvArray;
 
     int[] exclRow = null;
     int[] exclCol = null;
     int sheetNum = -1;
+    int filesize = 0;
 
     public static int sum = 0;
     public static int valid = 0;
     public static int updated = 0;
 
-    public ExcelDecoder(File file) {
+    public ExcelDecoder(File file, int startRow) {
         this.file = file;
+        this.startRow = startRow;
         this.fileVersion = file.getName().substring(file.getName().lastIndexOf("."));
-        this.wb = excl.getWorkbook(file);
+
+        if(fileVersion.equals(".csv")){
+            // CSV
+            csvData = Utils.CsvUtil.readCsv(this.file.getPath());
+        }else{
+            // EXCEL
+            this.wb = excl.getWorkbook(file);
+        }
         this.getSheetsRowAndCol();
+
+        if(fileVersion.equals(".csv")){
+            // CSV
+            filesize = Integer.parseInt(csvData.get(startRow-1).split(",")[exclCol[0]]);
+            csvArray = new String[exclRow[0]][exclCol[0]];
+            for(int i=0;i<exclRow[0];i++){
+                String[] strs = csvData.get(i).split(",");
+                csvArray[i] = strs;
+            }
+        }else{
+            // EXCEL
+            filesize = Integer.parseInt(getExactValue(startRow-1,exclCol[0]));
+        }
+    }
+
+    public String getExactValue(int row,int col){
+        if(csvData.size()==0){
+            // EXCEL
+            int sheet = 0;
+            return this.excl.getExactValue(this.wb, sheet, row,col).toString();
+        }else{
+            // CSV
+            return csvArray[row][col];
+        }
     }
 
     /*
      * 获得workbook的最大行列
      */
     private void getSheetsRowAndCol(){
-        this.sheetNum = this.wb.getNumberOfSheets();
+        this.sheetNum = 1;
         exclRow = new int[this.sheetNum];
         exclCol = new int[this.sheetNum];
-        for(int i = 0; i < this.sheetNum; i++){
-            exclRow[i] = this.wb.getSheetAt(i).getPhysicalNumberOfRows();
-            if(0 != exclRow[i]){
-                for(int j = 0; j < min(exclRow[i], 20); j++){
-                    exclCol[i] =  max(this.wb.getSheetAt(i).getRow(j).getPhysicalNumberOfCells(), exclCol[i]);
+        if(this.csvData.size()==0) {
+            // EXCEL
+            for (int i = 0; i < this.sheetNum; i++) {
+                exclRow[i] = this.wb.getSheetAt(i).getPhysicalNumberOfRows();
+                if (0 != exclRow[i]) {
+                    for (int j = startRow; j < min(exclRow[i], 20); j++) {
+                        exclCol[i] = max(this.wb.getSheetAt(i).getRow(j).getPhysicalNumberOfCells(), exclCol[i]);
+                    }
                 }
+            }
+        }else{
+            // CSV
+            exclRow[0] = csvData.size();
+            for (int j = startRow; j < min(exclRow[0], 20); j++) {
+                exclCol[0] = max(csvData.get(j).split(",").length, exclCol[0]);
             }
         }
     }
 
     public void decode(int row,int filesize){
-        String key = this.excl.getExactValue(this.wb, 0, row, keyIndex).toString();
+        String key = getExactValue(row, keyIndex).toString();
         //init src_blocks and key for pseudo-random
 //        decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
         List<Integer> src_blocks = decoder.getSrcBlocks(filesize,key,1);
@@ -70,7 +119,7 @@ public class ExcelDecoder extends AbstractDecoder{
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
         for(int col=0;col<exclCol[0];col++){
             if(col!=keyIndex) {
-                String str = this.excl.getExactValue(this.wb, 0, row, col).toString().replaceAll("[^A-Za-z0-9]", "");
+                String str = getExactValue(row, col).replaceAll("[^A-Za-z0-9]", "");
                 totalLen += str.length();
                 pq.offer(new AbstractMap.SimpleEntry<>(col,str));
             }
@@ -125,21 +174,18 @@ public class ExcelDecoder extends AbstractDecoder{
             System.out.println("Invalid Package.Skipped...");
         }
 
-
-
-
     }
 
-    public void run(String filePath, int startRow,int filesize) throws Exception{
+    public void run(String filePath) throws Exception{
         //Reads from stream, applying the LT decoding algorithm to incoming encoded blocks until sufficiently many blocks have been received to reconstruct the entire file.
         System.out.println("-----------------------------Extraction---------------------------------------");
 
 //        WatermarkUtils watermarkUtils = new WatermarkUtils(new File(filePath));
 
-        int endRow = exclRow[0];//固定第一个sheet
         //Embedment
         decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
-        for(int i=startRow;i<endRow;i++){
+        for(int i=startRow;i<exclRow[0];i++){//固定第一个sheet
+            //Embedment;i++){
             decode(i, filesize);
         }
 

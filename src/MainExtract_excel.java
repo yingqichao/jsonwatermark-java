@@ -10,19 +10,19 @@ import java.util.List;
  */
 public class MainExtract_excel {
     public static void main(String[] args) {
-
-        String filename = "ta_cb_person_heatmap_collect_deleted";String append = ".csv";
-
+        String filename = "ta_cb_person_heatmap_collect_deleted";String append = ".xls";
+        //CSV默认第一行是无效信息，第二行是表头，信息从第三行开始。xls默认第一行表头，第二行开始是信息
+        int startRow = (append.equals(".csv"))?2:1;
         String[] Keys = {"id", "name", "time", "phone", "date"};
 
         String wmStr = Util.readWatermark("src//watermark.txt");
         int embedMsgLen = 0;
 
         String filePath = "src//embedded_results//"+filename+"_embedded"+append;
-        ExcelDecoder extract = new ExcelDecoder(new File(filePath));
+        ExcelDecoder extract = new ExcelDecoder(new File(filePath),startRow);
         System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
         try {
-            extract.run(filePath, 1, 2*wmStr.length());
+            extract.run(filePath);
 
             List<String> list = extract.getEnglishResult();
             List<String> chinese_list = extract.getEnglishResult();

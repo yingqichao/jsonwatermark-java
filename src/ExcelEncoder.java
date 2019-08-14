@@ -22,7 +22,10 @@ public class ExcelEncoder extends AbstractEncoder {
     List<Integer> keyCols = new LinkedList<>();
 
     //for CSV only
-    List<String> csvData = new LinkedList<>();
+    List<String> csvData = new ArrayList<>();
+    List<String> csvData_embedded = new ArrayList<>();
+
+    String[][] csvArray;
 
 
     int keyIndex = 0;
@@ -62,6 +65,14 @@ public class ExcelEncoder extends AbstractEncoder {
             this.wb = excl.getWorkbook(this.file);
         }
         this.getSheetsRowAndCol();
+        if(this.fileVersion.equals(".csv")){
+            // CSV
+            csvArray = new String[exclRow[0]][exclCol[0]];
+            for(int i=0;i<exclRow[0];i++){
+                String[] strs = csvData.get(i).split(",");
+                csvArray[i] = strs;
+            }
+        }
     }
 
     /*
@@ -94,10 +105,10 @@ public class ExcelEncoder extends AbstractEncoder {
 
 //        try {
 
-            WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
+//            WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
 
 
-            keyIndex = embeddingUint.findKeyIndex();
+            keyIndex = findKeyIndex();
 //            keyIndex = keyCols.get(0);
 //            keyCols.remove(0);
 
@@ -111,11 +122,23 @@ public class ExcelEncoder extends AbstractEncoder {
             try {
                 if (csvData.size() == 0) {
                     // EXCEL
+                    this.excl.writeWorkBookAt(this.wb,0, startRow-1, exclCol[0], ((Integer)this.solitionGenerator.K).toString());
                     FileOutputStream out = new FileOutputStream(outpath);
                     this.excl.write2Excel(this.wb, out);
                 } else {
                     // CSV
-                    CsvUtil.writeCSV(outpath,csvData);
+                    for(int i=0;i<exclRow[0];i++){
+                        StringBuilder str = new StringBuilder();
+                        for(int j=0;j<exclCol[0];j++){
+                            str.append(csvArray[i][j]);str.append(',');
+                        }
+                        str.deleteCharAt(str.length()-1);
+                        csvData_embedded.add(str.toString());
+                    }
+
+
+                    csvData_embedded.set(startRow-1,csvData.get(startRow-1)+","+this.solitionGenerator.K);
+                    CsvUtil.writeCSV(outpath,csvData_embedded);
                 }
 
                 System.out.println("Embedding message into Excel Succeeded...");
@@ -131,6 +154,46 @@ public class ExcelEncoder extends AbstractEncoder {
 //        }
     }
 
+    public int findKeyIndex(){
+        //第一个数是作为键值的
+        int keyCol = -1;
+        int sheetIndex = 0;//当前只允许嵌入在一页里，不考虑多页的情况
+        double thresh = 0.8;int valid = 0;double maxMatch = 0;
+
+        for(int colIndex = 0; colIndex < this.exclCol[sheetIndex]; colIndex++){
+            Set<String> objCol = new HashSet<>();double totalLen = 0;List<Object> col = new LinkedList<>();
+            if(csvData.size()==0) {
+                // EXCEL
+                col = this.excl.getColValues(this.wb, sheetIndex, colIndex, 20);
+            }else{
+                // CSV
+                for(int i=0;i<exclRow[0];i++)
+                    col.add(csvArray[i][colIndex]);
+            }
+            for(Object object:col){
+                int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
+                totalLen += validLen;
+                if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
+                    //不足以嵌入信息，并且当前value没有出现过
+                    objCol.add(object.toString());
+            }
+
+            double match = ((double)objCol.size())/col.size();
+            if(match>=thresh){
+                valid++;
+                if(match>maxMatch){
+                    keyCol = colIndex;maxMatch = match;
+                }
+            }
+        }
+
+
+        System.out.println("The selected col is COL: "+keyCol+" with maxMatch "+maxMatch);
+
+
+        return keyCol;
+    }
+
     public String getExactValue(int row,int col){
         if(csvData.size()==0){
             // EXCEL
@@ -138,14 +201,15 @@ public class ExcelEncoder extends AbstractEncoder {
             return this.excl.getExactValue(this.wb, sheet, row,col).toString();
         }else{
             // CSV
-            return csvData.get(row).split(",")[col];
+            return csvArray[row][col];
         }
     }
 
     public boolean encoder(int row){
         //prepare
         int sheet = 0;
-        this.seed = Util.BKDRHash(this.excl.getExactValue(this.wb, sheet, row,keyIndex).toString(),131);
+        this.seed = Util.BKDRHash(getExactValue(row,keyIndex),131);
+                                        ;
         this.solitionGenerator.setSeed(this.seed);
         List<Integer> list = this.solitionGenerator.get_src_blocks(null);
         int block_data = 0;
@@ -158,7 +222,7 @@ public class ExcelEncoder extends AbstractEncoder {
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
         for(int col=0;col<exclCol[0];col++){
             if(col!=keyIndex) {
-                String str = this.excl.getExactValue(this.wb, sheet, row, col).toString().replaceAll("[^A-Za-z0-9]", "");
+                String str = getExactValue(row, col).replaceAll("[^A-Za-z0-9]", "");
                 totalLen += str.length();
                 pq.offer(new AbstractMap.SimpleEntry<>(col,str));
             }
@@ -249,43 +313,14 @@ public class ExcelEncoder extends AbstractEncoder {
         if(first!=null) newvalue.insert(0,first);
         if(negative)    newvalue.insert(0,'-');
 
-
-        this.excl.writeWorkBookAt(this.wb,0, row, col, newvalue.toString());
+        if(csvData.size()==0) {
+            this.excl.writeWorkBookAt(this.wb, 0, row, col, newvalue.toString());
+        }else{
+            csvArray[row][col] = newvalue.toString();
+        }
 
         return debug;
 
     }
-
-    /*
-     * 对filePath的Excel文件的指定sheet中的前几个浮点数列进行嵌入
-     * @param filePath : Excel 文件路径
-     * @param wmBin : 二进制的水印信息
-     * @param sheetIndex : 需要嵌入的sheet的索引下标，从0开始
-     * @param embedColNum : 需要嵌入的浮点数列的个数，选择最前面的开始嵌入
-     * @return : 返回嵌入的水印信息长度，嵌入失败返回 -1
-     */
-//    public int embed(String filePath, String wmStr, int sheetIndex, int embedColNum, String [] Keys){
-//        int msgLen = -1;
-//
-//        WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
-//        List<Integer> wmBin = embeddingUint.String2Bin(wmStr);
-//        List<Integer> wmInt = embeddingUint.bin2Int(wmBin);
-//        //int msgLen = wmBin.size();
-//        //List<Integer> wmInt = embeddingUint.bin2Int(wmBin); // 将二进制水印转化成数字，方便嵌入
-//        msgLen = wmBin.size();
-//
-//        List<List<Integer>> validCol = embeddingUint.findEmbeddingCols(Keys);
-//        for(int col = 0; col < min(embedColNum, validCol.get(sheetIndex).size()); col++){
-//            embeddingUint.embed2OneCol(sheetIndex, validCol.get(sheetIndex).get(col), wmInt, 1);
-//        }
-//
-//        return  msgLen;
-//    }
-//
-//    public List<Integer> getRandomMsg(int seed, int length){
-//        return WatermarkUtils.geneRandom(seed, length, 2);
-//    }
-
-
 
 }

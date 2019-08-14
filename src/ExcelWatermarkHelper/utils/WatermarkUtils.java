@@ -24,7 +24,7 @@ public class WatermarkUtils {
         this.file = file;
         this.fileVersion = file.getName().substring(file.getName().lastIndexOf("."));
         this.wb = excl.getWorkbook(file);
-        this.getSheetsRowAndCol();
+//        this.getSheetsRowAndCol();
     }
 
 
@@ -299,6 +299,8 @@ public class WatermarkUtils {
 
         return validCols;
     }
+
+
 
     /*
      * 寻找主键

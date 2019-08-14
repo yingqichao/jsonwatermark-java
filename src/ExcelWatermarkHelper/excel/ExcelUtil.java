@@ -173,6 +173,8 @@ public class ExcelUtil {
      */
     public static void writeWorkBookAt(Workbook wb, int sheetIndex, int posRow, int posCol, String val){
         Cell cell = wb.getSheetAt(sheetIndex).getRow(posRow).getCell(posCol);
+        if(cell==null)
+            cell = wb.getSheetAt(sheetIndex).getRow(posRow).createCell(posCol);
         cell.setCellValue(val);
     }
 }

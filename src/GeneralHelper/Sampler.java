@@ -11,7 +11,7 @@ public class Sampler {
     private int PRNG_M = (1 << 31) - 1;
     private int PRNG_MAX_RAND = PRNG_M - 1;
 
-    private int K;
+    public int K;
     private double delta;
     private double c;
     private long state;
