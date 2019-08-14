@@ -1,6 +1,11 @@
 package Utils;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.util.LinkedList;
+import java.util.List;
 
 public class StrBinaryTurn {
     // 将Unicode字符串转换成bool型数组
@@ -142,4 +147,36 @@ public class StrBinaryTurn {
         return result;
     }
 
+    public static List<String> stream2String(List<Integer> buff){
+        String str = "";
+        byte[] bs = new byte[buff.size()/2];
+        for (int i = 0; i < buff.size(); i+=2) {
+            int high = buff.get(i);int low = buff.get(i+1);
+            if (high == -1 || low == -1) {
+                str += "?";
+                bs[i / 2] = 0;
+            }
+            else {
+                int in = high * ((int) Math.pow(2, 4)) + low;
+                str += (char) in;
+                bs[i / 2] = (byte)in;
+            }
+        }
+        String chinese = new String();
+        try {
+            Charset charset = Charset.defaultCharset();
+            ByteBuffer buf = ByteBuffer.wrap(bs);
+            CharBuffer cBuf = charset.decode(buf);
+            chinese = cBuf.toString();
+        }catch(Exception e){
+            e.printStackTrace();
+            chinese = "编码格式不对，不是中文";
+        }finally {
+            List<String> list = new LinkedList<>();
+            //先英文结果，后中文结果
+            list.add(str);
+            list.add(chinese);
+            return list;
+        }
+    }
 }

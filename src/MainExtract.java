@@ -17,7 +17,10 @@ public class MainExtract {
         JsonObject object = (JsonObject)parser.parse(new FileReader("src//embedded_results//"+filename+"_data_"+watermark+".json"));
 
         JSONDecoder decoder = new JSONDecoder();
-        List<String> list = decoder.run(object);
+        decoder.run(object);
+
+        List<String> list = decoder.getEnglishResult();
+        List<String> chinese_list = decoder.getEnglishResult();
 
         System.out.println("-----------提取得到的信息是------------");
         //打印提取结果
@@ -27,6 +30,8 @@ public class MainExtract {
         }
 
         System.out.println("----如果您发现上面的解析内容是乱码，那么也可以参考以下gbk中文解码的水印内容----");
-
+        for(String str:chinese_list){
+            System.out.println(str);
+        }
     }
 }

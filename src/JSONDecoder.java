@@ -33,17 +33,11 @@ public class JSONDecoder extends AbstractDecoder {
                     success_time++;
                     System.out.println("--> Decoded Successfully <--... The ExcelWatermarkHelper is now successfully retrieved. Time: "+success_time);
                     List<Integer> buff = decoder.bytes_dump();
-                    String str = "";
-                    for (int i = 0; i < buff.size(); i+=2) {
-                        int high = buff.get(i);int low = buff.get(i+1);
-                        if (high == -1 || low == -1)
-                            str += "?";
-                        else {
-                            int in = high * ((int) Math.pow(2, 4)) + low;
-                            str += (char) in;
-                        }
-                    }
-                    secret_data.add(str);
+
+                    List<String> res = Utils.StrBinaryTurn.stream2String(buff);
+                    //分别保存中英文的可能结果
+                    secret_data.add(res.get(0));
+                    secret_data_chinese.add(res.get(1));
                     decoder.succeed_and_init();
                 }else{
                     System.out.println("Need more Packs...Received: "+decoder.received_packs);
@@ -53,7 +47,7 @@ public class JSONDecoder extends AbstractDecoder {
 
     }
 
-    public List<String> run(JsonObject object) throws Exception{
+    public void run(JsonObject object) throws Exception{
         //Reads from stream, applying the LT decoding algorithm to incoming encoded blocks until sufficiently many blocks have been received to reconstruct the entire file.
         System.out.println("-----------------------------Extraction---------------------------------------");
         // 解析string
@@ -61,7 +55,7 @@ public class JSONDecoder extends AbstractDecoder {
 //        modified_json= Utils.Util.eliminateLevels(JSON, "");
         decode(JSON, filesize);
 
-        return this.secret_data;
+//        return this.secret_data;
     }
 
     public int eliminateLevels(JsonObject object) throws Exception{

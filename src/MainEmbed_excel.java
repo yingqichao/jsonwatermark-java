@@ -25,10 +25,10 @@ public class MainEmbed_excel {
 
 
         String filePath = "C:\\Users\\admin\\Desktop\\ta_cb_person_heatmap_collect_deleted.csv";
-        ExcelEncoder embed = new ExcelEncoder(binarySeq,new File(filePath));
+        ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,1);
         try {
-            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
-            embed.run(filePath, 1,out);
+//            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
+            embed.run(filePath,"src//embedded_results//" + filename + "_embedded" + append);
         }
         catch(Exception e){
             e.printStackTrace();

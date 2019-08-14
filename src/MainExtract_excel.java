@@ -22,7 +22,10 @@ public class MainExtract_excel {
         ExcelDecoder extract = new ExcelDecoder(new File(filePath));
         System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
         try {
-            List<String> list = extract.run(filePath, 1, 2*wmStr.length());
+            extract.run(filePath, 1, 2*wmStr.length());
+
+            List<String> list = extract.getEnglishResult();
+            List<String> chinese_list = extract.getEnglishResult();
 
 
             System.out.println("-----------提取得到的信息是------------");
@@ -33,6 +36,9 @@ public class MainExtract_excel {
             }
 
             System.out.println("----如果您发现上面的解析内容是乱码，那么也可以参考以下gbk中文解码的水印内容----");
+            for(String str:chinese_list){
+                System.out.println(str);
+            }
         }catch(Exception e){
             e.printStackTrace();
         }

@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.*;
 
-import Utils.Util;
+import Utils.*;
 
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
@@ -15,7 +15,7 @@ import static java.lang.Math.min;
 public class ExcelEncoder extends AbstractEncoder {
 
     File file;
-    FileOutputStream out;
+//    FileOutputStream out;
     Workbook wb ;
     String fileVersion;
     ExcelUtil excl = new ExcelUtil();
@@ -30,26 +30,37 @@ public class ExcelEncoder extends AbstractEncoder {
     int[] exclRow = null;
     int[] exclCol = null;
     int sheetNum = -1;
+    int startRow = 0;
 
 
-    public ExcelEncoder(int seed, double c, double delta, String f_bytes,File file) {
-        super(seed, c, delta, f_bytes);
-        this.file = file;
-        this.fileVersion = file.getName().substring(file.getName().lastIndexOf("."));
-        if(this.fileVersion.equals(".csv")){
-            csvData = Utils.CsvUtil.readCsv(file.getPath());
-        }else{
-            this.wb = excl.getWorkbook(file);
-        }
+//    public ExcelEncoder(int seed, double c, double delta, String f_bytes,File file,int startRow) {
+//        this.startRow = startRow;
+//        super(seed, c, delta, f_bytes);
+//        this.file = file;
+//        this.fileVersion = file.getName().substring(file.getName().lastIndexOf("."));
+//        if(this.fileVersion.equals(".csv")){
+//            // CSV
+//            csvData = Utils.CsvUtil.readCsv(file.getPath());
+//        }else{
+//            //EXCEL
+//            this.wb = excl.getWorkbook(file);
+//        }
+//
+//        this.getSheetsRowAndCol();
+//    }
 
-        this.getSheetsRowAndCol();
-    }
-
-    public ExcelEncoder(String f_bytes,File file) {
+    public ExcelEncoder(String f_bytes,String file,int startRow) {
         super(f_bytes);
-        this.file = file;
-        this.fileVersion = file.getName().substring(file.getName().lastIndexOf("."));
-        this.wb = excl.getWorkbook(file);
+        this.startRow = startRow;
+        this.file = new File(file);
+        this.fileVersion = this.file.getName().substring(this.file.getName().lastIndexOf("."));
+        if(this.fileVersion.equals(".csv")){
+            // CSV
+            csvData = Utils.CsvUtil.readCsv(this.file.getPath());
+        }else{
+            //EXCEL
+            this.wb = excl.getWorkbook(this.file);
+        }
         this.getSheetsRowAndCol();
     }
 
@@ -57,54 +68,31 @@ public class ExcelEncoder extends AbstractEncoder {
      * 获得workbook的最大行列
      */
     private void getSheetsRowAndCol(){
-        this.sheetNum = this.wb.getNumberOfSheets();
+        this.sheetNum = 1;
         exclRow = new int[this.sheetNum];
         exclCol = new int[this.sheetNum];
-        for(int i = 0; i < this.sheetNum; i++){
-            exclRow[i] = this.wb.getSheetAt(i).getPhysicalNumberOfRows();
-            if(0 != exclRow[i]){
-                for(int j = 0; j < min(exclRow[i], 20); j++){
-                    exclCol[i] =  max(this.wb.getSheetAt(i).getRow(j).getPhysicalNumberOfCells(), exclCol[i]);
+        if(this.csvData.size()==0) {
+            // EXCEL
+            for (int i = 0; i < this.sheetNum; i++) {
+                exclRow[i] = this.wb.getSheetAt(i).getPhysicalNumberOfRows();
+                if (0 != exclRow[i]) {
+                    for (int j = startRow; j < min(exclRow[i], 20); j++) {
+                        exclCol[i] = max(this.wb.getSheetAt(i).getRow(j).getPhysicalNumberOfCells(), exclCol[i]);
+                    }
                 }
+            }
+        }else{
+            // CSV
+            exclRow[0] = csvData.size();
+            for (int j = startRow; j < min(exclRow[0], 20); j++) {
+                exclCol[0] = max(csvData.get(j).split(",").length, exclCol[0]);
             }
         }
     }
 
-//    public void embed2OneRow(int colNo){
-//        int rown = exclRow[0];//固定第一个sheet
-//
-//        List<Object> rowv = this.excl.getRowValues(this.wb, sheetNum, colNo);
-//        Utils ut = new Utils();
-//
-////        // 跳过不是浮点数的行
-////        int k = 0;
-////        for ( Object t : rowv ) {
-////            if (null != t) {
-////                if((ut.isDouble(rowv.get(k).toString()))){
-////                    break;
-////                }
-////            }
-////            k++;
-////        }
-//
-//        // 将水印嵌入到workbook指定位置
-////        for(int i = k; i < rown; i++){
-////            String t = colv.get(i).toString() + wm.get((i-k)%wm.size());
-////            this.excl.writeWorkBookAt(this.wb,sheetNum, i, colNo, t);
-////        }
-////        this.excl.write2Excel(this.wb, this.file);
-//    }
-
-    /*
-     * 对filePath的Excel文件的所有sheet中的浮点数列进行嵌入
-     * @param filePath : Excel 文件路径
-     * @param wmBin : 二进制的水印信息
-     * @return : 返回嵌入的水印信息长度，嵌入失败返回 -1
-     */
-    public boolean run(String filePath, int startRow, FileOutputStream out){
+    public boolean run(String filePath, String outpath){
 
 //        try {
-
 
             WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
 
@@ -120,15 +108,38 @@ public class ExcelEncoder extends AbstractEncoder {
                 encoder(i);
             }
 
-            this.excl.write2Excel(this.wb, out);
+            try {
+                if (csvData.size() == 0) {
+                    // EXCEL
+                    FileOutputStream out = new FileOutputStream(outpath);
+                    this.excl.write2Excel(this.wb, out);
+                } else {
+                    // CSV
+                    CsvUtil.writeCSV(outpath,csvData);
+                }
 
-            System.out.println("Embedding message into Excel Succeeded...");
+                System.out.println("Embedding message into Excel Succeeded...");
+            }catch(Exception e){
+                e.printStackTrace();
+                System.out.println("Embedding message into Excel Failed...");
+            }
 
             return true;
 //        }catch(Exception e){
 //            System.out.println("Embedding message into Excel Failed...");
 //            return false;
 //        }
+    }
+
+    public String getExactValue(int row,int col){
+        if(csvData.size()==0){
+            // EXCEL
+            int sheet = 0;
+            return this.excl.getExactValue(this.wb, sheet, row,col).toString();
+        }else{
+            // CSV
+            return csvData.get(row).split(",")[col];
+        }
     }
 
     public boolean encoder(int row){
