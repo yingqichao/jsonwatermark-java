@@ -10,7 +10,10 @@ import java.util.List;
  */
 public class MainExtract_excel {
     public static void main(String[] args) {
-        String filename = "ta_cb_person_heatmap_collect_deleted";String append = ".xls";
+        String filename = "7";//ta_cb_person_heatmap_collect_deleted
+        String append = ".xlsx";
+
+
         //CSV默认第一行是无效信息，第二行是表头，信息从第三行开始。xls默认第一行表头，第二行开始是信息
         int startRow = (append.equals(".csv"))?2:1;
         String[] Keys = {"id", "name", "time", "phone", "date"};

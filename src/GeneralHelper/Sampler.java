@@ -75,6 +75,7 @@ public class Sampler {
     public int get_next(){
         //Executes the next iteration of the PRNG evolution process, and returns the result
         this.state = PRNG_A * this.state % PRNG_M;
+        if(this.state==0)   this.state++;
         if(this.state<0)
             this.state += PRNG_M;
         return (int)this.state;

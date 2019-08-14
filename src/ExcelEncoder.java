@@ -158,7 +158,7 @@ public class ExcelEncoder extends AbstractEncoder {
         //第一个数是作为键值的
         int keyCol = -1;
         int sheetIndex = 0;//当前只允许嵌入在一页里，不考虑多页的情况
-        double thresh = 0.8;int valid = 0;double maxMatch = 0;
+        double thresh = 0;int valid = 0;double maxMatch = 0;
 
         for(int colIndex = 0; colIndex < this.exclCol[sheetIndex]; colIndex++){
             Set<String> objCol = new HashSet<>();double totalLen = 0;List<Object> col = new LinkedList<>();

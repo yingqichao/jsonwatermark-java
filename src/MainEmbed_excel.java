@@ -12,8 +12,9 @@ public class MainEmbed_excel {
     public static void main(String args[]){
 //        String MODE = "EXTRACT";
 
-        String filename = "ta_cb_person_heatmap_collect_deleted";
-        String append = ".xls";
+        String foldname = "EXCEL";
+        String filename = "7";
+        String append = ".xlsx";
 
 //        String[] Keys = {"id", "name", "time", "phone", "date"};
 
@@ -24,7 +25,7 @@ public class MainEmbed_excel {
         System.out.println("embedded ExcelWatermarkHelper : " + wmStr);int embedMsgLen = 0;
 
 
-        String filePath = "C:\\Users\\admin\\Desktop\\"+filename+append;
+        String filePath = "src//resources//"+foldname+"//"+filename+append;
         ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,1);
         try {
 //            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);

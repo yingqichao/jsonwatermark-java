@@ -1,5 +1,6 @@
-# Algorithm behind EXCEL ExcelWatermarkHelper
+# Algorithm behind JSON/Excel Watermarking in this repo
 
+# Excel watermark
 ## version 1.0（original）
 
 ### 攻击种类
@@ -30,7 +31,7 @@
 ### Advanced
 同样，我们引入ban表，将那些不可以被修改的列出来
 
-# Algorithm behind JSON ExcelWatermarkHelper
+# JSON watermark
 
 ## version 1.2
 2019.7.24
