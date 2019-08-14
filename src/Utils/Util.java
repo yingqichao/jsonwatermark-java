@@ -282,7 +282,6 @@ public class Util {
     }
 
     public static String StreamFromString(String str) {
-//        String str = "王雪";
         char[] strChar=str.toCharArray();
         String result="";
         for(int i=0;i<strChar.length;i++){
@@ -309,6 +308,16 @@ public class Util {
         return res;
 
 
+    }
+
+    public static int bin2dec(String str){
+        int i=0;
+        for(char c:str.toCharArray()){
+            i<<=1;
+            i+=(c=='1')?1:0;
+
+        }
+        return i;
     }
 
 

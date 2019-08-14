@@ -7,6 +7,7 @@ import ExcelWatermarkHelper.excel.ExcelUtil;
 import ExcelWatermarkHelper.utils.WatermarkUtils;
 import GeneralHelper.LtDecoder;
 import Setting.Settings;
+import Utils.Util;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.File;
@@ -62,7 +63,7 @@ public class ExcelDecoder extends AbstractDecoder{
     public void decode(int row,int filesize){
         String key = this.excl.getExactValue(this.wb, 0, row, keyIndex).toString();
         //init src_blocks and key for pseudo-random
-        decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
+//        decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
         List<Integer> src_blocks = decoder.getSrcBlocks(filesize,key,1);
         //get dynamically embedment: calculate total sum
         PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>((a,b)->(b.getValue().length()-a.getValue().length()));
@@ -75,38 +76,50 @@ public class ExcelDecoder extends AbstractDecoder{
             }
         }
         //data extraction
+        String debug = new String();
         int remainLen = DEFAULT_EMBEDLEN;int decodeInt = 0;
         while(pq.size()!=0){
             Map.Entry<Integer,String> entry = pq.poll();
             //data embedment according to length of value
             int len = (int)Math.ceil(DEFAULT_EMBEDLEN*entry.getValue().length()/(double)totalLen);
+            if(remainLen-len<0)
+                len = remainLen;
 
-            int retrieve = decoder.extract_excel(((Integer)row).toString(),entry.getValue(),len);
+             List<Object> list = decoder.extract_excel(((Integer)row).toString(),entry.getValue(),len);
+             int retrieve = (int)list.get(0);
+             debug += (String)list.get(1);
+
 
             remainLen -= len;
 
-            retrieve <<= remainLen;
+            retrieve <<= Math.max(0,remainLen);
 
             decodeInt += retrieve;
 
             if(remainLen<=0)    break;
         }
+        int real_embed_data = decodeInt>>(Settings.DEFAULT_EMBEDLEN-Settings.DEFAULT_DATALEN);
+
+        System.out.println("Debug Extract: EmbeddedAt-> "+debug+"  origin->"+ decodeInt+" data->" + real_embed_data + " sourceBlock->" + src_blocks.get(0) + " ROW: "+row);
 
         if (cyclic.CyclicCoder.decode(decodeInt) != -1) {
             System.out.println("Valid Package.");
-            if(decoder.consume_block_excel(src_blocks,decodeInt)) {
+
+            if(decoder.consume_block_excel(src_blocks,real_embed_data)) {
                 decoder.received_packs++;
                 if (decoder.is_done()) {
                     success_time++;
                     System.out.println("--> Decoded Successfully <--... The ExcelWatermarkHelper is now successfully retrieved. Time: " + success_time);
                     List<Integer> buff = decoder.bytes_dump();
                     String str = "";
-                    for (int i = 0; i < buff.size(); i++) {
-                        int tmp = buff.get(i);
-                        if (tmp == -1)
+                    for (int i = 0; i < buff.size(); i+=2) {
+                        int high = buff.get(i);int low = buff.get(i+1);
+                        if (high == -1 || low == -1)
                             str += "?";
-                        else
-                            str += (char) ('a' + tmp);
+                        else {
+                            int in = high * ((int) Math.pow(2, 4)) + low;
+                            str += (char) in;
+                        }
                     }
                     secret_data.add(str);
                     decoder.succeed_and_init();
@@ -131,6 +144,7 @@ public class ExcelDecoder extends AbstractDecoder{
 
         int endRow = exclRow[0];//固定第一个sheet
         //Embedment
+        decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
         for(int i=startRow;i<endRow;i++){
             decode(i, filesize);
         }

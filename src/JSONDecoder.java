@@ -34,12 +34,14 @@ public class JSONDecoder extends AbstractDecoder {
                     System.out.println("--> Decoded Successfully <--... The ExcelWatermarkHelper is now successfully retrieved. Time: "+success_time);
                     List<Integer> buff = decoder.bytes_dump();
                     String str = "";
-                    for(int i=0;i<buff.size();i++) {
-                        int tmp = buff.get(i);
-                        if(tmp==-1)
-                            str+="?";
-                        else
-                            str += (char)('a'+tmp);
+                    for (int i = 0; i < buff.size(); i+=2) {
+                        int high = buff.get(i);int low = buff.get(i+1);
+                        if (high == -1 || low == -1)
+                            str += "?";
+                        else {
+                            int in = high * ((int) Math.pow(2, 4)) + low;
+                            str += (char) in;
+                        }
                     }
                     secret_data.add(str);
                     decoder.succeed_and_init();

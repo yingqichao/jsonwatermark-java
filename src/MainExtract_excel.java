@@ -11,7 +11,7 @@ import java.util.List;
 public class MainExtract_excel {
     public static void main(String[] args) {
 
-        String filename = "ta_cb_person_heatmap_collect_deleted";String append = ".xls";
+        String filename = "ta_cb_person_heatmap_collect_deleted";String append = ".csv";
 
         String[] Keys = {"id", "name", "time", "phone", "date"};
 
@@ -22,7 +22,7 @@ public class MainExtract_excel {
         ExcelDecoder extract = new ExcelDecoder(new File(filePath));
         System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
         try {
-            List<String> list = extract.run(filePath, 1, 6);
+            List<String> list = extract.run(filePath, 1, 2*wmStr.length());
 
 
             System.out.println("-----------提取得到的信息是------------");
@@ -31,6 +31,8 @@ public class MainExtract_excel {
             for(String str:list){
                 System.out.println(str);
             }
+
+            System.out.println("----如果您发现上面的解析内容是乱码，那么也可以参考以下gbk中文解码的水印内容----");
         }catch(Exception e){
             e.printStackTrace();
         }

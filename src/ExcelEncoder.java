@@ -20,6 +20,11 @@ public class ExcelEncoder extends AbstractEncoder {
     String fileVersion;
     ExcelUtil excl = new ExcelUtil();
     List<Integer> keyCols = new LinkedList<>();
+
+    //for CSV only
+    List<String> csvData = new LinkedList<>();
+
+
     int keyIndex = 0;
 
     int[] exclRow = null;
@@ -31,7 +36,12 @@ public class ExcelEncoder extends AbstractEncoder {
         super(seed, c, delta, f_bytes);
         this.file = file;
         this.fileVersion = file.getName().substring(file.getName().lastIndexOf("."));
-        this.wb = excl.getWorkbook(file);
+        if(this.fileVersion.equals(".csv")){
+            csvData = Utils.CsvUtil.readCsv(file.getPath());
+        }else{
+            this.wb = excl.getWorkbook(file);
+        }
+
         this.getSheetsRowAndCol();
     }
 
@@ -148,17 +158,20 @@ public class ExcelEncoder extends AbstractEncoder {
             return false;
         }
         //data embedding
+        String debug = new String();
         int beginInd = 0;
         while(pq.size()!=0){
             Map.Entry<Integer,String> entry = pq.poll();
             //data embedment according to length of value
             int len = (int)Math.ceil(crc_text.length()*entry.getValue().toString().length()/(double)totalLen);
 
-            String modified = modify(row,entry.getKey(),entry.getValue(),crc_text.substring(beginInd,Math.min(beginInd+len,crc_text.length())));
+            debug += modify(row,entry.getKey(),entry.getValue(),crc_text.substring(beginInd,Math.min(beginInd+len,crc_text.length())));
 
             beginInd += len;
             if(beginInd>=crc_text.length())    break;
         }
+
+        System.out.println("Debug Embed: EmbeddedAt-> "+debug+" origin->"+Util.bin2dec(crc_text)+" data->" + Util.bin2dec(crc_text.substring(0,Settings.DEFAULT_DATALEN)) + " sourceBlock->" + list.get(2) + " ROW: "+row);
 
         return true;
     }
@@ -196,15 +209,15 @@ public class ExcelEncoder extends AbstractEncoder {
 //        String crc_text = Util.dec2bin(cyclic.CyclicCoder.encode(waterSeq),Settings.DEFAULT_EMBEDLEN);
         String crc_text = waterSeq;
 
-        int debug = 0;
+        String debug = new String();
 
         while(embedded<crc_text.length()){
             int num = this.solitionGenerator.get_next() % newvalue.length();
-            if(embedded==0)
-                debug = num;
+
             if(!duplicateSet.contains(num)){
                 duplicateSet.add(num);
                 char ori = newvalue.charAt(num);
+
                 if ((ori >= 'a' && ori <= 'z') || (ori >= 'A' && ori <= 'Z')) {
                     //对于小写大写字母：统一向上取结果
                     newvalue.setCharAt(num, (char) (ori + ori % 2 - crc_text.charAt(embedded) + '0'));
@@ -215,6 +228,7 @@ public class ExcelEncoder extends AbstractEncoder {
                     newvalue.setCharAt(num, (char) (ori - ori % 2 + crc_text.charAt(embedded) - '0'));
                     embedded ++;
                 }
+                debug += newvalue.charAt(num);
                 //其他的字符全都直接跳过
             }
         }
@@ -227,8 +241,7 @@ public class ExcelEncoder extends AbstractEncoder {
 
         this.excl.writeWorkBookAt(this.wb,0, row, col, newvalue.toString());
 
-        System.out.println("Debug Embed: data->" + waterSeq + " seed->" + debug +" ROWNUMBER: " + row + " " + newvalue);
-        return newvalue.toString();
+        return debug;
 
     }
 

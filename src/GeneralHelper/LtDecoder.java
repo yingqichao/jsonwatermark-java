@@ -111,7 +111,7 @@ public class LtDecoder {
 
     }
 
-    public int extract_excel(String key,String ori_block,int strlen){
+    public List<Object> extract_excel(String key,String ori_block,int strlen){
         //根据分配到的每个单元格的嵌入长度来做提取，没有检验的环节
         boolean negative;String verify = "";
         int extracted = 0;StringBuilder lt_block = new StringBuilder(ori_block);
@@ -131,7 +131,7 @@ public class LtDecoder {
         }
 
         int buff = -1;Set<Integer> duplicateSet = new HashSet<>();
-
+        String debug = new String();
         int ind = 0;
         while(ind<strlen){
             int num = prng.get_next() % lt_block.length();
@@ -139,6 +139,7 @@ public class LtDecoder {
             if(!duplicateSet.contains(num)) {
                 duplicateSet.add(num);
                 char ori = lt_block.charAt(num);
+                debug += ori;
                 if ((ori >= 97 && ori <=122)||(ori >= 65 && ori <= 90) ||(ori >= 48 && ori <= 57)){
 
                     extracted *= 2;
@@ -151,8 +152,10 @@ public class LtDecoder {
 
         }
 
+        List<Object> list = new LinkedList<>();list.add(extracted);list.add(debug);
+
 //        System.out.println("Debug Extract: data->" + extracted + " seed->" + buff + " " + key + " " + ori_block);
-        return extracted;
+        return list;
     }
 
     public List<Object> extract(String key,String ori_block,Set<Integer> duplicateSet){

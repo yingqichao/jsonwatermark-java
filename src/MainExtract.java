@@ -26,5 +26,7 @@ public class MainExtract {
             System.out.println(str);
         }
 
+        System.out.println("----如果您发现上面的解析内容是乱码，那么也可以参考以下gbk中文解码的水印内容----");
+
     }
 }
