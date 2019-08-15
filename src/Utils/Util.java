@@ -283,15 +283,17 @@ public class Util {
 
     public static String StreamFromString(String str) {
         char[] strChar=str.toCharArray();
-        String result="";
+        StringBuilder result=new StringBuilder();
         for(int i=0;i<strChar.length;i++){
+            int digits = (strChar[i]>=256)?16:8;
+//            String tmp = Util.dec2bin(strChar[i],digits);
             String tmp = Integer.toBinaryString(strChar[i]);
-            for(int j=tmp.length();j<8;j++)
+            for(int j=tmp.length();j<digits;j++)
                 tmp = '0'+tmp;
-            result += tmp;
+            result.append(tmp);
         }
 //        System.out.println(result);
-        return result;
+        return result.toString();
     }
 
     public static String dec2bin(int in,int digits){

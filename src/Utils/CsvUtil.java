@@ -17,8 +17,8 @@ public class CsvUtil {
         csv.setWritable(true);//设置可写
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader(csv));
-        } catch (FileNotFoundException e) {
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(csv),"GBK"));
+        } catch (Exception e) {
             e.printStackTrace();
         }
         String line = "";

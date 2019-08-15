@@ -162,21 +162,32 @@ public class StrBinaryTurn {
                 bs[i / 2] = (byte)in;
             }
         }
+//        byte[] cs = new byte[bs.length/2];
+////        for(int i=0;i<bs.length;i++)
+////            cs[i] = bs[i]*256+bs[i+1];
         String chinese = new String();
         try {
-            Charset charset = Charset.defaultCharset();
-            ByteBuffer buf = ByteBuffer.wrap(bs);
-            CharBuffer cBuf = charset.decode(buf);
-            chinese = cBuf.toString();
+            chinese = new String(bs, "GBK");
         }catch(Exception e){
             e.printStackTrace();
-            chinese = "编码格式不对，不是中文";
-        }finally {
+        }
+//        for(int i=0;i<bs.length;i+=2){
+//            chinese += ((char)(bs[i]*256+bs[i+1]));
+//        }
+//        try {
+//            Charset charset = Charset.defaultCharset();
+//            ByteBuffer buf = ByteBuffer.wrap(bs);
+//            CharBuffer cBuf = charset.decode(buf);
+//            chinese = cBuf.toString();
+//        }catch(Exception e){
+//            e.printStackTrace();
+//            chinese = "编码格式不对，不是中文";
+//        }finally {
             List<String> list = new LinkedList<>();
             //先英文结果，后中文结果
             list.add(str);
             list.add(chinese);
             return list;
-        }
+//        }
     }
 }
