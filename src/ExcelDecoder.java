@@ -180,22 +180,22 @@ public class ExcelDecoder extends AbstractDecoder{
         //第一个数是作为键值的
         int keyCol = -1;int firstThresh = -1;
         int sheetIndex = 0;//当前只允许嵌入在一页里，不考虑多页的情况
-        double thresh = 0.8;int valid = 0;double maxMatch = 0;double firstMatch = 0;
+        double thresh = 0.5;int valid = 0;double maxMatch = 0;double firstMatch = 0;
 
         for(int colIndex = 0; colIndex < this.exclCol[sheetIndex]; colIndex++){
             Set<String> objCol = new HashSet<>();Set<String> objColwithoutLen = new HashSet<>();
-            double totalLen = 0;List<Object> col = new LinkedList<>();
+            List<Object> col = new LinkedList<>();
             if(csvData.size()==0) {
                 // EXCEL
                 col = this.excl.getColValues(this.wb, sheetIndex, colIndex, 20);
             }else{
                 // CSV
-                for(int i=0;i<exclRow[0];i++)
+                for(int i=startRow;i<exclRow[0];i++)
                     col.add(csvArray[i][colIndex]);
             }
             for(Object object:col){
                 int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
-                totalLen += validLen;
+//                totalLen += validLen;
                 if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
                     //不足以嵌入信息，并且当前value没有出现过
                     objCol.add(object.toString());
