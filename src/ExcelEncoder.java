@@ -233,13 +233,17 @@ public class ExcelEncoder extends AbstractEncoder {
 
         String crc_text = Util.dec2bin(cyclic.CyclicCoder.encode(block_data),Settings.DEFAULT_EMBEDLEN);
         // dynamically embedment: calculate total sum
-        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>((a,b)->(b.getValue().length()-a.getValue().length()));
+        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>
+                ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
         for(int col=0;col<exclCol[0];col++){
             if(col!=keyIndex) {
-                String str = getExactValue(row, col).replaceAll("[^A-Za-z0-9]", "");
-                totalLen += str.length();
-                pq.offer(new AbstractMap.SimpleEntry<>(col,str));
+                String str = getExactValue(row, col);
+                if(!Util.isInteger(str) && Util.isNumeric(str)) {
+                    //现在是只对float进行嵌入了
+                    totalLen += str.length();
+                    pq.offer(new AbstractMap.SimpleEntry<>(col, str));
+                }
             }
         }
         if(totalLen<Settings.DEFAULT_MINLEN){
