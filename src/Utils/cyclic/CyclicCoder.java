@@ -1,4 +1,4 @@
-package cyclic;
+package Utils.cyclic;
 
 public class CyclicCoder {
 	private static final int IRREDUCIBLE_POLYNOMIAL = 0b1011;

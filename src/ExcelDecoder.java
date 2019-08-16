@@ -4,7 +4,6 @@
  * @Description DEFAULT
  */
 import ExcelWatermarkHelper.excel.ExcelUtil;
-import ExcelWatermarkHelper.utils.WatermarkUtils;
 import GeneralHelper.LtDecoder;
 import Setting.Settings;
 import Utils.*;
@@ -155,7 +154,7 @@ public class ExcelDecoder extends AbstractDecoder{
 
         System.out.println("Debug Extract: EmbeddedAt-> "+debug+"  origin->"+ decodeInt+" data->" + real_embed_data + " sourceBlock->" + src_blocks.get(0) + " ROW: "+row);
 
-        if (cyclic.CyclicCoder.decode(decodeInt) != -1) {
+        if (Utils.cyclic.CyclicCoder.decode(decodeInt) != -1) {
             System.out.println("Valid Package.");
 
             if(decoder.consume_block_excel(src_blocks,real_embed_data)) {

@@ -273,11 +273,11 @@ public static <A HREF="../../../../../../org/apache/poi/ss/formula/eval/ValueEva
  The same concept is extended to references across sheets, such that even multi-row,
  multi-column areas can be useful.<p/>
 
- Of course with carefully (or carelessly) chosen parameters, cyclic references can occur and
+ Of course with carefully (or carelessly) chosen parameters, Utils.cyclic references can occur and
  hence this method <b>can</b> throw a 'circular reference' EvaluationException.  Note that
  this method does not attempt to detect cycles.  Every cell in the specified Area <tt>ae</tt>
  has already been evaluated prior to this method call.  Any cell (or cell<b>s</b>) part of
- <tt>ae</tt> that would incur a cyclic reference error if selected by this method, will
+ <tt>ae</tt> that would incur a Utils.cyclic reference error if selected by this method, will
  already have the value <t>ErrorEval.CIRCULAR_REF_ERROR</tt> upon entry to this method.  It
  is assumed logic exists elsewhere to produce this behaviour.
 <P>

@@ -62,7 +62,7 @@ public class LtDecoder {
             src_blocks.remove(0);//d
             List<Object> blockAndVerify = extract(key, lt_block, duplicateSet);
             String tmpstr = (String) blockAndVerify.get(1);
-            if (cyclic.CyclicCoder.decode(Integer.parseInt(tmpstr, 2)) != -1) {
+            if (Utils.cyclic.CyclicCoder.decode(Integer.parseInt(tmpstr, 2)) != -1) {
                 // If BP is done, stop
                 System.out.println("Valid Package.");
                 this.done = handle_block(src_blocks, (int) blockAndVerify.get(0));

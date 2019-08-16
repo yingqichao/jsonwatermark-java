@@ -17,10 +17,9 @@ public class MainExtract_excel {
         //CSV默认第一行是无效信息，第二行是表头，信息从第三行开始(使用嵌入csv的数据包会这样，对于一般的csv也可能没有第一行的无效信息)
         // xls默认第一行表头，第二行开始是信息
         int startRow = (append.equals(".csv"))?2:1;
-        String[] Keys = {"id", "name", "time", "phone", "date"};
+//        String[] Keys = {"id", "name", "time", "phone", "date"};
 
         String wmStr = Util.readWatermark("src//watermark.txt");
-        int embedMsgLen = 0;
 
         String filePath = "src//embedded_results//"+filename+"_embedded"+append;
         ExcelDecoder extract = new ExcelDecoder(new File(filePath),startRow);

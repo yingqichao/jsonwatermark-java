@@ -15,15 +15,11 @@ public class MainEmbed_excel {
         String foldname = "EXCEL";
         String filename = "1";
         String append = ".xlsx";
-
-//        String[] Keys = {"id", "name", "time", "phone", "date"};
-
         String wmStr = Util.readWatermark("src//watermark.txt");
         String binarySeq = Util.StreamFromString(wmStr);
         System.out.println("Bit Num: "+binarySeq.length());
 
-        System.out.println("embedded ExcelWatermarkHelper : " + wmStr);int embedMsgLen = 0;
-
+        System.out.println("embedded ExcelWatermarkHelper : " + wmStr);
 
         String filePath = "src//resources//"+foldname+"//"+filename+append;
         ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,1);

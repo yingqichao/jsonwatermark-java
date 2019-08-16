@@ -1,4 +1,4 @@
-package cyclic;
+package Utils.cyclic;
 
 public class BinaryDivider {
 

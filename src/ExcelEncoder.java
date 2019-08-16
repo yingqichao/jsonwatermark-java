@@ -1,7 +1,6 @@
 import Setting.Settings;
 import org.apache.poi.ss.usermodel.Workbook;
 import ExcelWatermarkHelper.excel.ExcelUtil;
-import ExcelWatermarkHelper.utils.WatermarkUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -231,7 +230,7 @@ public class ExcelEncoder extends AbstractEncoder {
         for(int i=2;i<list.size();i++)
             block_data ^= this.blocks[list.get(i)];
 
-        String crc_text = Util.dec2bin(cyclic.CyclicCoder.encode(block_data),Settings.DEFAULT_EMBEDLEN);
+        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(block_data),Settings.DEFAULT_EMBEDLEN);
         // dynamically embedment: calculate total sum
         PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>
                 ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
@@ -300,7 +299,7 @@ public class ExcelEncoder extends AbstractEncoder {
 //        Set<Integer> duplicateSet = new HashSet<>(0);
         int embedded = 0;
 
-//        String crc_text = Util.dec2bin(cyclic.CyclicCoder.encode(waterSeq),Settings.DEFAULT_EMBEDLEN);
+//        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(waterSeq),Settings.DEFAULT_EMBEDLEN);
         String crc_text = waterSeq;
 
         String debug = new String();
