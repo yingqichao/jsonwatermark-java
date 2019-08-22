@@ -22,6 +22,7 @@ public class GeneralEmbedding {
         System.out.println("Bit Num: "+binarySeq.length());
         System.out.println("embedded watermark : " + wmStr);
         String filePath = "src//resources//"+foldname+"//"+filename+append;
+        System.out.println("\n================= Embed from file " + "\"" + filePath + "\" =================");
 
         if(append.equals(".xlsx") || append.equals(".xls") || append.equals(".csv")){
             System.out.println("[Service Started] Excel watermarking detected...");

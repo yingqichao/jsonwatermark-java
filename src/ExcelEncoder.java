@@ -100,7 +100,7 @@ public class ExcelEncoder extends AbstractEncoder {
         }
     }
 
-    public boolean run(String filePath, String outpath){
+    public boolean run(String filePath, String outpath) throws Exception{
 
 //        try {
 
@@ -112,6 +112,10 @@ public class ExcelEncoder extends AbstractEncoder {
 //            keyCols.remove(0);
 
             int endRow = exclRow[0];//固定第一个sheet
+
+        if(endRow<this.minRequire){
+            throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the watermark sequence...");
+        }
 
             //Embedment
             for(int i=startRow;i<endRow;i++){

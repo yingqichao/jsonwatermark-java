@@ -25,21 +25,27 @@ public class JSONEncoder extends AbstractEncoder {
 
     public String encoder(String key, String value){
 //        Generates an infinite sequence of blocks to transmit to the receiver
-        Set<Integer> duplicateSet = new HashSet<>();String res = value;
-        int innerPackage = value.replaceAll("[^A-Za-z0-9]","").length()/ Settings.DEFAULT_MINLEN;
-        if(innerPackage>1)
-            System.out.println("-- This package is splitted to embed "+innerPackage+" packages --");
-        for(int ite=0;ite<innerPackage;ite++){
-            this.seed = Util.BKDRHash(key+((innerPackage>1)?ite:""),131);
-            this.solitionGenerator.setSeed(this.seed);
-            List<Integer> list = this.solitionGenerator.get_src_blocks(null);
-            int block_data = 0;
-            for(int i=2;i<list.size();i++)
-                block_data ^= this.blocks[list.get(i)];
+        String res = value;
+        if(!Util.isInteger(value) && Util.isNumeric(value)){
+            System.out.println("[Warning] Embedding into String is now prohibited...");
+        }else{
+            Set<Integer> duplicateSet = new HashSet<>();
+            int innerPackage = value.replaceAll("[^A-Za-z0-9]","").length()/ Settings.DEFAULT_MINLEN;
+            if(innerPackage>1)
+                System.out.println("-- This package is splitted to embed "+innerPackage+" packages --");
+            for(int ite=0;ite<innerPackage;ite++){
+                this.seed = Util.BKDRHash(key+((innerPackage>1)?ite:""),131);
+                this.solitionGenerator.setSeed(this.seed);
+                List<Integer> list = this.solitionGenerator.get_src_blocks(null);
+                int block_data = 0;
+                for(int i=2;i<list.size();i++)
+                    block_data ^= this.blocks[list.get(i)];
 
-            res = modify(res,key,block_data,list,duplicateSet);
+                res = modify(res,key,block_data,list,duplicateSet);
 
+            }
         }
+
 
 
 
@@ -121,7 +127,7 @@ public class JSONEncoder extends AbstractEncoder {
             // 解析string
             JSON = eliminateLevels(object);
             if(valid<this.minRequire){
-                throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the ExcelWatermarkHelper sequence...");
+                throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the watermark sequence...");
             }
             //Embedment
             for(String key:this.JSON.keySet()){
@@ -205,7 +211,9 @@ public class JSONEncoder extends AbstractEncoder {
             if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Settings.DEFAULT_MINLEN){
                 //valid
                 JSON.put(prefix.replaceAll("[^A-Za-z0-9]",""),value);
-                valid+=value.replaceAll("[^A-Za-z0-9]","").length()/Settings.DEFAULT_MINLEN;
+                if(Util.isInteger(value) && Util.isNumeric(value))
+                    //新规定要求只能在float或者int中嵌入数据
+                    valid+=value.replaceAll("[^A-Za-z0-9]","").length()/Settings.DEFAULT_MINLEN;
             }
             sum++;
         }

@@ -22,6 +22,7 @@ public class MainEmbed_excel {
         System.out.println("embedded ExcelWatermarkHelper : " + wmStr);
 
         String filePath = "src//resources//"+foldname+"//"+filename+append;
+        System.out.println("\n================= Embed from file " + "\"" + filePath + "\" =================");
         ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,1);
         try {
 //            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
