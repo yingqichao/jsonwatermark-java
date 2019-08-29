@@ -149,7 +149,7 @@ public class StrBinaryTurn {
 
     public static List<String> stream2String(List<Integer> buff){
         String str = "";
-        byte[] bs = new byte[buff.size()/2];
+        int[] bs = new int[buff.size()/2];
         for (int i = 0; i < buff.size(); i+=2) {
             int high = buff.get(i);int low = buff.get(i+1);
             if (high == -1 || low == -1) {
@@ -159,18 +159,24 @@ public class StrBinaryTurn {
             else {
                 int in = high * ((int) Math.pow(2, 4)) + low;
                 str += (char) in;
-                bs[i / 2] = (byte)in;
+                bs[i / 2] = in;
             }
         }
-//        byte[] cs = new byte[bs.length/2];
-////        for(int i=0;i<bs.length;i++)
-////            cs[i] = bs[i]*256+bs[i+1];
+
         String chinese = new String();
-        try {
-            chinese = new String(bs, "GBK");
-        }catch(Exception e){
-            e.printStackTrace();
+        for(int i=0;i<bs.length;i+=2){
+            int in = bs[i]*256+bs[i+1];
+            String strHex = Integer.toHexString(in);
+            char letter = (char) Integer.parseInt(strHex,16);
+//            chinese.append(new Character(letter).toString());
+            chinese+=(letter);
         }
+
+//        try {
+//            chinese = new String(bs, "GBK");
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
 //        for(int i=0;i<bs.length;i+=2){
 //            chinese += ((char)(bs[i]*256+bs[i+1]));
 //        }
