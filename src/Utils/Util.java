@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonWriter;
 import java.io.*;
 
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Util {
@@ -283,9 +284,10 @@ public class Util {
 
     public static String StreamFromString(String str) {
         char[] strChar=str.toCharArray();
+        int digits = (isContainChinese(str))?16:8;
         StringBuilder result=new StringBuilder();
         for(int i=0;i<strChar.length;i++){
-            int digits = (strChar[i]>=256)?16:8;
+//            int digits = (strChar[i]>=256)?16:8;
 //            String tmp = Util.dec2bin(strChar[i],digits);
             String tmp = Integer.toBinaryString(strChar[i]);
             for(int j=tmp.length();j<digits;j++)
@@ -294,6 +296,22 @@ public class Util {
         }
 //        System.out.println(result);
         return result.toString();
+    }
+
+    /**
+     * 判断字符串中是否包含中文
+     * @param str
+     * 待校验字符串
+     * @return 是否为中文
+     * @warn 不能校验是否为中文标点符号
+     */
+    public static boolean isContainChinese(String str) {
+        Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
+        Matcher m = p.matcher(str);
+        if (m.find()) {
+            return true;
+        }
+        return false;
     }
 
     public static String dec2bin(int in,int digits){

@@ -149,7 +149,10 @@ public class JSONEncoder extends AbstractEncoder {
             return newJsonElement;
         }catch (Exception e){
             e.printStackTrace();
+            System.out.println("-----------------[Warning] Embedding was not conducted...--------------------");
         }
+
+
 
         return null;
 

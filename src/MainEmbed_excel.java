@@ -13,7 +13,7 @@ public class MainEmbed_excel {
 //        String MODE = "EXTRACT";
 
         String foldname = "EXCEL";
-        String filename = "1";
+        String filename = "2";
         String append = ".xlsx";
         String wmStr = Util.readWatermark("src//watermark.txt");
         String binarySeq = Util.StreamFromString(wmStr);

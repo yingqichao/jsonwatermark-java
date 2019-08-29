@@ -101,8 +101,8 @@ public class ExcelEncoder extends AbstractEncoder {
     }
 
     public boolean run(String filePath, String outpath) throws Exception{
-
-//        try {
+        System.out.println("-----------------------------Embedding---------------------------------------");
+        try {
 
 //            WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
 
@@ -117,12 +117,14 @@ public class ExcelEncoder extends AbstractEncoder {
             throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the watermark sequence...");
         }
 
+        valid = endRow;
+
             //Embedment
             for(int i=startRow;i<endRow;i++){
                 encoder(i);
             }
 
-            try {
+//            try {
                 if (csvData.size() == 0) {
                     // EXCEL
                     this.excl.writeWorkBookAt(this.wb,0, startRow-1, exclCol[0], ((Integer)this.solitionGenerator.K).toString());
@@ -144,10 +146,10 @@ public class ExcelEncoder extends AbstractEncoder {
                     CsvUtil.writeCSV(outpath,csvData_embedded);
                 }
 
-                System.out.println("Embedding message into Excel Succeeded...");
+                System.out.println("-----------------Embedding was conducted successfully...--------------------");
             }catch(Exception e){
                 e.printStackTrace();
-                System.out.println("Embedding message into Excel Failed...");
+                System.out.println("-----------------[Warning] Embedding was not conducted...--------------------");
             }
 
             return true;
@@ -223,7 +225,7 @@ public class ExcelEncoder extends AbstractEncoder {
         }
     }
 
-    public boolean encoder(int row){
+    public boolean encoder(int row) throws Exception{
         //prepare
         int sheet = 0;
         this.seed = Util.BKDRHash(getExactValue(row,keyIndex),131);
@@ -252,6 +254,10 @@ public class ExcelEncoder extends AbstractEncoder {
         if(totalLen<Settings.DEFAULT_MINLEN){
             //一般都不会执行的
             System.out.println("[SKIPPED PACK] Total length of row "+row+" is not enough!");
+            valid--;
+            if(valid<this.minRequire){
+                throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the watermark sequence...");
+            }
             return false;
         }
         //data embedding

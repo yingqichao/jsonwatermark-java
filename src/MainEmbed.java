@@ -25,7 +25,7 @@ public class MainEmbed {
 
         System.out.println("\n================= JSON Embedding from file " + "\"" + filename + "\" =================");
 
-        String watermark = Util.readWatermark("src//ExcelWatermarkHelper.txt");
+        String watermark = Util.readWatermark("src//watermark.txt");
         String binarySeq = Util.StreamFromString(watermark);
         System.out.println("Bit Num: "+binarySeq.length());
         JSONEncoder encoder = new JSONEncoder(binarySeq);
