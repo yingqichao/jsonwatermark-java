@@ -40,7 +40,7 @@ public class GeneralExtraction {
                     extract.run(filePath);
 
                     list = extract.getEnglishResult();
-                    chinese_list = extract.getEnglishResult();
+                    chinese_list = extract.getChineseResult();
 
             }else if(append.equals(".json")) {
                 JsonParser parser = new JsonParser();
@@ -54,17 +54,19 @@ public class GeneralExtraction {
                 chinese_list = decoder.getEnglishResult();
 
             }
-            System.out.println("-----------提取得到的信息是------------");
-            //打印提取结果
-            System.out.println("The ExcelWatermarkHelper is SUCCESSFULLY retrieved " + list.size() + " time(s)！");
-            for (String str : list) {
-                System.out.println(str);
-            }
 
-            System.out.println("----如果您发现上面的解析内容是乱码，那么也可以参考以下gbk中文解码的水印内容----");
-            for (String str : chinese_list) {
-                System.out.println(str);
-            }
+            printer.print(list,chinese_list);
+//            System.out.println("-----------提取得到的信息是------------");
+//            //打印提取结果
+//            System.out.println("The ExcelWatermarkHelper is SUCCESSFULLY retrieved " + list.size() + " time(s)！");
+//            for (String str : list) {
+//                System.out.println(str);
+//            }
+//
+//            System.out.println("----如果您发现上面的解析内容是乱码，那么也可以参考以下gbk中文解码的水印内容----");
+//            for (String str : chinese_list) {
+//                System.out.println(str);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
