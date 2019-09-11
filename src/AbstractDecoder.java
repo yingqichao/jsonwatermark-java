@@ -10,6 +10,7 @@ public abstract class AbstractDecoder {
     public LtDecoder decoder = null;
     public List<String> secret_data = new LinkedList<>();
     public List<String> secret_data_chinese = new LinkedList<>();
+    public int minRequire;
 
     public List<String> getChineseResult(){
         return this.secret_data_chinese;

@@ -245,14 +245,17 @@ public class ExcelEncoder extends AbstractEncoder {
             if(col!=keyIndex) {
                 String str = getExactValue(row, col);
                 if(!Util.isInteger(str) && Util.isNumeric(str)) {
-                    //现在是只对float进行嵌入了
-                    totalLen += str.length();
-                    pq.offer(new AbstractMap.SimpleEntry<>(col, str));
+                    //新规定要求只能在float或者int中嵌入数据
+                    //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
+                    if(Double.parseDouble(str)!=0 && str.replaceAll("[^A-Za-z0-9]", "").length()>=3) {
+                        totalLen += str.length();
+                        pq.offer(new AbstractMap.SimpleEntry<>(col, str));
+                    }
                 }
             }
         }
         if(totalLen<Settings.DEFAULT_MINLEN){
-            //一般都不会执行的
+            //表示当前行可以用来嵌入信息的总长度不够，一般都不会执行的
             System.out.println("[SKIPPED PACK] Total length of row "+row+" is not enough!");
             valid--;
             if(valid<this.minRequire){
@@ -282,7 +285,8 @@ public class ExcelEncoder extends AbstractEncoder {
     public String modify(int row,int col,String value,String waterSeq){
         //modify the value to embed data
         Set<Integer> duplicateSet = new HashSet<>();
-        Character first = null;boolean negative = false;int dotIndex = -1;
+        String first = null;
+        boolean negative = false;int dotIndex = -1;
         StringBuilder newvalue = new StringBuilder(value);
         int startFrom = 0;
         //preprocess
@@ -293,7 +297,8 @@ public class ExcelEncoder extends AbstractEncoder {
                 newvalue.deleteCharAt(startFrom);
                 startFrom++;
             }
-            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
+
+//            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
         }else if(Util.isNumeric(value)){
             double value_double = Double.parseDouble(value);
             negative = value_double<0;
@@ -301,13 +306,17 @@ public class ExcelEncoder extends AbstractEncoder {
                 newvalue.deleteCharAt(0);
                 startFrom++;
             }
-            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
+
+//            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
             dotIndex = newvalue.indexOf(".");
             newvalue.deleteCharAt(dotIndex);
         }
 
 //        Set<Integer> duplicateSet = new HashSet<>(0);
         int embedded = 0;
+        //前两位暂存
+        first = newvalue.substring(0,2);
+        newvalue.deleteCharAt(0);newvalue.deleteCharAt(0);
 
 //        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(waterSeq),Settings.DEFAULT_EMBEDLEN);
         String crc_text = waterSeq;
@@ -337,8 +346,9 @@ public class ExcelEncoder extends AbstractEncoder {
         }
 
         //recovery
-        if(dotIndex!=-1) newvalue.insert(dotIndex,'.');
         if(first!=null) newvalue.insert(0,first);
+        if(dotIndex!=-1) newvalue.insert(dotIndex,'.');
+
         if(negative)    newvalue.insert(0,'-');
 
         if(csvData.size()==0) {

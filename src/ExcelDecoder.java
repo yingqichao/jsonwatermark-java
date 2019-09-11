@@ -121,13 +121,22 @@ public class ExcelDecoder extends AbstractDecoder{
             if(col!=keyIndex) {
                 String str = getExactValue(row, col);
                 if(!Util.isInteger(str) && Util.isNumeric(str)) {
-                    //现在是只对float进行嵌入了
-                    totalLen += str.length();
-                    pq.offer(new AbstractMap.SimpleEntry<>(col, str));
+                    //新规定要求只能在float或者int中嵌入数据
+                    //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
+                    if(Double.parseDouble(str)!=0 && str.replaceAll("[^A-Za-z0-9]", "").length()>=3) {
+                        totalLen += str.length();
+                        pq.offer(new AbstractMap.SimpleEntry<>(col, str));
+                    }
                 }
             }
         }
         //data extraction
+        if(totalLen<Settings.DEFAULT_MINLEN){
+            //表示当前行可以用来嵌入信息的总长度不够，一般都不会执行的
+            System.out.println("[SKIPPED PACK] Total length of row "+row+" is not enough!");
+
+            return;
+        }
         String debug = new String();
         int remainLen = DEFAULT_EMBEDLEN;int decodeInt = 0;
         while(pq.size()!=0){

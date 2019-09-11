@@ -121,13 +121,16 @@ public class LtDecoder {
             long value_int = Long.parseLong(ori_block);
             negative = value_int<0;
             if(negative)    lt_block.deleteCharAt(0);
-            lt_block.deleteCharAt(0);
+            //删除前两位
+            lt_block.deleteCharAt(0);lt_block.deleteCharAt(0);
         }else if(Util.isNumeric(ori_block)){
             double value_double = Double.parseDouble(ori_block);
             negative = value_double<0;
             if(negative)    lt_block.deleteCharAt(0);
-            lt_block.deleteCharAt(0);
+
             lt_block.deleteCharAt(lt_block.indexOf("."));
+            //删除前两位
+            lt_block.deleteCharAt(0);lt_block.deleteCharAt(0);
         }
 
         int buff = -1;Set<Integer> duplicateSet = new HashSet<>();
