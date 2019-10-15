@@ -253,7 +253,8 @@ public class ExcelEncoder extends AbstractEncoder {
                 while(a1.charAt(0)!='.' && a1.charAt(0)!='0'){
                     a1.deleteCharAt(0);
                 }
-                return b1.length()-a1.length();
+                return b1.toString().replaceAll("[^0-9]+", "").length()
+                        -a1.toString().replaceAll("[^0-9]+", "").length();
             }
         };
         PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>(comp);
@@ -263,10 +264,10 @@ public class ExcelEncoder extends AbstractEncoder {
         for(int col=0;col<exclCol[0];col++){
             if(col!=keyIndex) {
                 String str = getExactValue(row, col);
-                if(!Util.isInteger(str) && Util.isNumeric(str)) {
+                if(Util.isInteger(str) && Util.isNumeric(str)) {
                     //新规定要求只能在float或者int中嵌入数据
                     //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
-                    if(Double.parseDouble(str)!=0 && str.replaceAll("[^A-Za-z0-9]", "").length()>=3) {
+                    if(Double.parseDouble(str)!=0 && lengthQualify(str,3)) {
                         totalLen += str.length();
                         pq.offer(new AbstractMap.SimpleEntry<>(col, str));
                     }
@@ -299,6 +300,16 @@ public class ExcelEncoder extends AbstractEncoder {
         System.out.println("Debug Embed: EmbeddedAt-> "+debug+" origin->"+Util.bin2dec(crc_text)+" data->" + Util.bin2dec(crc_text.substring(0,Settings.DEFAULT_DATALEN)) + " sourceBlock->" + list.get(2) + " ROW: "+row);
 
         return true;
+    }
+
+    public boolean lengthQualify(String str,int minLength){
+        StringBuilder b1 = new StringBuilder(str);
+        // 去除前缀的0
+        while(b1.charAt(0)!='.' && b1.charAt(0)!='0'){
+            b1.deleteCharAt(0);
+        }
+
+        return b1.toString().replaceAll("[^0-9]+", "").length()>=minLength;
     }
 
     public String modify(int row,int col,String value,String waterSeq){
