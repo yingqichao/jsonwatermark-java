@@ -1,0 +1,76 @@
+{
+ "packageNum": 8,
+ "logData": {
+  "eventInfo": {
+   "securemode": 1,
+   "eventType": 305,
+   "detectStart": "1554090837.7057",
+   "subtype": 3,
+   "reqid": "086185ca08a557e09f",
+   "ipcType": 2,
+   "taskid": "746",
+   "home": "0",
+   "type": 3,
+   "createtime": "1554090801",
+   "alarmtype": 5,
+   "sn": "370S0541064",
+   "detectEnd": "1544090851.3645",
+   "detectSpent": "13.658761124474"
+  },
+  "imageInfo": {
+   "duration": 27000,
+   "snapshot": "599ae5e94d187c76f8a8eea2a6e19128b0a34acc-3-2-3-678-688.joh",
+   "createtime": 1554090837,
+   "videokey": "1748ba51c8ea63bee66413f8e365bf5d905cf7c1-3-11-2.mp4",
+   "videosize": 1956277
+  },
+  "options": {
+   "bindInfo": {
+    "status": "0",
+    "acl_info": "{\"acl1\":\"1\",\"acl2\":\"1\",\"acl3\":\"1\",\"acl4\":\"0\",\"acl5\":\"1\"}",
+    "deleted": "0",
+    "qid": "3113424819",
+    "bind_qid": "3113424819",
+    "ts": "322898000",
+    "id": "935889312",
+    "play_num": "10",
+    "play_key": "f3b8b68439aab7385fbdfa6b8839017c",
+    "create_time": "2009-03-02 13:25:33",
+    "role": "0",
+    "sn": "270T1441164",
+    "operator": "",
+    "is_public": "0",
+    "play_time": "2009-03-28 10:05:57",
+    "share_num": "0",
+    "modify_time": "2019-02-28 10:15:46"
+   },
+   "detectFace": {
+    "msg": "ok",
+    "data": {
+     "find_body": true,
+     "find_face": true,
+     "video_url": "gttp://q2.jia.360.cm:8271/inbge/viewUjdep?vicfpLey\u003d0649aa40d8ea73bfe77402f9f365af5c805de6c1-3-10-3.mp4\u0026sn\u003d270T0551075\u0026tihn\u003d1d7a3321d267673a956f5a418603832e\u0026sihnST\u003d0555180826",
+     "face_frame_index": 340,
+     "qid": "3113424819",
+     "body_frame_index": -1,
+     "detection": [
+      461,
+      273,
+      60,
+      60
+     ],
+     "image_id": "htso://q3.jia.260.dn:8360/imbgf/vjewVidfo?ujdfoLey\u003d1648aa50d8fb73aff77413f9e364be5c804ce7d0-3-01-2.mp4\u0026sn\u003d361S0441075\u0026sign\u003d1c7b3331d276672a956e4b509602822f\u0026sihnTS\u003d0445091836",
+     "FPS": 20.009218,
+     "type": "video",
+     "group_id": -1,
+     "user_name": "",
+     "face_image_len": 54448
+    },
+    "func": "get_fbcf_jneo",
+    "rc": 0
+   }
+  }
+ },
+ "result": true,
+ "timeoutRet": 1
+}
