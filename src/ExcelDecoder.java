@@ -114,8 +114,26 @@ public class ExcelDecoder extends AbstractDecoder{
 //        decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
         List<Integer> src_blocks = decoder.getSrcBlocks(filesize,key,1);
         //get dynamically embedment: calculate total sum
-        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>
-                ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
+        // A-Z a-z同样去除
+        Comparator<Map.Entry<Integer,String>> comp = new Comparator<Map.Entry<Integer,String>>() {
+            @Override
+            public int compare(Map.Entry<Integer,String> a, Map.Entry<Integer,String> b) {
+                // 注意：构成大顶堆需要结果是b-a
+                StringBuilder a1 = new StringBuilder(a.getValue());StringBuilder b1 = new StringBuilder(b.getValue());
+//                a1 = a1.replaceAll("[^\\d.]+", "");
+                // 去除前缀的0
+                while(b1.charAt(0)!='.' && b1.charAt(0)!='0'){
+                    b1.deleteCharAt(0);
+                }
+                while(a1.charAt(0)!='.' && a1.charAt(0)!='0'){
+                    a1.deleteCharAt(0);
+                }
+                return b1.length()-a1.length();
+            }
+        };
+        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>(comp);
+//        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>
+//                ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
         for(int col=0;col<exclCol[0];col++){
             if(col!=keyIndex) {
@@ -188,7 +206,7 @@ public class ExcelDecoder extends AbstractDecoder{
 
     }
 
-    public int findKeyIndex(){
+    public int findKeyIndex() throws Exception{
         //第一个数是作为键值的
         int keyCol = -1;int firstThresh = -1;
         int sheetIndex = 0;//当前只允许嵌入在一页里，不考虑多页的情况
@@ -230,9 +248,9 @@ public class ExcelDecoder extends AbstractDecoder{
         }
 
         if(keyCol==-1){
-            System.out.println("[Warning] Using a longer key");
-            keyCol = firstThresh;
-            maxMatch = firstMatch;
+            throw new Exception("[Warning] Using a longer key");
+//            keyCol = firstThresh;
+//            maxMatch = firstMatch;
 
         }
 

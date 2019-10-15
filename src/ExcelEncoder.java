@@ -240,8 +240,25 @@ public class ExcelEncoder extends AbstractEncoder {
         String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(block_data),Settings.DEFAULT_EMBEDLEN);
         // dynamically embedment: calculate total sum
         // A-Z a-z同样去除
-        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>
-                ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
+        Comparator<Map.Entry<Integer,String>> comp = new Comparator<Map.Entry<Integer,String>>() {
+            @Override
+            public int compare(Map.Entry<Integer,String> a, Map.Entry<Integer,String> b) {
+                // 注意：构成大顶堆需要结果是b-a
+                StringBuilder a1 = new StringBuilder(a.getValue());StringBuilder b1 = new StringBuilder(b.getValue());
+//                a1 = a1.replaceAll("[^\\d.]+", "");
+                // 去除前缀的0
+                while(b1.charAt(0)!='.' && b1.charAt(0)!='0'){
+                    b1.deleteCharAt(0);
+                }
+                while(a1.charAt(0)!='.' && a1.charAt(0)!='0'){
+                    a1.deleteCharAt(0);
+                }
+                return b1.length()-a1.length();
+            }
+        };
+        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>(comp);
+//        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>
+//                ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
         for(int col=0;col<exclCol[0];col++){
             if(col!=keyIndex) {
