@@ -164,12 +164,14 @@ public class StrBinaryTurn {
         }
 
         String chinese = new String();
-        for(int i=0;i<bs.length;i+=2){
-            int in = bs[i]*256+bs[i+1];
-            String strHex = Integer.toHexString(in);
-            char letter = (char) Integer.parseInt(strHex,16);
+        if(bs.length%2==0) {
+            for (int i = 0; i < bs.length; i += 2) {
+                int in = bs[i] * 256 + bs[i + 1];
+                String strHex = Integer.toHexString(in);
+                char letter = (char) Integer.parseInt(strHex, 16);
 //            chinese.append(new Character(letter).toString());
-            chinese+=(letter);
+                chinese += (letter);
+            }
         }
 
 //        try {

@@ -159,7 +159,7 @@ public class ExcelEncoder extends AbstractEncoder {
 //        }
     }
 
-    public int findKeyIndex(){
+    public int findKeyIndex() throws Exception{
         //第一个数是作为键值的
         int keyCol = -1;int firstThresh = -1;
         int sheetIndex = 0;//当前只允许嵌入在一页里，不考虑多页的情况
@@ -202,8 +202,9 @@ public class ExcelEncoder extends AbstractEncoder {
 
         if(keyCol==-1){
             System.out.println("[Warning] Using a longer key");
-            keyCol = firstThresh;
-            maxMatch = firstMatch;
+            throw new Exception("[Warning] No valid key index found...Embedding was aborted...");
+//            keyCol = firstThresh;
+//            maxMatch = firstMatch;
 
         }
 
@@ -238,6 +239,7 @@ public class ExcelEncoder extends AbstractEncoder {
 
         String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(block_data),Settings.DEFAULT_EMBEDLEN);
         // dynamically embedment: calculate total sum
+        // A-Z a-z同样去除
         PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>
                 ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
