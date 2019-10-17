@@ -264,7 +264,7 @@ public class ExcelEncoder extends AbstractEncoder {
         for(int col=0;col<exclCol[0];col++){
             if(col!=keyIndex) {
                 String str = getExactValue(row, col);
-                if(Util.isInteger(str) && Util.isNumeric(str)) {
+                if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据
                     //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
                     if(Double.parseDouble(str)!=0 && lengthQualify(str,3)) {
