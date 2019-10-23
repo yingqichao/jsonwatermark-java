@@ -214,7 +214,7 @@ public class JSONEncoder extends AbstractEncoder {
             if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Settings.DEFAULT_MINLEN){
                 //valid
                 JSON.put(prefix.replaceAll("[^A-Za-z0-9]",""),value);
-                if(Util.isInteger(value) && Util.isNumeric(value))
+                if(Util.isNumeric(value))
                     //新规定要求只能在float或者int中嵌入数据
                     valid+=value.replaceAll("[^A-Za-z0-9]","").length()/Settings.DEFAULT_MINLEN;
             }

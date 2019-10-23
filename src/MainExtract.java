@@ -16,7 +16,7 @@ public class MainExtract {
 
 //        Map<String,String> JSON = Utils.Util.readFakeJSON("src/watermarkedJSON.txt");
         JsonParser parser = new JsonParser() ;
-        String watermark = Util.readWatermark("src/ExcelWatermarkHelper.txt");
+        String watermark = Util.readWatermark("src/watermark.txt");
         JsonObject object = (JsonObject)parser.parse(new FileReader("src//embedded_results//"+filename+"_data_"+watermark+".json"));
 
         JSONDecoder decoder = new JSONDecoder();

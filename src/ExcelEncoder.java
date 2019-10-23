@@ -228,9 +228,10 @@ public class ExcelEncoder extends AbstractEncoder {
 
     public boolean encoder(int row) throws Exception{
         //prepare
-        int sheet = 0;
+        int sheet = 0;int debug1 = 0;
         this.seed = Util.BKDRHash(getExactValue(row,keyIndex),131);
-                                        ;
+        if(row==556)
+            debug1 = 1;
         this.solitionGenerator.setSeed(this.seed);
         List<Integer> list = this.solitionGenerator.get_src_blocks(null);
         int block_data = 0;
@@ -267,14 +268,14 @@ public class ExcelEncoder extends AbstractEncoder {
                 if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据
                     //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
-                    if(Double.parseDouble(str)!=0 && lengthQualify(str,3)) {
-                        totalLen += str.length();
+                    if(Double.parseDouble(str)!=0 && lengthQualify(str,3)>=3) {
+                        totalLen += lengthQualify(str,3);
                         pq.offer(new AbstractMap.SimpleEntry<>(col, str));
                     }
                 }
             }
         }
-        if(totalLen<Settings.DEFAULT_MINLEN){
+        if(totalLen<Settings.DEFAULT_EMBEDLEN){
             //表示当前行可以用来嵌入信息的总长度不够，一般都不会执行的
             System.out.println("[SKIPPED PACK] Total length of row "+row+" is not enough!");
             valid--;
@@ -289,7 +290,7 @@ public class ExcelEncoder extends AbstractEncoder {
         while(pq.size()!=0){
             Map.Entry<Integer,String> entry = pq.poll();
             //data embedment according to length of value
-            int len = (int)Math.ceil(crc_text.length()*entry.getValue().toString().length()/(double)totalLen);
+            int len = (int)Math.ceil(crc_text.length()*lengthQualify(entry.getValue().toString(),3)/(double)totalLen);
 
             debug += modify(row,entry.getKey(),entry.getValue(),crc_text.substring(beginInd,Math.min(beginInd+len,crc_text.length())));
 
@@ -302,14 +303,14 @@ public class ExcelEncoder extends AbstractEncoder {
         return true;
     }
 
-    public boolean lengthQualify(String str,int minLength){
+    public int lengthQualify(String str,int minLength){
         StringBuilder b1 = new StringBuilder(str);
         // 去除前缀的0
         while(b1.charAt(0)!='.' && b1.charAt(0)!='0'){
             b1.deleteCharAt(0);
         }
 
-        return b1.toString().replaceAll("[^0-9]+", "").length()>=minLength;
+        return b1.toString().replaceAll("[^0-9]+", "").length()-2;
     }
 
     public String modify(int row,int col,String value,String waterSeq){
