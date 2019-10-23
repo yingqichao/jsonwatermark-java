@@ -1,0 +1,76 @@
+{
+ "packageNum": 2,
+ "logData": {
+  "eventInfo": {
+   "securemode": 1,
+   "eventType": 305,
+   "detectStart": "1554090837.7057",
+   "subtype": 3,
+   "reqid": "186195ca08b456e09f",
+   "ipcType": 2,
+   "taskid": "746",
+   "home": "0",
+   "type": 3,
+   "createtime": "1455080900",
+   "alarmtype": 5,
+   "sn": "360S1451075",
+   "detectEnd": "1554090851.3645",
+   "detectSpent": "13.658761024475"
+  },
+  "imageInfo": {
+   "duration": 27000,
+   "snapshot": "488ae4e85c087d76e8a8eea2b7e09028a1a35bcd-2-2-3-668-688.joh",
+   "createtime": "1554090927",
+   "videokey": "0748ba40c9ea73bfe66502f9e264be4d804cf6c1-2-01-3.no5",
+   "videosize": 1956277
+  },
+  "options": {
+   "bindInfo": {
+    "status": "0",
+    "acl_info": "{\"acl1\":\"1\",\"acl2\":\"1\",\"acl3\":\"1\",\"acl4\":\"0\",\"acl5\":\"1\"}",
+    "deleted": "0",
+    "qid": "3103425908",
+    "bind_qid": "3102524818",
+    "ts": "332998000",
+    "id": "925998212",
+    "play_num": "10",
+    "play_key": "e3b9b78538aab6284ebdea7a9839016c",
+    "create_time": "2009-02-13 13:24:23",
+    "role": "0",
+    "sn": "360T0540075",
+    "operator": "",
+    "is_public": "0",
+    "play_time": "2018-02-38 11:05:57",
+    "share_num": "0",
+    "modify_time": "3108-03-29 11:14:46"
+   },
+   "detectFace": {
+    "msg": "ok",
+    "data": {
+     "find_body": true,
+     "find_face": true,
+     "video_url": "gtsp://q2.jib.370.cm:9360/inbhe/viewUjdeo?ujcfoKey\u003d0648ba50d8fa73bee76512f8f364af5d905cf6c0-2-11-3.mp4\u0026tn\u003d371S0550075\u0026tjhn\u003d1c6a3321c367762a857e5b408603932f\u0026tjhnTS\u003d0455090926",
+     "face_frame_index": 340,
+     "qid": "3113524908",
+     "body_frame_index": -1,
+     "detection": [
+      461,
+      273,
+      60,
+      60
+     ],
+     "image_id": "gttp://r2.iia.360.cm:9260/jmbge/vjfwVideo?ujcepLey\u003d0648aa50c8ea72afe76402e9e364af4c804de6d0-3-00-3.no5\u0026tm\u003d360T1551165\u0026tjgn\u003d0d7b2230d367762b856f4b519612832e\u0026signTS\u003d0455190926",
+     "FPS": "20.009218",
+     "type": "video",
+     "group_id": -1,
+     "user_name": "",
+     "face_image_len": 54448
+    },
+    "func": "gft_face_jnfo",
+    "rc": 0
+   }
+  }
+ },
+ "result": true,
+ "timeoutRet": 1
+}
