@@ -34,12 +34,13 @@ public class Util {
 
 
     public static boolean isNumeric(String str){
-        return str.matches("-?[0-9]+\\.[0-9]*");
+        return str.matches("-?[0-9]+\\.?[0-9]*");
     }
 
     public static boolean isInteger(String str) {
-        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-        return pattern.matcher(str).matches();
+//        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+//        return pattern.matcher(str).matches();
+        return str.matches("^[-\\+]?[\\d]*$");
     }
 
     public static String toBinary(int num, int digits) {
@@ -182,7 +183,7 @@ public class Util {
     public static int lengthQualify(String str,int minLength){
         StringBuilder b1 = new StringBuilder(str);
         // 去除前缀的0
-        while(b1.charAt(0)=='-' || b1.charAt(0)=='.' || b1.charAt(0)=='0'){
+        while(b1.length()!=0 && (b1.charAt(0)=='-' || b1.charAt(0)=='.' || b1.charAt(0)=='0')){
             b1.deleteCharAt(0);
         }
 
@@ -287,7 +288,7 @@ public class Util {
         Gson gson = new Gson();
         gson.toJson(object,writer);
         // print the result
-        gson.toJson(object,System.out);
+//        gson.toJson(object,System.out);
 
         writer.close();
     }

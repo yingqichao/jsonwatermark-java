@@ -1,0 +1,277 @@
+{
+  "location": [
+    {
+      "id": 2002,
+      "person_value": 621,
+      "location_id": 132,
+      "longitude": 117.2688418,
+      "latitude": 39.7265038
+    },
+    {
+      "id": 2003,
+      "person_value": 376,
+      "location_id": 2,
+      "longitude": 117.168421,
+      "latitude": 39.1126331
+    },
+    {
+      "id": 2005,
+      "person_value": 359,
+      "location_id": 19,
+      "longitude": 117.2464964,
+      "latitude": 39.0735636
+    },
+    {
+      "id": 2006,
+      "person_value": 943,
+      "location_id": 130,
+      "longitude": 117.1782975,
+      "latitude": 39.0677441
+    },
+    {
+      "id": 2007,
+      "person_value": 536,
+      "location_id": 20,
+      "longitude": 117.2012657,
+      "latitude": 39.0673193
+    },
+    {
+      "id": 2008,
+      "person_value": 752,
+      "location_id": 131,
+      "longitude": 117.2716545,
+      "latitude": 39.0780355
+    },
+    {
+      "id": 2009,
+      "person_value": 1050,
+      "location_id": 132,
+      "longitude": 117.2620127,
+      "latitude": 39.7252291
+    },
+    {
+      "id": 2010,
+      "person_value": 895,
+      "location_id": 2,
+      "longitude": 117.4903583,
+      "latitude": 39.1804555
+    },
+    {
+      "id": 2011,
+      "person_value": 222,
+      "location_id": 28,
+      "longitude": 117.2563084,
+      "latitude": 39.7387524
+    },
+    {
+      "id": 2012,
+      "person_value": 325,
+      "location_id": 19,
+      "longitude": 117.2561784,
+      "latitude": 39.071145
+    },
+    {
+      "id": 2013,
+      "person_value": 859,
+      "location_id": 130,
+      "longitude": 117.1806326,
+      "latitude": 39.0664263
+    },
+    {
+      "id": 2014,
+      "person_value": 218,
+      "location_id": 20,
+      "longitude": 117.1997041,
+      "latitude": 39.067414
+    },
+    {
+      "id": 2015,
+      "person_value": 413,
+      "location_id": 131,
+      "longitude": 117.2727531,
+      "latitude": 39.0761094
+    },
+    {
+      "id": 2017,
+      "person_value": 215,
+      "location_id": 2,
+      "longitude": 117.4380593,
+      "latitude": 39.1377714
+    },
+    {
+      "id": 2018,
+      "person_value": 1044,
+      "location_id": 28,
+      "longitude": 117.2947324,
+      "latitude": 39.72956
+    },
+    {
+      "id": 2019,
+      "person_value": 471,
+      "location_id": 19,
+      "longitude": 117.2475566,
+      "latitude": 39.0669141
+    },
+    {
+      "id": 2020,
+      "person_value": 125,
+      "location_id": 130,
+      "longitude": 117.1796964,
+      "latitude": 39.0660032
+    },
+    {
+      "id": 2021,
+      "person_value": 113,
+      "location_id": 20,
+      "longitude": 117.1678646,
+      "latitude": 39.0634285
+    },
+    {
+      "id": 2022,
+      "person_value": 1087,
+      "location_id": 131,
+      "longitude": 117.2718182,
+      "latitude": 39.0770934
+    },
+    {
+      "id": 2023,
+      "person_value": 996,
+      "location_id": 132,
+      "longitude": 117.26096,
+      "latitude": 39.7273396
+    },
+    {
+      "id": 2024,
+      "person_value": 618,
+      "location_id": 2,
+      "longitude": 117.6755731,
+      "latitude": 39.1384911
+    },
+    {
+      "id": 2025,
+      "person_value": 1001,
+      "location_id": 28,
+      "longitude": 117.260844,
+      "latitude": 39.7441695
+    },
+    {
+      "id": 2028,
+      "person_value": 524,
+      "location_id": 20,
+      "longitude": 117.1939642,
+      "latitude": 39.074525
+    },
+    {
+      "id": 2029,
+      "person_value": 1053,
+      "location_id": 131,
+      "longitude": 117.2714116,
+      "latitude": 39.0774226
+    },
+    {
+      "id": 2030,
+      "person_value": 591,
+      "location_id": 132,
+      "longitude": 117.264301,
+      "latitude": 39.7268322
+    },
+    {
+      "id": 2031,
+      "person_value": 696,
+      "location_id": 2,
+      "longitude": 117.6870682,
+      "latitude": 39.0090343
+    },
+    {
+      "id": 2032,
+      "person_value": 608,
+      "location_id": 28,
+      "longitude": 117.2517093,
+      "latitude": 39.709497
+    },
+    {
+      "id": 2033,
+      "person_value": 849,
+      "location_id": 19,
+      "longitude": 117.2344345,
+      "latitude": 39.074473
+    },
+    {
+      "id": 2034,
+      "person_value": 323,
+      "location_id": 130,
+      "longitude": 117.179635,
+      "latitude": 39.067537
+    },
+    {
+      "id": 2035,
+      "person_value": 967,
+      "location_id": 20,
+      "longitude": 117.1658765,
+      "latitude": 39.0691166
+    },
+    {
+      "id": 2036,
+      "person_value": 766,
+      "location_id": 131,
+      "longitude": 117.273371,
+      "latitude": 39.0758961
+    },
+    {
+      "id": 2037,
+      "person_value": 828,
+      "location_id": 132,
+      "longitude": 117.2718849,
+      "latitude": 39.7267459
+    },
+    {
+      "id": 2038,
+      "person_value": 742,
+      "location_id": 2,
+      "longitude": 117.5755288,
+      "latitude": 39.1822788
+    },
+    {
+      "id": 2039,
+      "person_value": 126,
+      "location_id": 28,
+      "longitude": 117.272885,
+      "latitude": 39.7278381
+    },
+    {
+      "id": 2040,
+      "person_value": 302,
+      "location_id": 19,
+      "longitude": 117.283323,
+      "latitude": 39.071549
+    },
+    {
+      "id": 2041,
+      "person_value": 1033,
+      "location_id": 130,
+      "longitude": 117.179884,
+      "latitude": 39.0661776
+    },
+    {
+      "id": 2042,
+      "person_value": 157,
+      "location_id": 20,
+      "longitude": 117.1804595,
+      "latitude": 39.0655931
+    },
+    {
+      "id": 2043,
+      "person_value": 588,
+      "location_id": 131,
+      "longitude": 117.2724057,
+      "latitude": 39.0780133
+    },
+    {
+      "id": 2044,
+      "person_value": 368,
+      "location_id": 132,
+      "longitude": 117.2721065,
+      "latitude": 39.7241715
+    }
+  ]
+}

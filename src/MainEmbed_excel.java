@@ -13,8 +13,8 @@ public class MainEmbed_excel {
 //        String MODE = "EXTRACT";
 
         String foldname = "EXCEL";
-        String filename = "test3";
-        String append = ".csv";
+        String filename = "jsontest";
+        String append = ".xlsx";
         String wmStr = Util.readWatermark("src//watermark.txt");
         String binarySeq = Util.StreamFromString(wmStr);
         System.out.println("Bit Num: "+binarySeq.length());

@@ -1,0 +1,1204 @@
+{
+  "install": [
+    {
+      "id": 812189,
+      "newinstall_level1": 3088229859,
+      "newinstall_level2": 1985521804,
+      "newinstall_level3": 1.170421138e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 2052419783,
+      "newinstall_level2": 1278614414,
+      "newinstall_level3": 1.685521641e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 1865518043,
+      "newinstall_level2": 1198912976,
+      "newinstall_level3": 1.266971233e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 1681215854,
+      "newinstall_level2": 1021111702,
+      "newinstall_level3": 3.270463162e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1465412370,
+      "newinstall_level2": 91858926,
+      "newinstall_level3": 2.181580204e+13
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 1417213552,
+      "newinstall_level2": 964510527,
+      "newinstall_level3": 2.263032193e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1412713617,
+      "newinstall_level2": 1018611160,
+      "newinstall_level3": 8.50494831e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1353111408,
+      "newinstall_level2": 87858134,
+      "newinstall_level3": 2.170945203e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1350512967,
+      "newinstall_level2": 1001410751,
+      "newinstall_level3": 8.458948265e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1343810734,
+      "newinstall_level2": 78537690,
+      "newinstall_level3": 2.090953196e+13
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 1335512838,
+      "newinstall_level2": 912410032,
+      "newinstall_level3": 2.117042055e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1314211226,
+      "newinstall_level2": 87207826,
+      "newinstall_level3": 2.070157194e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1289910806,
+      "newinstall_level2": 83897532,
+      "newinstall_level3": 2.061666193e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1281511334,
+      "newinstall_level2": 83198074,
+      "newinstall_level3": 2.114059198e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1274711217,
+      "newinstall_level2": 85817905,
+      "newinstall_level3": 2.111257198e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1261311420,
+      "newinstall_level2": 83678186,
+      "newinstall_level3": 2.123580199e+13
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 1254112146,
+      "newinstall_level2": 79808595,
+      "newinstall_level3": 6608464296
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1245510315,
+      "newinstall_level2": 80097232,
+      "newinstall_level3": 2.059428193e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 122239834,
+      "newinstall_level2": 76736825,
+      "newinstall_level3": 2.016895189e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 122039821,
+      "newinstall_level2": 72306922,
+      "newinstall_level3": 2.091800196e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1207710756,
+      "newinstall_level2": 80927784,
+      "newinstall_level3": 2.099977196e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1197511552,
+      "newinstall_level2": 85599297,
+      "newinstall_level3": 8.727048529e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1177010201,
+      "newinstall_level2": 79367114,
+      "newinstall_level3": 2.037263191e+13
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 1176311320,
+      "newinstall_level2": 84258842,
+      "newinstall_level3": 2.314492248e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1172810258,
+      "newinstall_level2": 75437405,
+      "newinstall_level3": 2.091905196e+13
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 1171511046,
+      "newinstall_level2": 72218185,
+      "newinstall_level3": 3.277383168e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 115629085,
+      "newinstall_level2": 70876316,
+      "newinstall_level3": 2.032862191e+13
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 1153410910,
+      "newinstall_level2": 68398323,
+      "newinstall_level3": 2.94353285e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1152010430,
+      "newinstall_level2": 81577510,
+      "newinstall_level3": 2.034848191e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 115069119,
+      "newinstall_level2": 70846373,
+      "newinstall_level3": 2.098665197e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1140710082,
+      "newinstall_level2": 77477239,
+      "newinstall_level3": 2.101343197e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1138610171,
+      "newinstall_level2": 78247326,
+      "newinstall_level3": 2.074505194e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1134811090,
+      "newinstall_level2": 90559065,
+      "newinstall_level3": 8.032977887e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1132311016,
+      "newinstall_level2": 86488959,
+      "newinstall_level3": 8.250468084e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1127010886,
+      "newinstall_level2": 80858886,
+      "newinstall_level3": 8.565218373e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1126910156,
+      "newinstall_level2": 78207192,
+      "newinstall_level3": 2.074666195e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 112679216,
+      "newinstall_level2": 71466439,
+      "newinstall_level3": 2.103178197e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 112008985,
+      "newinstall_level2": 70116377,
+      "newinstall_level3": 2.098792197e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1119810858,
+      "newinstall_level2": 82188716,
+      "newinstall_level3": 8.650858458e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1114210150,
+      "newinstall_level2": 79217236,
+      "newinstall_level3": 2.022519189e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 1106510223,
+      "newinstall_level2": 77627239,
+      "newinstall_level3": 2.102936197e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 109249715,
+      "newinstall_level2": 71916967,
+      "newinstall_level3": 1.947329182e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 108879577,
+      "newinstall_level2": 74956901,
+      "newinstall_level3": 2.044043192e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 108879754,
+      "newinstall_level2": 75616957,
+      "newinstall_level3": 2.048163192e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 108828756,
+      "newinstall_level2": 67576129,
+      "newinstall_level3": 2.050220192e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 108638454,
+      "newinstall_level2": 65105957,
+      "newinstall_level3": 2.043182192e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 107999660,
+      "newinstall_level2": 74436981,
+      "newinstall_level3": 2.100437197e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1061410404,
+      "newinstall_level2": 85338512,
+      "newinstall_level3": 8.141177996e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 1054610084,
+      "newinstall_level2": 64677553,
+      "newinstall_level3": 2.995012902e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 105448434,
+      "newinstall_level2": 64516000,
+      "newinstall_level3": 2.063138193e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 105439421,
+      "newinstall_level2": 73906697,
+      "newinstall_level3": 2.057759193e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1046910106,
+      "newinstall_level2": 76798235,
+      "newinstall_level3": 8.687968492e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 104619447,
+      "newinstall_level2": 73746730,
+      "newinstall_level3": 2.050111192e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 1045610234,
+      "newinstall_level2": 83258315,
+      "newinstall_level3": 8.008087858e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 104219210,
+      "newinstall_level2": 68616577,
+      "newinstall_level3": 2.109052198e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 103238565,
+      "newinstall_level2": 66886011,
+      "newinstall_level3": 2.083922196e+13
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 102059239,
+      "newinstall_level2": 71486585,
+      "newinstall_level3": 1.936143182e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 101759814,
+      "newinstall_level2": 72357945,
+      "newinstall_level3": 8.640218445e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 101649182,
+      "newinstall_level2": 69006489,
+      "newinstall_level3": 1.932453181e+13
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 101599722,
+      "newinstall_level2": 70357719,
+      "newinstall_level3": 2.712122632e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 101189221,
+      "newinstall_level2": 72236621,
+      "newinstall_level3": 1.989961186e+13
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 99829374,
+      "newinstall_level2": 60977072,
+      "newinstall_level3": 2.852472763e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 99719737,
+      "newinstall_level2": 75737803,
+      "newinstall_level3": 8.492598323e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 99528778,
+      "newinstall_level2": 68346335,
+      "newinstall_level3": 2.040077191e+13
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 99439463,
+      "newinstall_level2": 72858037,
+      "newinstall_level3": 4730343952
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 97699358,
+      "newinstall_level2": 61226914,
+      "newinstall_level3": 1.7490117e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 97679226,
+      "newinstall_level2": 68587695,
+      "newinstall_level3": 4452341335
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 96609167,
+      "newinstall_level2": 61376710,
+      "newinstall_level3": 3.716413596e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 96579457,
+      "newinstall_level2": 75467633,
+      "newinstall_level3": 7.926837785e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 94959259,
+      "newinstall_level2": 75567586,
+      "newinstall_level3": 8.132647989e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 94289227,
+      "newinstall_level2": 74427412,
+      "newinstall_level3": 8.18805804e+11
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 93727484,
+      "newinstall_level2": 48285798,
+      "newinstall_level3": 9581485903
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 92959030,
+      "newinstall_level2": 69427396,
+      "newinstall_level3": 8.488198301e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 91328657,
+      "newinstall_level2": 58356340,
+      "newinstall_level3": 3.28294318e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 91328678,
+      "newinstall_level2": 57096621,
+      "newinstall_level3": 2.893462805e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 89798644,
+      "newinstall_level2": 65917100,
+      "newinstall_level3": 7.820087649e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 89298068,
+      "newinstall_level2": 62695793,
+      "newinstall_level3": 1.889672177e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 87468541,
+      "newinstall_level2": 69196877,
+      "newinstall_level3": 8.078137933e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 87287961,
+      "newinstall_level2": 60225569,
+      "newinstall_level3": 1.874765176e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 87038455,
+      "newinstall_level2": 66316905,
+      "newinstall_level3": 8.342608179e+11
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 86376875,
+      "newinstall_level2": 42645204,
+      "newinstall_level3": 1.246001121e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 86067735,
+      "newinstall_level2": 59985456,
+      "newinstall_level3": 1.849769174e+13
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 85928261,
+      "newinstall_level2": 62306842,
+      "newinstall_level3": 8.605178416e+11
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 84848040,
+      "newinstall_level2": 59856682,
+      "newinstall_level3": 2.49227241e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 84668221,
+      "newinstall_level2": 66156901,
+      "newinstall_level3": 4358541322
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 84668240,
+      "newinstall_level2": 68167032,
+      "newinstall_level3": 4494342842
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 84038107,
+      "newinstall_level2": 62406670,
+      "newinstall_level3": 7.728057563e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 83478142,
+      "newinstall_level2": 67806933,
+      "newinstall_level3": 4632844136
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 82978136,
+      "newinstall_level2": 64366505,
+      "newinstall_level3": 7.974887834e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 82518060,
+      "newinstall_level2": 65036562,
+      "newinstall_level3": 8.11718797e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 82237836,
+      "newinstall_level2": 51795731,
+      "newinstall_level3": 3.173553076e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 81707458,
+      "newinstall_level2": 57245316,
+      "newinstall_level3": 1.860637175e+13
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 81567381,
+      "newinstall_level2": 50495247,
+      "newinstall_level3": 9418686843
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 81547997,
+      "newinstall_level2": 63696357,
+      "newinstall_level3": 8.08537794e+11
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 80966535,
+      "newinstall_level2": 42574942,
+      "newinstall_level3": 9263483560
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 80927767,
+      "newinstall_level2": 59956434,
+      "newinstall_level3": 8.538908352e+11
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 80847369,
+      "newinstall_level2": 49915152,
+      "newinstall_level3": 9165884611
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 80437646,
+      "newinstall_level2": 49545788,
+      "newinstall_level3": 1.827951776e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 79877791,
+      "newinstall_level2": 61386381,
+      "newinstall_level3": 8.321408159e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 79447784,
+      "newinstall_level2": 62636249,
+      "newinstall_level3": 8.168978017e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 78477677,
+      "newinstall_level2": 63116246,
+      "newinstall_level3": 8.075527929e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 78387682,
+      "newinstall_level2": 62226249,
+      "newinstall_level3": 8.13788799e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 77567586,
+      "newinstall_level2": 60746063,
+      "newinstall_level3": 8.061647915e+11
+    },
+    {
+      "id": 100142,
+      "newinstall_level1": 77297041,
+      "newinstall_level2": 53754909,
+      "newinstall_level3": 1.858656174e+13
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 77137305,
+      "newinstall_level2": 55296036,
+      "newinstall_level3": 2.445132367e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 75947318,
+      "newinstall_level2": 57786187,
+      "newinstall_level3": 3744735304
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 75607420,
+      "newinstall_level2": 59185926,
+      "newinstall_level3": 8.057057913e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 75407410,
+      "newinstall_level2": 61195988,
+      "newinstall_level3": 7.857457718e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 74917147,
+      "newinstall_level2": 45515393,
+      "newinstall_level3": 2.997662905e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 74737143,
+      "newinstall_level2": 44685203,
+      "newinstall_level3": 2.987232895e+11
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 74426627,
+      "newinstall_level2": 44334441,
+      "newinstall_level3": 1.016419383e+10
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 74167215,
+      "newinstall_level2": 56735882,
+      "newinstall_level3": 8.356658189e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 73997254,
+      "newinstall_level2": 58805886,
+      "newinstall_level3": 7.274347149e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 73617154,
+      "newinstall_level2": 59846137,
+      "newinstall_level3": 4544743274
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 73607007,
+      "newinstall_level2": 54255926,
+      "newinstall_level3": 4910145826
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 73475986,
+      "newinstall_level2": 38774555,
+      "newinstall_level3": 1.220681099e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 73006940,
+      "newinstall_level2": 45745178,
+      "newinstall_level3": 3.165763067e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 72717116,
+      "newinstall_level2": 56235693,
+      "newinstall_level3": 8.027987884e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 72677085,
+      "newinstall_level2": 55055817,
+      "newinstall_level3": 7.574937428e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 71856831,
+      "newinstall_level2": 43985104,
+      "newinstall_level3": 2.953722863e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 71827018,
+      "newinstall_level2": 56855726,
+      "newinstall_level3": 7.969347822e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 71767005,
+      "newinstall_level2": 57555741,
+      "newinstall_level3": 7.96284782e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 71536921,
+      "newinstall_level2": 56035857,
+      "newinstall_level3": 3161530132
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 71436719,
+      "newinstall_level2": 50065646,
+      "newinstall_level3": 2750225406
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 71426884,
+      "newinstall_level2": 42554998,
+      "newinstall_level3": 7308370709
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 71396821,
+      "newinstall_level2": 50795294,
+      "newinstall_level3": 2.304212238e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 71326961,
+      "newinstall_level2": 56595673,
+      "newinstall_level3": 7.350987219e+11
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 71146863,
+      "newinstall_level2": 54185672,
+      "newinstall_level3": 2.394182328e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 70966916,
+      "newinstall_level2": 56895652,
+      "newinstall_level3": 7.979827836e+11
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 70476166,
+      "newinstall_level2": 39874435,
+      "newinstall_level3": 8636879155
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 70196830,
+      "newinstall_level2": 55285558,
+      "newinstall_level3": 7.589097445e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 69526605,
+      "newinstall_level2": 51525543,
+      "newinstall_level3": 4913845927
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 69226164,
+      "newinstall_level2": 41974161,
+      "newinstall_level3": 1.002959254e+10
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 69046486,
+      "newinstall_level2": 47555354,
+      "newinstall_level3": 1383612528
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 68726641,
+      "newinstall_level2": 54495686,
+      "newinstall_level3": 4533242835
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 68446701,
+      "newinstall_level2": 53815373,
+      "newinstall_level3": 7.220117093e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 66776532,
+      "newinstall_level2": 52785256,
+      "newinstall_level3": 8.003407858e+11
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 66515932,
+      "newinstall_level2": 40224079,
+      "newinstall_level3": 1.052159703e+10
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 66465792,
+      "newinstall_level2": 37534010,
+      "newinstall_level3": 1.15893106e+11
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 65786409,
+      "newinstall_level2": 52865403,
+      "newinstall_level3": 2.342322288e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 65346301,
+      "newinstall_level2": 50885389,
+      "newinstall_level3": 5300650140
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 65226355,
+      "newinstall_level2": 51575271,
+      "newinstall_level3": 2.309992257e+11
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 64196249,
+      "newinstall_level2": 51075151,
+      "newinstall_level3": 2.277272225e+11
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 64086246,
+      "newinstall_level2": 51025168,
+      "newinstall_level3": 2.291532239e+11
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 63785792,
+      "newinstall_level2": 44574245,
+      "newinstall_level3": 5.757165392e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 63155947,
+      "newinstall_level2": 45634991,
+      "newinstall_level3": 2775625652
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 63046135,
+      "newinstall_level2": 50455097,
+      "newinstall_level3": 2.292792239e+11
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 62606096,
+      "newinstall_level2": 49625064,
+      "newinstall_level3": 2.264462212e+11
+    },
+    {
+      "id": 810362,
+      "newinstall_level1": 62576123,
+      "newinstall_level2": 50104995,
+      "newinstall_level3": 7.230277106e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 62386053,
+      "newinstall_level2": 49615132,
+      "newinstall_level3": 4880046507
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 62326057,
+      "newinstall_level2": 49415034,
+      "newinstall_level3": 2.24139219e+11
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 62035995,
+      "newinstall_level2": 47475000,
+      "newinstall_level3": 2.346562284e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 62005863,
+      "newinstall_level2": 43784895,
+      "newinstall_level3": 1543814070
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 61845915,
+      "newinstall_level2": 42474648,
+      "newinstall_level3": 2.316862249e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 61745986,
+      "newinstall_level2": 48715042,
+      "newinstall_level3": 2896227613
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 61376000,
+      "newinstall_level2": 49314986,
+      "newinstall_level3": 2.257482207e+11
+    },
+    {
+      "id": 812647,
+      "newinstall_level1": 60635589,
+      "newinstall_level2": 43953710,
+      "newinstall_level3": 2067318729
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 60595845,
+      "newinstall_level2": 46854907,
+      "newinstall_level3": 2276921386
+    },
+    {
+      "id": 812228,
+      "newinstall_level1": 60345784,
+      "newinstall_level2": 44014608,
+      "newinstall_level3": 7910575203
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 59995787,
+      "newinstall_level2": 34494028,
+      "newinstall_level3": 7671474271
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 59855774,
+      "newinstall_level2": 33883980,
+      "newinstall_level3": 7512872664
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 59685801,
+      "newinstall_level2": 48085003,
+      "newinstall_level3": 4570343350
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 58885724,
+      "newinstall_level2": 47884863,
+      "newinstall_level3": 4538143139
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 58805717,
+      "newinstall_level2": 47944943,
+      "newinstall_level3": 4674744501
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 58545511,
+      "newinstall_level2": 36223664,
+      "newinstall_level3": 5305951304
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 58435294,
+      "newinstall_level2": 39593866,
+      "newinstall_level3": 5.639605275e+11
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 58285630,
+      "newinstall_level2": 33903941,
+      "newinstall_level3": 7991877345
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 57875489,
+      "newinstall_level2": 41424545,
+      "newinstall_level3": 2.439252364e+11
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 57625226,
+      "newinstall_level2": 41053786,
+      "newinstall_level3": 5.736695375e+11
+    },
+    {
+      "id": 812228,
+      "newinstall_level1": 57115500,
+      "newinstall_level2": 43284505,
+      "newinstall_level3": 7562271849
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 56475431,
+      "newinstall_level2": 35244050,
+      "newinstall_level3": 1.636041592e+11
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 56095090,
+      "newinstall_level2": 39243788,
+      "newinstall_level3": 5.664495295e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 56075307,
+      "newinstall_level2": 35093942,
+      "newinstall_level3": 3.218013118e+11
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 55795378,
+      "newinstall_level2": 32113822,
+      "newinstall_level3": 1.05458102e+11
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 55535084,
+      "newinstall_level2": 38463662,
+      "newinstall_level3": 5.635865281e+11
+    },
+    {
+      "id": 300002,
+      "newinstall_level1": 55365178,
+      "newinstall_level2": 39763359,
+      "newinstall_level3": 1.430831316e+11
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 55155046,
+      "newinstall_level2": 39933605,
+      "newinstall_level3": 5.492635147e+11
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 54835293,
+      "newinstall_level2": 31853775,
+      "newinstall_level3": 8264480037
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 54675317,
+      "newinstall_level2": 43574386,
+      "newinstall_level3": 2.270702217e+11
+    },
+    {
+      "id": 812189,
+      "newinstall_level1": 54155158,
+      "newinstall_level2": 33803944,
+      "newinstall_level3": 1.585251541e+11
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 53754912,
+      "newinstall_level2": 37333484,
+      "newinstall_level3": 5.621115266e+11
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 53624857,
+      "newinstall_level2": 35773382,
+      "newinstall_level3": 5.393545041e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 53415186,
+      "newinstall_level2": 43174380,
+      "newinstall_level3": 2657625271
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 53144423,
+      "newinstall_level2": 28663447,
+      "newinstall_level3": 1.199391087e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 52385097,
+      "newinstall_level2": 42554373,
+      "newinstall_level3": 1745216577
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 52295025,
+      "newinstall_level2": 28463298,
+      "newinstall_level3": 6508263007
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 52175083,
+      "newinstall_level2": 41624243,
+      "newinstall_level3": 1577514956
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 51985058,
+      "newinstall_level2": 41534326,
+      "newinstall_level3": 2496723661
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 51944707,
+      "newinstall_level2": 36153278,
+      "newinstall_level3": 5.360545008e+11
+    },
+    {
+      "id": 300002,
+      "newinstall_level1": 51884785,
+      "newinstall_level2": 36933176,
+      "newinstall_level3": 1.50049138e+11
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 51704674,
+      "newinstall_level2": 35323430,
+      "newinstall_level3": 5.304454971e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 51555019,
+      "newinstall_level2": 41124181,
+      "newinstall_level3": 1844517552
+    },
+    {
+      "id": 810360,
+      "newinstall_level1": 51004852,
+      "newinstall_level2": 37103979,
+      "newinstall_level3": 2.382102309e+11
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 50964918,
+      "newinstall_level2": 28813445,
+      "newinstall_level3": 9939996205
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 50564627,
+      "newinstall_level2": 36073417,
+      "newinstall_level3": 5.568745222e+11
+    },
+    {
+      "id": 100139,
+      "newinstall_level1": 50304511,
+      "newinstall_level2": 34133236,
+      "newinstall_level3": 5.313344966e+11
+    },
+    {
+      "id": 814304,
+      "newinstall_level1": 49924814,
+      "newinstall_level2": 38324038,
+      "newinstall_level3": 1388113095
+    },
+    {
+      "id": 812647,
+      "newinstall_level1": 49874566,
+      "newinstall_level2": 34463085,
+      "newinstall_level3": 1727415646
+    },
+    {
+      "id": 810463,
+      "newinstall_level1": 49364468,
+      "newinstall_level2": 30013077,
+      "newinstall_level3": 8703580312
+    },
+    {
+      "id": 812328,
+      "newinstall_level1": 48704680,
+      "newinstall_level2": 28353396,
+      "newinstall_level3": 1.080441045e+11
+    }
+  ]
+}

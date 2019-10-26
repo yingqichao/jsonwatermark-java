@@ -26,7 +26,7 @@ public class JSONEncoder extends AbstractEncoder {
     public String encoder(String key, String value){
 //        Generates an infinite sequence of blocks to transmit to the receiver
         String res = value;
-        if(!Util.isInteger(value) && Util.isNumeric(value)){
+        if(!Util.isNumeric(value)){
             System.out.println("[Warning] Embedding into String is now prohibited...");
         }else{
             Set<Integer> duplicateSet = new HashSet<>();
@@ -57,26 +57,44 @@ public class JSONEncoder extends AbstractEncoder {
         //modify the value to embed data
         Character first = null;boolean negative = false;int dotIndex = -1;
         StringBuilder newvalue = new StringBuilder(value);
-        int startFrom = 0;
+        int startFrom = 0;String buffer = "";
         //preprocess
         if(Util.isInteger(value)){
             long value_int = Long.parseLong(value);
-            negative = value_int<0;
-            if(negative)  {
-                newvalue.deleteCharAt(startFrom);
+            //去除前缀0
+            while(value.charAt(startFrom)=='-' || value.charAt(startFrom)=='.' || value.charAt(startFrom)=='0'){
+//                newvalue.deleteCharAt(0);
                 startFrom++;
             }
-            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
+
+            //前两位暂存
+            buffer = value.substring(0,startFrom+2);
+            newvalue = new StringBuilder(value.substring(startFrom+2));
+
+//            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
         }else if(Util.isNumeric(value)){
             double value_double = Double.parseDouble(value);
-            negative = value_double<0;
-            if(negative)    {
-                newvalue.deleteCharAt(0);
+//            negative = value_double<0;
+//            if(negative)    {
+////                newvalue.deleteCharAt(0);
+//                startFrom++;
+//            }
+
+            //去除前缀0
+            while(value.charAt(startFrom)=='-' || value.charAt(startFrom)=='.' || value.charAt(startFrom)=='0'){
+//                newvalue.deleteCharAt(0);
                 startFrom++;
             }
-            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
-            dotIndex = newvalue.indexOf(".");
-            newvalue.deleteCharAt(dotIndex);
+
+            //前两位暂存
+            buffer = value.substring(0,startFrom+2);
+            newvalue = new StringBuilder(value.substring(startFrom+2));
+
+//            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
+//            dotIndex = newvalue.indexOf(".");
+//            if(dotIndex>=0) {
+//                newvalue.deleteCharAt(dotIndex);
+//            }
         }
 
 //        Set<Integer> duplicateSet = new HashSet<>(0);
@@ -111,9 +129,10 @@ public class JSONEncoder extends AbstractEncoder {
         }
 
         //recovery
-        if(dotIndex!=-1) newvalue.insert(dotIndex,'.');
-        if(first!=null) newvalue.insert(0,first);
-        if(negative)    newvalue.insert(0,'-');
+//        if(first!=null) newvalue.insert(0,first);
+//        if(dotIndex!=-1) newvalue.insert(dotIndex,'.');
+//        if(negative)    newvalue.insert(0,'-');
+        newvalue.insert(0,buffer);
 
         System.out.println("Debug Embed: data->" + waterSeq + " seed->" + debug +" " + keyname + " " + newvalue);
         return newvalue.toString();
@@ -210,13 +229,13 @@ public class JSONEncoder extends AbstractEncoder {
         }else if(!(object instanceof JsonNull)){
             // instance of JsonPrimitive
             String value = ((JsonPrimitive)object).getAsString();
-
-            if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Settings.DEFAULT_MINLEN){
+            int lengthQualify = Util.lengthQualify(value,3);
+            if (Util.isNumeric(value) && lengthQualify > Settings.DEFAULT_MINLEN){
                 //valid
                 JSON.put(prefix.replaceAll("[^A-Za-z0-9]",""),value);
-                if(Util.isNumeric(value))
-                    //新规定要求只能在float或者int中嵌入数据
-                    valid+=value.replaceAll("[^A-Za-z0-9]","").length()/Settings.DEFAULT_MINLEN;
+//                if(Util.isNumeric(value))
+                    //新规定要yy求只能在float或者int中嵌入数据
+                valid += lengthQualify/Settings.DEFAULT_MINLEN;
             }
             sum++;
         }

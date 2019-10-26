@@ -10,8 +10,8 @@ import java.util.List;
  */
 public class MainExtract_excel {
     public static void main(String[] args) {
-        String filename = "test3";//ta_cb_person_heatmap_collect_deleted
-        String append = ".csv";
+        String filename = "jsontest";//ta_cb_person_heatmap_collect_deleted
+        String append = ".xlsx";
 
 
         //CSV默认第一行是无效信息，第二行是表头，信息从第三行开始(使用嵌入csv的数据包会这样，对于一般的csv也可能没有第一行的无效信息)

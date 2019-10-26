@@ -75,7 +75,8 @@ public class ExcelDecoder extends AbstractDecoder{
         if(csvData.size()==0){
             // EXCEL
             int sheet = 0;
-            return this.excl.getExactValue(this.wb, sheet, row,col).toString();
+            Object str = this.excl.getExactValue(this.wb, sheet, row,col);
+            return ((str==null)?"":str).toString();
         }else{
             // CSV
             return csvArray[row][col];
@@ -142,7 +143,7 @@ public class ExcelDecoder extends AbstractDecoder{
                 if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据
                     //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
-                    if(Double.parseDouble(str)!=0 && Util.lengthQualify(str,3)>=3) {
+                    if(Double.parseDouble(str)!=0 && Util.lengthQualify(str,3)>0) {
                         totalLen += Util.lengthQualify(str,3);
                         pq.offer(new AbstractMap.SimpleEntry<>(col, str));
                     }
@@ -225,6 +226,8 @@ public class ExcelDecoder extends AbstractDecoder{
                     col.add(csvArray[i][colIndex]);
             }
             for(Object object:col){
+                if(object==null)
+                    continue;
                 int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
 //                totalLen += validLen;
                 if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
@@ -249,7 +252,8 @@ public class ExcelDecoder extends AbstractDecoder{
         }
 
         if(keyCol==-1){
-            throw new Exception("[Warning] Using a longer key");
+            System.out.println("[Warning] Using a longer key");
+            throw new Exception("[Warning] No valid key index found...Extraction was aborted...");
 //            keyCol = firstThresh;
 //            maxMatch = firstMatch;
 

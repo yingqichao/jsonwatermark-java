@@ -175,19 +175,34 @@ public class LtDecoder {
         List<Object> list = new LinkedList<>();
         int strlen = Settings.DEFAULT_EMBEDLEN;boolean negative;String verify = "";
         int extracted = 0;StringBuilder lt_block = new StringBuilder(ori_block);
+        int startFrom = 0;
 
         //preprocess
         if(Util.isInteger(ori_block)){
             long value_int = Long.parseLong(ori_block);
-            negative = value_int<0;
-            if(negative)    lt_block.deleteCharAt(0);
-            lt_block.deleteCharAt(0);
+//            negative = value_int<0;
+//            if(negative)    lt_block.deleteCharAt(0);
+//            //删除前两位
+//            lt_block.deleteCharAt(0);lt_block.deleteCharAt(0);
+            while(ori_block.charAt(startFrom)=='-' || ori_block.charAt(startFrom)=='.' || ori_block.charAt(startFrom)=='0'){
+                startFrom++;
+            }
+
+            lt_block = new StringBuilder(ori_block.substring(startFrom+2));
+
         }else if(Util.isNumeric(ori_block)){
             double value_double = Double.parseDouble(ori_block);
-            negative = value_double<0;
-            if(negative)    lt_block.deleteCharAt(0);
-            lt_block.deleteCharAt(0);
-            lt_block.deleteCharAt(lt_block.indexOf("."));
+//            negative = value_double<0;
+//            if(negative)    lt_block.deleteCharAt(0);
+//
+//            lt_block.deleteCharAt(lt_block.indexOf("."));
+//            //删除前两位
+//            lt_block.deleteCharAt(0);lt_block.deleteCharAt(0);
+            while(ori_block.charAt(startFrom)=='-' || ori_block.charAt(startFrom)=='.' || ori_block.charAt(startFrom)=='0'){
+                startFrom++;
+            }
+
+            lt_block = new StringBuilder(ori_block.substring(startFrom+2));
         }
 
         int buff = -1;

@@ -16,7 +16,7 @@ import java.util.Map;
 public class JSONDecoder extends AbstractDecoder {
 
     public Map<String,String> JSON = new HashMap<>();
-    public Map<String,String> watermarkedJSON = new HashMap<>();
+//    public Map<String,String> watermarkedJSON = new HashMap<>();
 
     public static int sum = 0;
     public static int valid = 0;
@@ -97,11 +97,13 @@ public class JSONDecoder extends AbstractDecoder {
         }else if(!(object instanceof JsonNull)){
             // instance of JsonPrimitive
             String value = ((JsonPrimitive)object).getAsString();
-
-            if (!Util.isJSON(value) && value.replaceAll("[^A-Za-z0-9]","").length() > Settings.DEFAULT_MINLEN){
+            int lengthQualify = Util.lengthQualify(value,3);
+            if (Util.isNumeric(value) && lengthQualify > Settings.DEFAULT_MINLEN){
                 //valid
                 JSON.put(prefix.replaceAll("[^A-Za-z0-9]",""),value);
-                valid++;
+//                if(Util.isNumeric(value))
+                //新规定要yy求只能在float或者int中嵌入数据
+                valid += lengthQualify/Settings.DEFAULT_MINLEN;
             }
             sum++;
         }

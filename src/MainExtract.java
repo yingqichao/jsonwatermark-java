@@ -9,7 +9,7 @@ import java.util.*;
 public class MainExtract {
     public static void main(String[] args) throws Exception{
 
-        String filename = "test";
+        String filename = "file4";
 
 
         System.out.println("\n================= JSON Extract from file " + "\"" + filename + "\" =================");
