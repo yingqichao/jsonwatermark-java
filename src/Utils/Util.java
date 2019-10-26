@@ -179,6 +179,16 @@ public class Util {
 
     }
 
+    public static int lengthQualify(String str,int minLength){
+        StringBuilder b1 = new StringBuilder(str);
+        // 去除前缀的0
+        while(b1.charAt(0)=='-' || b1.charAt(0)=='.' || b1.charAt(0)=='0'){
+            b1.deleteCharAt(0);
+        }
+
+        return b1.toString().replaceAll("[^0-9]+", "").length()-2;
+    }
+
     public static JsonElement replaceKey(JsonElement source,Map<String, String> rep,String prefix,String curr,int arrayCount,String newTagName,String packageNumName,int isRoot) {
         if(arrayCount>0){
             //which indicates the parent object is an array

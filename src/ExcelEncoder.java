@@ -248,10 +248,10 @@ public class ExcelEncoder extends AbstractEncoder {
                 StringBuilder a1 = new StringBuilder(a.getValue());StringBuilder b1 = new StringBuilder(b.getValue());
 //                a1 = a1.replaceAll("[^\\d.]+", "");
                 // 去除前缀的0
-                while(b1.charAt(0)!='.' && b1.charAt(0)!='0'){
+                while(b1.charAt(0)=='-' || b1.charAt(0)=='.' || b1.charAt(0)=='0'){
                     b1.deleteCharAt(0);
                 }
-                while(a1.charAt(0)!='.' && a1.charAt(0)!='0'){
+                while(a1.charAt(0)=='-' || a1.charAt(0)=='.' || a1.charAt(0)=='0'){
                     a1.deleteCharAt(0);
                 }
                 return b1.toString().replaceAll("[^0-9]+", "").length()
@@ -268,8 +268,8 @@ public class ExcelEncoder extends AbstractEncoder {
                 if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据
                     //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
-                    if(Double.parseDouble(str)!=0 && lengthQualify(str,3)>=3) {
-                        totalLen += lengthQualify(str,3);
+                    if(Double.parseDouble(str)!=0 && Util.lengthQualify(str,3)>=3) {
+                        totalLen += Util.lengthQualify(str,3);
                         pq.offer(new AbstractMap.SimpleEntry<>(col, str));
                     }
                 }
@@ -290,7 +290,7 @@ public class ExcelEncoder extends AbstractEncoder {
         while(pq.size()!=0){
             Map.Entry<Integer,String> entry = pq.poll();
             //data embedment according to length of value
-            int len = (int)Math.ceil(crc_text.length()*lengthQualify(entry.getValue().toString(),3)/(double)totalLen);
+            int len = (int)Math.ceil(crc_text.length()*Util.lengthQualify(entry.getValue().toString(),3)/(double)totalLen);
 
             debug += modify(row,entry.getKey(),entry.getValue(),crc_text.substring(beginInd,Math.min(beginInd+len,crc_text.length())));
 
@@ -303,51 +303,56 @@ public class ExcelEncoder extends AbstractEncoder {
         return true;
     }
 
-    public int lengthQualify(String str,int minLength){
-        StringBuilder b1 = new StringBuilder(str);
-        // 去除前缀的0
-        while(b1.charAt(0)!='.' && b1.charAt(0)!='0'){
-            b1.deleteCharAt(0);
-        }
-
-        return b1.toString().replaceAll("[^0-9]+", "").length()-2;
-    }
-
     public String modify(int row,int col,String value,String waterSeq){
         //modify the value to embed data
         Set<Integer> duplicateSet = new HashSet<>();
-        String first = null;
-        boolean negative = false;int dotIndex = -1;
-        StringBuilder newvalue = new StringBuilder(value);
+//        boolean negative = false;
+        StringBuilder newvalue = new StringBuilder();String buffer = "";
         int startFrom = 0;
         //preprocess
         if(Util.isInteger(value)){
             long value_int = Long.parseLong(value);
-            negative = value_int<0;
-            if(negative)  {
-                newvalue.deleteCharAt(startFrom);
+            //去除前缀0
+            while(value.charAt(startFrom)=='-' || value.charAt(startFrom)=='.' || value.charAt(startFrom)=='0'){
+//                newvalue.deleteCharAt(0);
                 startFrom++;
             }
+
+            //前两位暂存
+            buffer = value.substring(0,startFrom+2);
+            newvalue = new StringBuilder(value.substring(startFrom+2));
 
 //            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
         }else if(Util.isNumeric(value)){
             double value_double = Double.parseDouble(value);
-            negative = value_double<0;
-            if(negative)    {
-                newvalue.deleteCharAt(0);
+//            negative = value_double<0;
+//            if(negative)    {
+////                newvalue.deleteCharAt(0);
+//                startFrom++;
+//            }
+
+            //去除前缀0
+            while(value.charAt(startFrom)=='-' || value.charAt(startFrom)=='.' || value.charAt(startFrom)=='0'){
+//                newvalue.deleteCharAt(0);
                 startFrom++;
             }
 
+            //前两位暂存
+            buffer = value.substring(0,startFrom+2);
+            newvalue = new StringBuilder(value.substring(startFrom+2));
+
 //            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
-            dotIndex = newvalue.indexOf(".");
-            newvalue.deleteCharAt(dotIndex);
+//            dotIndex = newvalue.indexOf(".");
+//            if(dotIndex>=0) {
+//                newvalue.deleteCharAt(dotIndex);
+//            }
         }
 
 //        Set<Integer> duplicateSet = new HashSet<>(0);
         int embedded = 0;
         //前两位暂存
-        first = newvalue.substring(0,2);
-        newvalue.deleteCharAt(0);newvalue.deleteCharAt(0);
+//        first = newvalue.substring(0,2);
+//        newvalue.deleteCharAt(0);newvalue.deleteCharAt(0);
 
 //        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(waterSeq),Settings.DEFAULT_EMBEDLEN);
         String crc_text = waterSeq;
@@ -371,16 +376,20 @@ public class ExcelEncoder extends AbstractEncoder {
                     newvalue.setCharAt(num, (char) (ori - ori % 2 + crc_text.charAt(embedded) - '0'));
                     embedded ++;
                 }
+                else if(ori == '.'){
+                    //遇到.直接跳过
+                    continue;
+                }
                 debug += newvalue.charAt(num);
-                //其他的字符全都直接跳过
             }
         }
 
         //recovery
-        if(first!=null) newvalue.insert(0,first);
-        if(dotIndex!=-1) newvalue.insert(dotIndex,'.');
+//        if(first!=null) newvalue.insert(0,first);
+//        if(dotIndex!=-1) newvalue.insert(dotIndex,'.');
+//        if(negative)    newvalue.insert(0,'-');
+        newvalue.insert(0,buffer);
 
-        if(negative)    newvalue.insert(0,'-');
 
         if(csvData.size()==0) {
             this.excl.writeWorkBookAt(this.wb, 0, row, col, newvalue.toString());

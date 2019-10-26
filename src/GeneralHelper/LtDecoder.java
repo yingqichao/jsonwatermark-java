@@ -115,36 +115,46 @@ public class LtDecoder {
         //根据分配到的每个单元格的嵌入长度来做提取，没有检验的环节
         boolean negative;String verify = "";
         int extracted = 0;StringBuilder lt_block = new StringBuilder(ori_block);
-
+        int startFrom = 0;
         //preprocess
         if(Util.isInteger(ori_block)){
             long value_int = Long.parseLong(ori_block);
-            negative = value_int<0;
-            if(negative)    lt_block.deleteCharAt(0);
-            //删除前两位
-            lt_block.deleteCharAt(0);lt_block.deleteCharAt(0);
+//            negative = value_int<0;
+//            if(negative)    lt_block.deleteCharAt(0);
+//            //删除前两位
+//            lt_block.deleteCharAt(0);lt_block.deleteCharAt(0);
+            while(ori_block.charAt(startFrom)=='-' || ori_block.charAt(startFrom)=='.' || ori_block.charAt(startFrom)=='0'){
+                startFrom++;
+            }
+
+            lt_block = new StringBuilder(ori_block.substring(startFrom+2));
+
         }else if(Util.isNumeric(ori_block)){
             double value_double = Double.parseDouble(ori_block);
-            negative = value_double<0;
-            if(negative)    lt_block.deleteCharAt(0);
+//            negative = value_double<0;
+//            if(negative)    lt_block.deleteCharAt(0);
+//
+//            lt_block.deleteCharAt(lt_block.indexOf("."));
+//            //删除前两位
+//            lt_block.deleteCharAt(0);lt_block.deleteCharAt(0);
+            while(ori_block.charAt(startFrom)=='-' || ori_block.charAt(startFrom)=='.' || ori_block.charAt(startFrom)=='0'){
+                startFrom++;
+            }
 
-            lt_block.deleteCharAt(lt_block.indexOf("."));
-            //删除前两位
-            lt_block.deleteCharAt(0);lt_block.deleteCharAt(0);
+            lt_block = new StringBuilder(ori_block.substring(startFrom+2));
         }
 
-        int buff = -1;Set<Integer> duplicateSet = new HashSet<>();
+        Set<Integer> duplicateSet = new HashSet<>();
         String debug = new String();
         int ind = 0;
         while(ind<strlen){
             int num = prng.get_next() % lt_block.length();
-            if(ind==0)  buff = num;
             if(!duplicateSet.contains(num)) {
                 duplicateSet.add(num);
                 char ori = lt_block.charAt(num);
-                debug += ori;
-                if ((ori >= 97 && ori <=122)||(ori >= 65 && ori <= 90) ||(ori >= 48 && ori <= 57)){
 
+                if ((ori >= 97 && ori <=122)||(ori >= 65 && ori <= 90) ||(ori >= 48 && ori <= 57)){
+                    debug += ori;
                     extracted *= 2;
                     extracted += (ori % 2);// * pow(2, ind)
 

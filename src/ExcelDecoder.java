@@ -122,10 +122,10 @@ public class ExcelDecoder extends AbstractDecoder{
                 StringBuilder a1 = new StringBuilder(a.getValue());StringBuilder b1 = new StringBuilder(b.getValue());
 //                a1 = a1.replaceAll("[^\\d.]+", "");
                 // 去除前缀的0
-                while(b1.charAt(0)!='.' && b1.charAt(0)!='0'){
+                while(b1.charAt(0)=='-' || b1.charAt(0)=='.' || b1.charAt(0)=='0'){
                     b1.deleteCharAt(0);
                 }
-                while(a1.charAt(0)!='.' && a1.charAt(0)!='0'){
+                while(a1.charAt(0)=='-' || a1.charAt(0)=='.' || a1.charAt(0)=='0'){
                     a1.deleteCharAt(0);
                 }
                 return b1.toString().replaceAll("[^0-9]+", "").length()
@@ -142,8 +142,8 @@ public class ExcelDecoder extends AbstractDecoder{
                 if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据
                     //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
-                    if(Double.parseDouble(str)!=0 && lengthQualify(str,3)>=3) {
-                        totalLen += lengthQualify(str,3);
+                    if(Double.parseDouble(str)!=0 && Util.lengthQualify(str,3)>=3) {
+                        totalLen += Util.lengthQualify(str,3);
                         pq.offer(new AbstractMap.SimpleEntry<>(col, str));
                     }
                 }
@@ -161,7 +161,7 @@ public class ExcelDecoder extends AbstractDecoder{
         while(pq.size()!=0){
             Map.Entry<Integer,String> entry = pq.poll();
             //data embedment according to length of value
-            int len = (int)Math.ceil(DEFAULT_EMBEDLEN*lengthQualify(entry.getValue().toString(),3)/(double)totalLen);
+            int len = (int)Math.ceil(DEFAULT_EMBEDLEN*Util.lengthQualify(entry.getValue().toString(),3)/(double)totalLen);
             if(remainLen-len<0)
                 len = remainLen;
 
@@ -205,16 +205,6 @@ public class ExcelDecoder extends AbstractDecoder{
             System.out.println("Invalid Package.Skipped...");
         }
 
-    }
-
-    public int lengthQualify(String str,int minLength){
-        StringBuilder b1 = new StringBuilder(str);
-        // 去除前缀的0
-        while(b1.charAt(0)!='.' && b1.charAt(0)!='0'){
-            b1.deleteCharAt(0);
-        }
-
-        return b1.toString().replaceAll("[^0-9]+", "").length()-2;
     }
 
     public int findKeyIndex() throws Exception{
