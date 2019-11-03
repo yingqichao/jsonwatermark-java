@@ -14,12 +14,12 @@ import java.util.List;
  */
 public class GeneralExtraction {
 
-    public static void main(String[] args) {
+    public static void main(String[] s) {
         // For Comparison Only
         String wmStr = Util.readWatermark("src//watermark.txt");
         List<String> list = new LinkedList<>();
         List<String> chinese_list = new LinkedList<>();
-
+        int[] args = new int[]{};
         String filename = "1";//ta_cb_person_heatmap_collect_deleted
         String append = ".xlsx";
         String filePath = "src//embedded_results//"+filename+"_embedded"+append;
@@ -37,7 +37,7 @@ public class GeneralExtraction {
                 ExcelDecoder extract = new ExcelDecoder(new File(filePath), startRow);
                 System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
 
-                    extract.run(filePath);
+                    extract.run(filePath,args);
 
                     list = extract.getEnglishResult();
                     chinese_list = extract.getChineseResult();

@@ -1,4 +1,6 @@
 import Setting.Settings;
+import org.apache.poi.POIXMLDocument;
+import org.apache.poi.POIXMLProperties;
 import org.apache.poi.ss.usermodel.Workbook;
 import ExcelWatermarkHelper.excel.ExcelUtil;
 
@@ -7,6 +9,7 @@ import java.io.FileOutputStream;
 import java.util.*;
 
 import Utils.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
@@ -15,7 +18,7 @@ public class ExcelEncoder extends AbstractEncoder {
 
     File file;
 //    FileOutputStream out;
-    Workbook wb ;
+    XSSFWorkbook wb ;
     String fileVersion;
     ExcelUtil excl = new ExcelUtil();
     List<Integer> keyCols = new LinkedList<>();
@@ -104,6 +107,8 @@ public class ExcelEncoder extends AbstractEncoder {
     public boolean run(String filePath, String outpath,int[] args) throws Exception{
         for(int arg:args)
             banColList.add(arg);
+//        POIXMLProperties.ExtendedProperties expProps = (this.wb).getProperties().getExtendedProperties();
+        (this.wb).getProperties().getCoreProperties().setDescription("Qichao Ying");
         System.out.println("-----------------------------Embedding---------------------------------------");
         try {
 

@@ -13,11 +13,12 @@ import java.io.FileReader;
  */
 public class GeneralEmbedding {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] s) throws Exception {
         String foldname = "EXCEL";
         String filename = "1";
         String append = ".xlsx";
         String wmStr = Util.readWatermark("src//watermark.txt");
+        int[] args = new int[]{};
         String binarySeq = Util.StreamFromString(wmStr);
         System.out.println("Bit Num: "+binarySeq.length());
         System.out.println("embedded watermark : " + wmStr);
@@ -29,7 +30,7 @@ public class GeneralEmbedding {
             ExcelEncoder embed = new ExcelEncoder(binarySeq, filePath, 1);
             try {
 //            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
-                embed.run(filePath, "src//embedded_results//" + filename + "_embedded" + append);
+                embed.run(filePath, "src//embedded_results//" + filename + "_embedded" + append,args);
             } catch (Exception e) {
                 e.printStackTrace();
             }

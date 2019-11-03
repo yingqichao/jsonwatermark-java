@@ -24,17 +24,19 @@ public class ExcelUtil {
      * @param file : 需要读取的文件流
      * @return : file的workbook
      */
-    public static Workbook getWorkbook(File file){
+    public static XSSFWorkbook getWorkbook(File file){
         try {
             String fileName = file.getName();
             String extName = fileName.substring(fileName.lastIndexOf("."));
-            Workbook wb = null;
+            XSSFWorkbook wb = null;
             FileInputStream excelFileInputStream = new FileInputStream(file);
-            if (ExcelVersion.V2003.getSuffix().equals(extName)) {
-                wb = new HSSFWorkbook(excelFileInputStream);
-            } else if (ExcelVersion.V2007.getSuffix().equals(extName)) {
+//            if (ExcelVersion.V2003.getSuffix().equals(extName)) {
+//                wb = new HSSFWorkbook(excelFileInputStream);
+//
+//            }
+//            else if (ExcelVersion.V2007.getSuffix().equals(extName)) {
                 wb = new XSSFWorkbook(excelFileInputStream);
-            }
+//            }
             excelFileInputStream.close();
             return wb;
         } catch (IOException e) {

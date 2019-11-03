@@ -8,6 +8,7 @@ import GeneralHelper.LtDecoder;
 import Setting.Settings;
 import Utils.*;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,7 +22,7 @@ public class ExcelDecoder extends AbstractDecoder{
 
     File file;
     FileOutputStream out;
-    Workbook wb ;
+    XSSFWorkbook wb ;
     String fileVersion;
     ExcelUtil excl = new ExcelUtil();
     List<Integer> keyCols = new LinkedList<>();
@@ -256,6 +257,8 @@ public class ExcelDecoder extends AbstractDecoder{
             banColList.add(arg);
         //Reads from stream, applying the LT decoding algorithm to incoming encoded blocks until sufficiently many blocks have been received to reconstruct the entire file.
         System.out.println("-----------------------------Extraction---------------------------------------");
+
+        String descrip = (this.wb).getProperties().getCoreProperties().getDescription();
 
 //        WatermarkUtils watermarkUtils = new WatermarkUtils(new File(filePath));
         keyIndex = findKeyIndex();
