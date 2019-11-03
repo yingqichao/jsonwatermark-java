@@ -12,6 +12,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.*;
 
 import static Setting.Settings.DEFAULT_EMBEDLEN;
@@ -45,7 +49,7 @@ public class ExcelDecoder extends AbstractDecoder{
     public static int valid = 0;
     public static int updated = 0;
 
-    public ExcelDecoder(File file, int startRow) {
+    public ExcelDecoder(File file, int startRow) throws Exception{
         this.file = file;
         this.startRow = startRow;
         this.fileVersion = file.getName().substring(file.getName().lastIndexOf("."));
@@ -59,9 +63,23 @@ public class ExcelDecoder extends AbstractDecoder{
         }
         this.getSheetsRowAndCol();
 
+//        filesize = Integer.parseInt((this.wb).getProperties().getCoreProperties().getDescription());
+        ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
+        UserDefinedFileAttributeView userDefined = Files. getFileAttributeView(Paths.get(file.getPath()), UserDefinedFileAttributeView.class);
+        try {
+            userDefined.read("num_packages", buf);
+        }catch(Exception e){
+            throw new Exception("The file does not contain watermark.");
+        }
+        filesize = buf.get(0);
+        if(filesize==0){
+            throw new Exception("Filesize equals to 0. Please check!");
+        }
+
+
         if(fileVersion.equals(".csv")){
             // CSV
-            filesize = Integer.parseInt(csvData.get(startRow-1).split(",")[exclCol[0]]);
+//            filesize = Integer.parseInt(csvData.get(startRow-1).split(",")[exclCol[0]]);
             csvArray = new String[exclRow[0]][exclCol[0]];
             for(int i=0;i<exclRow[0];i++){
                 String[] strs = csvData.get(i).split(",");
@@ -69,7 +87,7 @@ public class ExcelDecoder extends AbstractDecoder{
             }
         }else{
             // EXCEL
-            filesize = Integer.parseInt(getExactValue(startRow-1,exclCol[0]));
+//            filesize = Integer.parseInt(getExactValue(startRow-1,exclCol[0]));
         }
     }
 
@@ -258,7 +276,6 @@ public class ExcelDecoder extends AbstractDecoder{
         //Reads from stream, applying the LT decoding algorithm to incoming encoded blocks until sufficiently many blocks have been received to reconstruct the entire file.
         System.out.println("-----------------------------Extraction---------------------------------------");
 
-        String descrip = (this.wb).getProperties().getCoreProperties().getDescription();
 
 //        WatermarkUtils watermarkUtils = new WatermarkUtils(new File(filePath));
         keyIndex = findKeyIndex();

@@ -6,6 +6,10 @@ import ExcelWatermarkHelper.excel.ExcelUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.*;
 
 import Utils.*;
@@ -108,7 +112,7 @@ public class ExcelEncoder extends AbstractEncoder {
         for(int arg:args)
             banColList.add(arg);
 //        POIXMLProperties.ExtendedProperties expProps = (this.wb).getProperties().getExtendedProperties();
-        (this.wb).getProperties().getCoreProperties().setDescription("Qichao Ying");
+//        (this.wb).getProperties().getCoreProperties().setDescription("Qichao Ying");
         System.out.println("-----------------------------Embedding---------------------------------------");
         try {
 
@@ -135,8 +139,10 @@ public class ExcelEncoder extends AbstractEncoder {
 //            try {
                 if (csvData.size() == 0) {
                     // EXCEL
-                    this.excl.writeWorkBookAt(this.wb,0, startRow-1, exclCol[0], ((Integer)this.solitionGenerator.K).toString());
+                    // filesize原来是写在数据中的
+//                    this.excl.writeWorkBookAt(this.wb,0, startRow-1, exclCol[0], ((Integer)this.solitionGenerator.K).toString());
                     FileOutputStream out = new FileOutputStream(outpath);
+
                     this.excl.write2Excel(this.wb, out);
                 } else {
                     // CSV
@@ -149,10 +155,18 @@ public class ExcelEncoder extends AbstractEncoder {
                         csvData_embedded.add(str.toString());
                     }
 
-
-                    csvData_embedded.set(startRow-1,csvData.get(startRow-1)+","+this.solitionGenerator.K);
+                    // filesize原来是写在数据中的
+//                    csvData_embedded.set(startRow-1,csvData.get(startRow-1)+","+this.solitionGenerator.K);
                     CsvUtil.writeCSV(outpath,csvData_embedded);
                 }
+
+//                (this.wb).getProperties().getCoreProperties().setDescription(((Integer)this.solitionGenerator.K).toString());
+                ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
+                buf.put((byte)this.solitionGenerator.K) ;
+                UserDefinedFileAttributeView userDefined = Files. getFileAttributeView(Paths.get(outpath), UserDefinedFileAttributeView.class);
+                userDefined.write("num_packages",buf);
+
+//
 
                 System.out.println("-----------------Embedding was conducted successfully...--------------------");
             }catch(Exception e){

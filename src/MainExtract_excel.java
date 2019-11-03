@@ -10,7 +10,7 @@ import java.util.List;
  * @Description DEFAULT
  */
 public class MainExtract_excel {
-    public static boolean Extract(String filename,String append,String filePath,int startRow,int[] args){
+    public static boolean Extract(String filename,String append,String filePath,int startRow,int[] args) throws Exception{
 
         ExcelDecoder extract = new ExcelDecoder(new File(filePath),startRow);
         System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
@@ -43,7 +43,7 @@ public class MainExtract_excel {
 
     }
 
-    public static void main(String[] s) {
+    public static void main(String[] s) throws Exception{
         String filename = "jsontest";//ta_cb_person_heatmap_collect_deleted
         String append = ".xlsx";
         int[] args = new int[]{};
