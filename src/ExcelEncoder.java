@@ -162,7 +162,8 @@ public class ExcelEncoder extends AbstractEncoder {
 
 //                (this.wb).getProperties().getCoreProperties().setDescription(((Integer)this.solitionGenerator.K).toString());
                 ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
-                buf.put((byte)this.solitionGenerator.K) ;
+                buf.put(((Integer)this.solitionGenerator.K).toString().getBytes()) ;
+                buf.flip();
                 UserDefinedFileAttributeView userDefined = Files. getFileAttributeView(Paths.get(outpath), UserDefinedFileAttributeView.class);
                 userDefined.write("num_packages",buf);
 

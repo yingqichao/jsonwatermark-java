@@ -13,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
@@ -65,13 +66,14 @@ public class ExcelDecoder extends AbstractDecoder{
 
 //        filesize = Integer.parseInt((this.wb).getProperties().getCoreProperties().getDescription());
         ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
-        UserDefinedFileAttributeView userDefined = Files. getFileAttributeView(Paths.get(file.getPath()), UserDefinedFileAttributeView.class);
+        UserDefinedFileAttributeView userDefined = Files.getFileAttributeView(Paths.get(file.getPath()), UserDefinedFileAttributeView.class);
         try {
             userDefined.read("num_packages", buf);
         }catch(Exception e){
             throw new Exception("The file does not contain watermark.");
         }
-        filesize = buf.get(0);
+        buf.flip();
+        filesize = Integer.parseInt(Charset.defaultCharset().decode(buf).toString());
         if(filesize==0){
             throw new Exception("Filesize equals to 0. Please check!");
         }
@@ -142,7 +144,7 @@ public class ExcelDecoder extends AbstractDecoder{
 //                ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
         for(int col=0;col<exclCol[0];col++){
-            if(col!=keyIndex && banColList.contains(col)) {
+            if(col!=keyIndex && !banColList.contains(col)) {
                 String str = getExactValue(row, col);
                 if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据
