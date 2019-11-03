@@ -9,12 +9,10 @@ import java.io.FileOutputStream;
  * @Description DEFAULT
  */
 public class MainEmbed_excel {
-    public static void main(String args[]){
-//        String MODE = "EXTRACT";
-
-        String foldname = "EXCEL";
-        String filename = "jsontest";
-        String append = ".xlsx";
+    public static boolean Embed(String foldname,String filename,String append,String waterPath,int[] args){
+        //input:foldname 载体文件夹 filename 载体名称 append 载体后缀名 waterPath 水印文件txt位置 args 不允许做嵌入的列indices
+        //return: 是否嵌入成功
+        int argsLen = args.length;
         String wmStr = Util.readWatermark("src//watermark.txt");
         String binarySeq = Util.StreamFromString(wmStr);
         System.out.println("Bit Num: "+binarySeq.length());
@@ -26,13 +24,28 @@ public class MainEmbed_excel {
         ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,1);
         try {
 //            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
-            embed.run(filePath,"src//embedded_results//" + filename + "_embedded" + append);
+            embed.run(filePath,"src//embedded_results//" + filename + "_embedded" + append,args);
+            return true;
         }
         catch(Exception e){
             e.printStackTrace();
+            return false;
         }
+
+    }
+
+    public static void main(String s[]){
+//        String MODE = "EXTRACT";
+
+        int[] args = new int[]{};
+        String foldname = "EXCEL";
+        String filename = "jsontest";
+        String append = ".xlsx";
+        String waterPath = "src//watermark.txt";
+        Embed(foldname,filename,append,waterPath,args);
 
     }
 
 
 }
+

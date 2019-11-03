@@ -12,9 +12,23 @@ import java.util.regex.Pattern;
 
 public class Util {
 
-    public static void main(String[] args){
-        System.out.println(crc_remainder("1001",null,null));
-    }
+    public static Comparator<Map.Entry<Integer,String>> comparator = new Comparator<Map.Entry<Integer,String>>() {
+        @Override
+        public int compare(Map.Entry<Integer,String> a, Map.Entry<Integer,String> b) {
+            // 注意：构成大顶堆需要结果是b-a
+            StringBuilder a1 = new StringBuilder(a.getValue());StringBuilder b1 = new StringBuilder(b.getValue());
+//                a1 = a1.replaceAll("[^\\d.]+", "");
+            // 去除前缀的0
+            while(b1.charAt(0)=='-' || b1.charAt(0)=='.' || b1.charAt(0)=='0'){
+                b1.deleteCharAt(0);
+            }
+            while(a1.charAt(0)=='-' || a1.charAt(0)=='.' || a1.charAt(0)=='0'){
+                a1.deleteCharAt(0);
+            }
+            return b1.toString().replaceAll("[^0-9]+", "").length()
+                    -a1.toString().replaceAll("[^0-9]+", "").length();
+        }
+    };
 
     public static boolean isJSON(String jsonStr) {
         JsonElement jsonElement;

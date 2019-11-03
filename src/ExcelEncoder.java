@@ -33,6 +33,7 @@ public class ExcelEncoder extends AbstractEncoder {
     int[] exclCol = null;
     int sheetNum = -1;
     int startRow = 0;
+    Set<Integer> banColList = new HashSet<>();
 
 
 //    public ExcelEncoder(int seed, double c, double delta, String f_bytes,File file,int startRow) {
@@ -100,7 +101,9 @@ public class ExcelEncoder extends AbstractEncoder {
         }
     }
 
-    public boolean run(String filePath, String outpath) throws Exception{
+    public boolean run(String filePath, String outpath,int[] args) throws Exception{
+        for(int arg:args)
+            banColList.add(arg);
         System.out.println("-----------------------------Embedding---------------------------------------");
         try {
 
@@ -113,11 +116,11 @@ public class ExcelEncoder extends AbstractEncoder {
 
             int endRow = exclRow[0];//固定第一个sheet
 
-        if(endRow<this.minRequire){
-            throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the watermark sequence...");
-        }
+            if(endRow<this.minRequire){
+                throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the watermark sequence...");
+            }
 
-        valid = endRow;
+            valid = endRow;
 
             //Embedment
             for(int i=startRow;i<endRow;i++){
@@ -233,8 +236,7 @@ public class ExcelEncoder extends AbstractEncoder {
         //prepare
         int sheet = 0;int debug1 = 0;
         this.seed = Util.BKDRHash(getExactValue(row,keyIndex),131);
-        if(row==556)
-            debug1 = 1;
+
         this.solitionGenerator.setSeed(this.seed);
         List<Integer> list = this.solitionGenerator.get_src_blocks(null);
         int block_data = 0;
@@ -244,29 +246,14 @@ public class ExcelEncoder extends AbstractEncoder {
         String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(block_data),Settings.DEFAULT_EMBEDLEN);
         // dynamically embedment: calculate total sum
         // A-Z a-z同样去除
-        Comparator<Map.Entry<Integer,String>> comp = new Comparator<Map.Entry<Integer,String>>() {
-            @Override
-            public int compare(Map.Entry<Integer,String> a, Map.Entry<Integer,String> b) {
-                // 注意：构成大顶堆需要结果是b-a
-                StringBuilder a1 = new StringBuilder(a.getValue());StringBuilder b1 = new StringBuilder(b.getValue());
-//                a1 = a1.replaceAll("[^\\d.]+", "");
-                // 去除前缀的0
-                while(b1.charAt(0)=='-' || b1.charAt(0)=='.' || b1.charAt(0)=='0'){
-                    b1.deleteCharAt(0);
-                }
-                while(a1.charAt(0)=='-' || a1.charAt(0)=='.' || a1.charAt(0)=='0'){
-                    a1.deleteCharAt(0);
-                }
-                return b1.toString().replaceAll("[^0-9]+", "").length()
-                        -a1.toString().replaceAll("[^0-9]+", "").length();
-            }
-        };
-        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>(comp);
+
+        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>(Util.comparator);
 //        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>
 //                ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
         for(int col=0;col<exclCol[0];col++){
-            if(col!=keyIndex) {
+            //不是关键列，也不在banList里
+            if(col!=keyIndex && ! banColList.contains(col)) {
                 String str = getExactValue(row, col);
                 if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据

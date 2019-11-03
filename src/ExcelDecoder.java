@@ -38,6 +38,7 @@ public class ExcelDecoder extends AbstractDecoder{
     int[] exclCol = null;
     int sheetNum = -1;
     int filesize = 0;
+    Set<Integer> banColList = new HashSet<>();
 
     public static int sum = 0;
     public static int valid = 0;
@@ -116,29 +117,13 @@ public class ExcelDecoder extends AbstractDecoder{
         List<Integer> src_blocks = decoder.getSrcBlocks(filesize,key,1);
         //get dynamically embedment: calculate total sum
         // A-Z a-z同样去除
-        Comparator<Map.Entry<Integer,String>> comp = new Comparator<Map.Entry<Integer,String>>() {
-            @Override
-            public int compare(Map.Entry<Integer,String> a, Map.Entry<Integer,String> b) {
-                // 注意：构成大顶堆需要结果是b-a
-                StringBuilder a1 = new StringBuilder(a.getValue());StringBuilder b1 = new StringBuilder(b.getValue());
-//                a1 = a1.replaceAll("[^\\d.]+", "");
-                // 去除前缀的0
-                while(b1.charAt(0)=='-' || b1.charAt(0)=='.' || b1.charAt(0)=='0'){
-                    b1.deleteCharAt(0);
-                }
-                while(a1.charAt(0)=='-' || a1.charAt(0)=='.' || a1.charAt(0)=='0'){
-                    a1.deleteCharAt(0);
-                }
-                return b1.toString().replaceAll("[^0-9]+", "").length()
-                        -a1.toString().replaceAll("[^0-9]+", "").length();
-            }
-        };
-        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>(comp);
+
+        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>(Util.comparator);
 //        PriorityQueue<Map.Entry<Integer,String>> pq = new PriorityQueue<>
 //                ((a,b)->(b.getValue().replaceAll("[^A-Za-z0-9]", "").length()-a.getValue().replaceAll("[^A-Za-z0-9]", "").length()));
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
         for(int col=0;col<exclCol[0];col++){
-            if(col!=keyIndex) {
+            if(col!=keyIndex && banColList.contains(col)) {
                 String str = getExactValue(row, col);
                 if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据
@@ -266,7 +251,9 @@ public class ExcelDecoder extends AbstractDecoder{
         return keyCol;
     }
 
-    public void run(String filePath) throws Exception{
+    public void run(String filePath,int[] args) throws Exception{
+        for(int arg:args)
+            banColList.add(arg);
         //Reads from stream, applying the LT decoding algorithm to incoming encoded blocks until sufficiently many blocks have been received to reconstruct the entire file.
         System.out.println("-----------------------------Extraction---------------------------------------");
 
