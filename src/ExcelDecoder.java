@@ -101,7 +101,7 @@ public class ExcelDecoder extends AbstractDecoder{
             return ((str==null)?"":str).toString();
         }else{
             // CSV
-            return csvArray[row][col];
+            return (csvArray[row].length>col)?csvArray[row][col]:"";
         }
     }
 
@@ -229,16 +229,18 @@ public class ExcelDecoder extends AbstractDecoder{
             }else{
                 // CSV
                 for(int i=startRow;i<exclRow[0];i++)
-                    col.add(csvArray[i][colIndex]);
+                    //每一行的长度可能不一样
+                    if(csvArray[i].length>colIndex)
+                        col.add(csvArray[i][colIndex]);
             }
             for(Object object:col){
                 if(object==null)
                     continue;
                 int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
 //                totalLen += validLen;
-                if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
+//                if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
                     //不足以嵌入信息，并且当前value没有出现过
-                    objCol.add(object.toString());
+                objCol.add(object.toString());
 
                 objColwithoutLen.add(object.toString());
             }
@@ -258,7 +260,7 @@ public class ExcelDecoder extends AbstractDecoder{
         }
 
         if(keyCol==-1){
-            System.out.println("[Warning] Using a longer key");
+//            System.out.println("[Warning] Using a longer key");
             throw new Exception("[Warning] No valid key index found...Extraction was aborted...");
 //            keyCol = firstThresh;
 //            maxMatch = firstMatch;

@@ -51,7 +51,7 @@ public class CsvUtil {
             csvWriter.writeRecord(headers);
             for(int i=0;i<writearraylist.size();i++){
                 String[] writeLine=writearraylist.get(i).split(",");
-                System.out.println(writeLine);
+//                System.out.println(writeLine);
                 csvWriter.writeRecord(writeLine);
             }
 

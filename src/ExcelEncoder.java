@@ -204,9 +204,9 @@ public class ExcelEncoder extends AbstractEncoder {
                     continue;
                 int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
 //                totalLen += validLen;
-                if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
+//                if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
                     //不足以嵌入信息，并且当前value没有出现过
-                    objCol.add(object.toString());
+                objCol.add(object.toString());
 
                 objColwithoutLen.add(object.toString());
             }

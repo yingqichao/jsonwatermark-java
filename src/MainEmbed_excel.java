@@ -38,9 +38,9 @@ public class MainEmbed_excel {
 //        String MODE = "EXTRACT";
 
         int[] args = new int[]{};
-        String foldname = "EXCEL";
-        String filename = "jsontest";
-        String append = ".xlsx";
+        String foldname = "CSV";
+        String filename = "1";
+        String append = ".csv";
         String waterPath = "src//watermark.txt";
         Embed(foldname,filename,append,waterPath,args);
 
