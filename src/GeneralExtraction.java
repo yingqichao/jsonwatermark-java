@@ -45,10 +45,11 @@ public class GeneralExtraction {
             }else if(append.equals(".json")) {
                 JsonParser parser = new JsonParser();
                 String watermark = Util.readWatermark("src/ExcelWatermarkHelper.txt");
-                JsonObject object = (JsonObject) parser.parse(new FileReader("src//embedded_results//" + filename + "_data_" + watermark + ".json"));
+                String emb_path = "src//embedded_results//" + filename + "_data_" + watermark + ".json";
+                JsonObject object = (JsonObject) parser.parse(new FileReader(emb_path));
 
                 JSONDecoder decoder = new JSONDecoder();
-                decoder.run(object);
+                decoder.run(object,emb_path);
 
                 list = decoder.getEnglishResult();
                 chinese_list = decoder.getEnglishResult();

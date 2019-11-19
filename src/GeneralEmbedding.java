@@ -37,12 +37,13 @@ public class GeneralEmbedding {
         }else if(append.equals(".json")){
             System.out.println("[Service Started] JSON watermarking detected...");
             JsonParser parser = new JsonParser() ;
-            JsonObject object = (JsonObject)parser.parse(new FileReader("src//resources//JSON//"+filename+".json"));
+            String emb_path = "src//resources//JSON//"+filename+".json";
+            JsonObject object = (JsonObject)parser.parse(new FileReader(emb_path));
             JSONEncoder encoder = new JSONEncoder(binarySeq);
-            JsonElement jsonElement = encoder.run(object);
+            encoder.run(object,emb_path);
 
-            FileOutputStream out=new FileOutputStream("src//embedded_results//"+filename+"_embedded"+".json");
-            Util.writeJsonStream(out,jsonElement);
+//            FileOutputStream out=new FileOutputStream("src//embedded_results//"+filename+"_embedded"+".json");
+//            Util.writeJsonStream(out,jsonElement);
         }else throw new Exception("Unsupportted type of file");
     }
 
