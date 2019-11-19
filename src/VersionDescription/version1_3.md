@@ -10,5 +10,7 @@ for(int i=startRow;i<exclRow[0];i++)
     if(csvArray[i].length<colIndex)
         col.add(csvArray[i][colIndex]);
         
-        
+11.19
+1.  修复xls会报错的bug
+2.  JSON对于原始包的数量，从原来的隐藏在json内部改成了隐藏在自定义字段中  
              

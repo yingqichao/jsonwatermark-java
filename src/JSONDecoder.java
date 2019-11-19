@@ -3,6 +3,11 @@ import Setting.Settings;
 import Utils.Util;
 import com.google.gson.*;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,30 +52,43 @@ public class JSONDecoder extends AbstractDecoder {
 
     }
 
-    public void run(JsonObject object) throws Exception{
+    public void run(JsonObject object,String emb_file) throws Exception{
         //Reads from stream, applying the LT decoding algorithm to incoming encoded blocks until sufficiently many blocks have been received to reconstruct the entire file.
         System.out.println("-----------------------------Extraction---------------------------------------");
         // 解析string
-        int filesize = eliminateLevels(object);
+        ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
+        UserDefinedFileAttributeView userDefined = Files.getFileAttributeView(Paths.get(emb_file), UserDefinedFileAttributeView.class);
+        try {
+            userDefined.read("num_packages", buf);
+        }catch(Exception e){
+            throw new Exception("The file does not contain watermark.");
+        }
+        buf.flip();
+        int filesize = Integer.parseInt(Charset.defaultCharset().decode(buf).toString());
+        if(filesize==0){
+            throw new Exception("Filesize equals to 0. Please check!");
+        }
+
+        eliminateLevels(object);
 //        modified_json= Utils.Util.eliminateLevels(JSON, "");
         decode(JSON, filesize);
 
 //        return this.secret_data;
     }
 
-    public int eliminateLevels(JsonObject object) throws Exception{
+    public void eliminateLevels(JsonObject object) throws Exception{
         // clear
         JSON = new HashMap<>();
         sum = 0;valid = 0;
         //get num of packages. It is shown in the root node.
         try {
-            int numpackage = ((JsonPrimitive) ((JsonObject) object).get(Settings.packageNumName)).getAsInt();
+//            int numpackage = ((JsonPrimitive) ((JsonObject) object).get(Settings.packageNumName)).getAsInt();
 
 
             recursiveEliminateHelper(object,"",false);
 
             System.out.println("Sum of KEYS: " + sum + ". Sum of Valid: " + valid);
-            return numpackage;
+            return;
         }catch(NullPointerException e){
             throw new Exception("[Error] No info of packageNum was found in this JSON!");
         }

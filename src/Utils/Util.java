@@ -247,8 +247,8 @@ public class Util {
 
             Iterator<Map.Entry<String, JsonElement>> iterator = jsonObj.entrySet().iterator();
             JsonObject newJsonObj = new JsonObject();
-            if(isRoot>0)
-                newJsonObj.add(packageNumName, new JsonPrimitive(isRoot));
+//            if(isRoot>0)
+//                newJsonObj.add(packageNumName, new JsonPrimitive(isRoot));
             if(arrayCount!=0){
                 newJsonObj.add(newTagName, new JsonPrimitive(arrayCount));
                 arrayCount = 0;

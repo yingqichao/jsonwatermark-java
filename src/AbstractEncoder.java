@@ -32,6 +32,7 @@ public abstract class AbstractEncoder {
         System.out.println("packages: "+this.K+". Minimum required blocks: "+this.K*2);
         this.solitionGenerator = new Sampler(this.K,delta,c);// Seed is set by interfacing code using set_seed
 
+
     }
 
     public AbstractEncoder(String f_bytes){

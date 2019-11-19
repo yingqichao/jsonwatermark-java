@@ -28,13 +28,20 @@ public class MainEmbed {
         System.out.println("\n================= JSON Embedding from file " + "\"" + filename + "\" =================");
 
         String watermark = Util.readWatermark("src//watermark.txt");
+
+        String outpath = "src//embedded_results//"+filename+"_data_"+watermark+".json";
+
         String binarySeq = Util.StreamFromString(watermark);
         System.out.println("Bit Num: "+binarySeq.length());
         JSONEncoder encoder = new JSONEncoder(binarySeq);
-        JsonElement jsonElement = encoder.run(object);
+        encoder.run(object,outpath);
 
-        FileOutputStream out=new FileOutputStream("src//embedded_results//"+filename+"_data_"+watermark+".json");
-        Util.writeJsonStream(out,jsonElement);
+
+
+//        FileOutputStream out=new FileOutputStream("src//embedded_results//"+filename+"_data_"+watermark+".json");
+//        Util.writeJsonStream(out,jsonElement);
+
+
 
     }
 

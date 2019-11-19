@@ -17,10 +17,11 @@ public class MainExtract {
 //        Map<String,String> JSON = Utils.Util.readFakeJSON("src/watermarkedJSON.txt");
         JsonParser parser = new JsonParser() ;
         String watermark = Util.readWatermark("src/watermark.txt");
-        JsonObject object = (JsonObject)parser.parse(new FileReader("src//embedded_results//"+filename+"_data_"+watermark+".json"));
+        String emb_file = "src//embedded_results//"+filename+"_data_"+watermark+".json";
+        JsonObject object = (JsonObject)parser.parse(new FileReader(emb_file));
 
         JSONDecoder decoder = new JSONDecoder();
-        decoder.run(object);
+        decoder.run(object,emb_file);
 
         List<String> list = decoder.getEnglishResult();
         List<String> chinese_list = decoder.getChineseResult();

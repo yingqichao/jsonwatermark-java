@@ -27,7 +27,7 @@ public class ExcelDecoder extends AbstractDecoder{
 
     File file;
     FileOutputStream out;
-    XSSFWorkbook wb ;
+    Workbook wb ;
     String fileVersion;
     ExcelUtil excl = new ExcelUtil();
     List<Integer> keyCols = new LinkedList<>();

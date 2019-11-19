@@ -1,6 +1,8 @@
+import ExcelWatermarkHelper.excel.ExcelVersion;
 import Setting.Settings;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.POIXMLProperties;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import ExcelWatermarkHelper.excel.ExcelUtil;
 
@@ -22,7 +24,7 @@ public class ExcelEncoder extends AbstractEncoder {
 
     File file;
 //    FileOutputStream out;
-    XSSFWorkbook wb ;
+    Workbook wb ;
     String fileVersion;
     ExcelUtil excl = new ExcelUtil();
     List<Integer> keyCols = new LinkedList<>();
@@ -70,6 +72,7 @@ public class ExcelEncoder extends AbstractEncoder {
         }else{
             //EXCEL
             this.wb = excl.getWorkbook(this.file);
+
         }
         this.getSheetsRowAndCol();
         if(this.fileVersion.equals(".csv")){
@@ -164,7 +167,7 @@ public class ExcelEncoder extends AbstractEncoder {
                 ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
                 buf.put(((Integer)this.solitionGenerator.K).toString().getBytes()) ;
                 buf.flip();
-                UserDefinedFileAttributeView userDefined = Files. getFileAttributeView(Paths.get(outpath), UserDefinedFileAttributeView.class);
+                UserDefinedFileAttributeView userDefined = Files.getFileAttributeView(Paths.get(outpath), UserDefinedFileAttributeView.class);
                 userDefined.write("num_packages",buf);
 
 //

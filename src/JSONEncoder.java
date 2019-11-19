@@ -2,6 +2,11 @@ import Setting.Settings;
 import Utils.Util;
 import com.google.gson.*;
 
+import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.*;
 
 /**
@@ -45,10 +50,6 @@ public class JSONEncoder extends AbstractEncoder {
 
             }
         }
-
-
-
-
         return res;
 
     }
@@ -140,7 +141,7 @@ public class JSONEncoder extends AbstractEncoder {
     }
 
 
-    public JsonElement run(JsonObject object){
+    public void run(JsonObject object,String outpath){
         System.out.println("-----------------------------Embedding---------------------------------------");
         try {
             // 解析string
@@ -161,11 +162,19 @@ public class JSONEncoder extends AbstractEncoder {
 //            Utils.Util.writeFromJSON(watermarkedJSON);
             // Writing Json
 
+            ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
+            buf.put(((Integer)this.solitionGenerator.K).toString().getBytes()) ;
+            buf.flip();
+            UserDefinedFileAttributeView userDefined = Files.getFileAttributeView(Paths.get(outpath), UserDefinedFileAttributeView.class);
+            userDefined.write("num_packages",buf);
 
+
+            FileOutputStream out=new FileOutputStream(outpath);
+            Util.writeJsonStream(out,newJsonElement);
 
             System.out.println("-----------------Embedding was conducted successfully...--------------------");
 
-            return newJsonElement;
+            return;
         }catch (Exception e){
             e.printStackTrace();
             System.out.println("-----------------[Warning] Embedding was not conducted...--------------------");
@@ -173,7 +182,7 @@ public class JSONEncoder extends AbstractEncoder {
 
 
 
-        return null;
+        return;
 
     }
 
