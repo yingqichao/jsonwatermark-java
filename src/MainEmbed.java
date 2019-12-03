@@ -7,14 +7,19 @@ import com.google.gson.JsonParser;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class MainEmbed {
 
 
     public static void main(String[] args) throws Exception{
 
-
+        String[] ban = new String[]{"logDataeventInfodetectStart"};
+        Set<String> banList = new HashSet<>();
+        for(String str:ban)
+            banList.add(str);
 
         String filename = "file4";
 
@@ -34,7 +39,7 @@ public class MainEmbed {
         String binarySeq = Util.StreamFromString(watermark);
         System.out.println("Bit Num: "+binarySeq.length());
         JSONEncoder encoder = new JSONEncoder(binarySeq);
-        encoder.run(object,outpath);
+        encoder.run(object,outpath,banList);
 
 
 

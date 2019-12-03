@@ -141,11 +141,11 @@ public class JSONEncoder extends AbstractEncoder {
     }
 
 
-    public void run(JsonObject object,String outpath){
+    public void run(JsonObject object,String outpath, Set<String> banList){
         System.out.println("-----------------------------Embedding---------------------------------------");
         try {
             // 解析string
-            JSON = eliminateLevels(object);
+            JSON = eliminateLevels(object,banList);
             if(valid<this.minRequire){
                 throw new Exception("[Error] Not enough valid packages for watermarking! Please shorter the watermark sequence...");
             }
@@ -202,12 +202,12 @@ public class JSONEncoder extends AbstractEncoder {
 //
 //    }
 
-    public TreeMap<String,String> eliminateLevels(JsonObject object){
+    public TreeMap<String,String> eliminateLevels(JsonObject object,Set<String> banList){
         // clear
         JSON = new TreeMap<>();
         sum = 0;valid = 0;
 
-        recursiveEliminateHelper(object,"",0);
+        recursiveEliminateHelper(object,"",0,banList);
 
         for(String key:JSON.keySet())
             System.out.println(key+"   "+JSON.get(key));
@@ -218,7 +218,11 @@ public class JSONEncoder extends AbstractEncoder {
         return JSON;
     }
 
-    public void recursiveEliminateHelper(JsonElement object, String prefix,int arrayCount){
+    public void recursiveEliminateHelper(JsonElement object, String prefix,int arrayCount,Set<String> banList){
+        // if the node is in the ban list, return and prohibit further recursion
+        if(banList.contains(prefix))
+            return;
+
         if(arrayCount>0){
             //which indicates the parent object is an array
             prefix += arrayCount;
@@ -227,12 +231,12 @@ public class JSONEncoder extends AbstractEncoder {
         if(object instanceof JsonObject){
             // continue the recursion
             for(Map.Entry<String, JsonElement> entry:((JsonObject) object).entrySet()){
-                recursiveEliminateHelper(entry.getValue(),prefix+entry.getKey(),arrayCount);
+                recursiveEliminateHelper(entry.getValue(),prefix+entry.getKey(),arrayCount,banList);
             }
         }else if(object instanceof JsonArray){
             int count = 1;
             for (Iterator<JsonElement> iter = ((JsonArray) object).iterator(); iter.hasNext();){
-                recursiveEliminateHelper(iter.next(),prefix,count);
+                recursiveEliminateHelper(iter.next(),prefix,count,banList);
                 count++;
             }
         }else if(!(object instanceof JsonNull)){

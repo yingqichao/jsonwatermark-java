@@ -5,6 +5,8 @@ import com.google.gson.JsonParser;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Qichao Ying
@@ -35,12 +37,17 @@ public class GeneralEmbedding {
                 e.printStackTrace();
             }
         }else if(append.equals(".json")){
+            String[] ban = new String[]{"logDataeventInfodetectStart"};
+            Set<String> banList = new HashSet<>();
+            for(String str:ban)
+                banList.add(str);
+
             System.out.println("[Service Started] JSON watermarking detected...");
             JsonParser parser = new JsonParser() ;
             String emb_path = "src//resources//JSON//"+filename+".json";
             JsonObject object = (JsonObject)parser.parse(new FileReader(emb_path));
             JSONEncoder encoder = new JSONEncoder(binarySeq);
-            encoder.run(object,emb_path);
+            encoder.run(object,emb_path,banList);
 
 //            FileOutputStream out=new FileOutputStream("src//embedded_results//"+filename+"_embedded"+".json");
 //            Util.writeJsonStream(out,jsonElement);
