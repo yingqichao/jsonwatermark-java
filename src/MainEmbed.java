@@ -21,7 +21,7 @@ public class MainEmbed {
         for(String str:ban)
             banList.add(str);
 
-        String filename = "file4";
+        String filename = "file1";
 
 //        Map<String,String> JSON = Utils.Util.readFakeJSON("src/fakeJSON.txt");
         JsonParser parser = new JsonParser() ;

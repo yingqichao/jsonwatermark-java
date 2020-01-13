@@ -47,8 +47,8 @@ public class CsvUtil {
             // 创建CSV写对象 例如:CsvWriter(文件路径，分隔符，编码格式);
             CsvWriter csvWriter = new CsvWriter(csvFilePath, ',', Charset.forName("GBK"));
             // 写内容
-            String[] headers = {"FileName","FileSize","FileMD5"};
-            csvWriter.writeRecord(headers);
+//            String[] headers = {"FileName","FileSize","FileMD5"};
+//            csvWriter.writeRecord(headers);
             for(int i=0;i<writearraylist.size();i++){
                 String[] writeLine=writearraylist.get(i).split(",");
 //                System.out.println(writeLine);

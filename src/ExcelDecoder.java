@@ -84,8 +84,14 @@ public class ExcelDecoder extends AbstractDecoder{
 //            filesize = Integer.parseInt(csvData.get(startRow-1).split(",")[exclCol[0]]);
             csvArray = new String[exclRow[0]][exclCol[0]];
             for(int i=0;i<exclRow[0];i++){
-                String[] strs = csvData.get(i).split(",");
-                csvArray[i] = strs;
+                String[] strs1 = csvData.get(i).split(",");String[] strs2 = csvData.get(i).split("\t");
+
+                String[] strs = (strs1.length>=strs2.length)?strs1:strs2;
+                for(int j=0;j<exclCol[0];j++)
+                    if(j>=strs.length)
+                        csvArray[i][j] = "";
+                    else
+                        csvArray[i][j] = strs[j];
             }
         }else{
             // EXCEL
@@ -127,6 +133,7 @@ public class ExcelDecoder extends AbstractDecoder{
             exclRow[0] = csvData.size();
             for (int j = startRow; j < min(exclRow[0], 20); j++) {
                 exclCol[0] = max(csvData.get(j).split(",").length, exclCol[0]);
+                exclCol[0] = max(csvData.get(j).split("\t").length, exclCol[0]);
             }
         }
     }
@@ -216,9 +223,11 @@ public class ExcelDecoder extends AbstractDecoder{
 
     public int findKeyIndex() throws Exception{
         //第一个数是作为键值的
-        int keyCol = -1;int firstThresh = -1;
+        int keyCol = -1;//int firstThresh = -1;
         int sheetIndex = 0;//当前只允许嵌入在一页里，不考虑多页的情况
-        double thresh = 0.5;int valid = 0;double maxMatch = 0;double firstMatch = 0;
+        double thresh = 0.0;//int valid = 0;
+        double maxMatch = 0;//double firstMatch = 0;
+        double matchLen = 0;
 
         for(int colIndex = 0; colIndex < this.exclCol[sheetIndex]; colIndex++){
             Set<String> objCol = new HashSet<>();Set<String> objColwithoutLen = new HashSet<>();
@@ -229,39 +238,40 @@ public class ExcelDecoder extends AbstractDecoder{
             }else{
                 // CSV
                 for(int i=startRow;i<exclRow[0];i++)
-                    //每一行的长度可能不一样
-                    if(csvArray[i].length>colIndex)
-                        col.add(csvArray[i][colIndex]);
+                    col.add(csvArray[i][colIndex]);
             }
             for(Object object:col){
                 if(object==null)
                     continue;
                 int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
 //                totalLen += validLen;
-//                if(validLen <= Setting.Settings.DEFAULT_MINLEN_EXCEL)
+                if(validLen >= Setting.Settings.DEFAULT_MINLEN_EXCEL)
                     //不足以嵌入信息，并且当前value没有出现过
-                objCol.add(object.toString());
-
-                objColwithoutLen.add(object.toString());
+                    objCol.add(object.toString());
+                objColwithoutLen.add((object.toString().length()<=2)?object.toString():object.toString().substring(0,2));
             }
 
-            double match = ((double)objCol.size())/col.size();
-            if(match>=thresh){
-                valid++;
-                if(match>maxMatch){
-                    keyCol = colIndex;maxMatch = match;
+            double match = ((double)objColwithoutLen.size())/col.size();double matchWithLen = ((double)objCol.size())/col.size();
+            //maxMatch = Math.max(maxMatch,match);
+            if(match>=thresh && match>=maxMatch){
+
+                if(match>maxMatch || matchWithLen<matchLen){
+                    matchLen = matchWithLen;
+                    keyCol = colIndex;
                 }
+
+                maxMatch = match;
             }
-            double match1 = ((double)objColwithoutLen.size())/col.size();
-            if(match<thresh && match1>=thresh && firstThresh==-1){
-                firstThresh = colIndex;
-                firstMatch = match1;
-            }
+
+//            if(match<thresh && match1>=thresh && firstThresh==-1){
+//                firstThresh = colIndex;
+//                firstMatch = match1;
+//            }
         }
 
         if(keyCol==-1){
-//            System.out.println("[Warning] Using a longer key");
-            throw new Exception("[Warning] No valid key index found...Extraction was aborted...");
+            System.out.println("[Warning] Using a longer key");
+            throw new Exception("[Warning] No valid key index found...Embedding was aborted...");
 //            keyCol = firstThresh;
 //            maxMatch = firstMatch;
 
