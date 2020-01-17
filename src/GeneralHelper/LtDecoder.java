@@ -35,6 +35,7 @@ public class LtDecoder {
     }
 
     public boolean consume_block(int filesize,String key,String lt_block,Integer blocksize){
+        //For JSON
         //如果一个包的有效字符长度足够长，那么会被拆成若干个包
         if(blocksize==null) blocksize = 1;
         Set<Integer> duplicateSet = new HashSet<>(0);
@@ -62,7 +63,7 @@ public class LtDecoder {
             src_blocks.remove(0);//d
             List<Object> blockAndVerify = extract(key, lt_block, duplicateSet);
             String tmpstr = (String) blockAndVerify.get(1);
-            if (Utils.cyclic.CyclicCoder.decode(Integer.parseInt(tmpstr, 2)) != -1) {
+            if (Utils.cyclic.CyclicCoder.decode(Integer.parseInt(tmpstr, 2),Settings.DATA_POLYNOMIAL) != -1) {
                 // If BP is done, stop
                 System.out.println("Valid Package.");
                 this.done = handle_block(src_blocks, (int) blockAndVerify.get(0));
@@ -88,8 +89,8 @@ public class LtDecoder {
             this.filesize = filesize;
             this.blocksize = blocksize;
             this.K = (int) Math.ceil(filesize / blocksize);
-            this.block_graph = new BlockGraph(K);
             this.prng = new Sampler(K, Settings.DEFAULT_DELTA, Settings.DEFAULT_C);
+            this.block_graph = new BlockGraph(K);
             this.initialized = true;
         }
 
@@ -105,14 +106,28 @@ public class LtDecoder {
 
     }
 
+    public void buildPrng(String key){
+        this.prng = new Sampler(16, Settings.DEFAULT_DELTA, Settings.DEFAULT_C);//这里的K无关紧要
+        int blockseed = Util.BKDRHash(key,null);
+        int have = 0;int buff = 0;
+
+        this.prng.setSeed(blockseed);
+        while(have<=Settings.reserved_space+1){
+            buff = prng.get_next();
+            have++;
+        }
+
+//        System.out.println(buff);
+    }
+
     public boolean consume_block_excel(List<Integer> src_blocks,int validValue){
         this.done = handle_block(src_blocks, validValue);
         return this.done;
 
     }
 
-    public List<Object> extract_excel(String key,String ori_block,int strlen){
-        //根据分配到的每个单元格的嵌入长度来做提取，没有检验的环节
+    public List<Object> extract_excel(String key,String ori_block,int strlen,int max_allowed_modi_digits){
+        //Excel提取，根据分配到的每个单元格的嵌入长度来做提取，没有检验的环节
         boolean negative;String verify = "";
         int extracted = 0;StringBuilder lt_block = new StringBuilder(ori_block);
         int startFrom = 0;
@@ -121,13 +136,13 @@ public class LtDecoder {
             long value_int = Long.parseLong(ori_block);
 //            negative = value_int<0;
 //            if(negative)    lt_block.deleteCharAt(0);
-//            //删除前两位
+//            //删除前几位
 //            lt_block.deleteCharAt(0);lt_block.deleteCharAt(0);
             while(ori_block.charAt(startFrom)=='-' || ori_block.charAt(startFrom)=='.' || ori_block.charAt(startFrom)=='0'){
                 startFrom++;
             }
 
-            lt_block = new StringBuilder(ori_block.substring(startFrom+2));
+            lt_block = new StringBuilder(ori_block.substring(startFrom+max_allowed_modi_digits));
 
         }else if(Util.isNumeric(ori_block)){
             double value_double = Double.parseDouble(ori_block);
@@ -141,7 +156,7 @@ public class LtDecoder {
                 startFrom++;
             }
 
-            lt_block = new StringBuilder(ori_block.substring(startFrom+2));
+            lt_block = new StringBuilder(ori_block.substring(startFrom+max_allowed_modi_digits));
         }
 
         Set<Integer> duplicateSet = new HashSet<>();
@@ -172,6 +187,7 @@ public class LtDecoder {
     }
 
     public List<Object> extract(String key,String ori_block,Set<Integer> duplicateSet){
+        //JSON 提取，这里还是保留最高2位
         List<Object> list = new LinkedList<>();
         int strlen = Settings.DEFAULT_EMBEDLEN;boolean negative;String verify = "";
         int extracted = 0;StringBuilder lt_block = new StringBuilder(ori_block);

@@ -21,7 +21,7 @@ public class MainEmbed_excel {
 
         String filePath = "src//resources//"+foldname+"//"+filename+append;
         System.out.println("\n================= Embed from file " + "\"" + filePath + "\" =================");
-        ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,1);
+        ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,1,0.05);
         try {
 //            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
             embed.run(filePath,"src//embedded_results//" + filename + "_embedded" + append,args);
@@ -38,9 +38,9 @@ public class MainEmbed_excel {
 //        String MODE = "EXTRACT";
 
         int[] args = new int[]{};
-        String foldname = "CSV";
-        String filename = "6";
-        String append = ".csv";
+        String foldname = "EXCEL";
+        String filename = "long";
+        String append = ".xlsx";
         String waterPath = "src//watermark.txt";
         Embed(foldname,filename,append,waterPath,args);
 

@@ -148,17 +148,18 @@ public class StrBinaryTurn {
     }
 
     public static List<String> stream2String(List<Integer> buff){
-        String str = "";
+        StringBuilder str = new StringBuilder();
         int[] bs = new int[buff.size()/2];
         for (int i = 0; i < buff.size(); i+=2) {
             int high = buff.get(i);int low = buff.get(i+1);
             if (high == -1 || low == -1) {
-                str += "?";
+                str.append('?');
                 bs[i / 2] = 0;
             }
             else {
                 int in = high * ((int) Math.pow(2, 4)) + low;
-                str += (char) in;
+                if(in!=0)
+                    str.append((char) in);
                 bs[i / 2] = in;
             }
         }
@@ -174,28 +175,11 @@ public class StrBinaryTurn {
             }
         }
 
-//        try {
-//            chinese = new String(bs, "GBK");
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
-//        for(int i=0;i<bs.length;i+=2){
-//            chinese += ((char)(bs[i]*256+bs[i+1]));
-//        }
-//        try {
-//            Charset charset = Charset.defaultCharset();
-//            ByteBuffer buf = ByteBuffer.wrap(bs);
-//            CharBuffer cBuf = charset.decode(buf);
-//            chinese = cBuf.toString();
-//        }catch(Exception e){
-//            e.printStackTrace();
-//            chinese = "编码格式不对，不是中文";
-//        }finally {
-            List<String> list = new LinkedList<>();
-            //先英文结果，后中文结果
-            list.add(str);
-            list.add(chinese);
-            return list;
-//        }
+        List<String> list = new LinkedList<>();
+        //先英文结果，后中文结果
+        list.add(str.toString());
+        list.add(chinese);
+        return list;
+
     }
 }

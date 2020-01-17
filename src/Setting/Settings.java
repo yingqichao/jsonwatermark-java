@@ -9,4 +9,10 @@ public class Settings {
     public static int DEFAULT_DATALEN = 4;
     public static String newTagName = "addw";
     public static String packageNumName = "packageNum";
+    public static double max_allowed_modification = 0.01;
+    public static int row_for_water_len = 8;
+
+    public static int DATA_POLYNOMIAL = 0;
+    public static int KEY_POLYNOMIAL = 1;
+    public static int reserved_space = 100;
 }

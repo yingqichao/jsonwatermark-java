@@ -5,6 +5,7 @@
  */
 import ExcelWatermarkHelper.excel.ExcelUtil;
 import GeneralHelper.LtDecoder;
+import GeneralHelper.Sampler;
 import Setting.Settings;
 import Utils.*;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -20,10 +21,14 @@ import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.*;
 
 import static Setting.Settings.DEFAULT_EMBEDLEN;
+import static Setting.Settings.KEY_POLYNOMIAL;
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 
 public class ExcelDecoder extends AbstractDecoder{
+
+    Map<Integer,Integer> map = new HashMap<>();
+    TreeMap<Integer,Integer> treemap = new TreeMap<>();
 
     File file;
     FileOutputStream out;
@@ -31,13 +36,14 @@ public class ExcelDecoder extends AbstractDecoder{
     String fileVersion;
     ExcelUtil excl = new ExcelUtil();
     List<Integer> keyCols = new LinkedList<>();
+    int max_allowed_modi_digits = 3;
     int keyIndex = 0;
     int startRow = 0;
 
+    Set<Integer> row_contain_len = new HashSet<>();
 
     //for CSV only
     List<String> csvData = new ArrayList<>();
-
     String[][] csvArray;
 
     int[] exclRow = null;
@@ -50,8 +56,11 @@ public class ExcelDecoder extends AbstractDecoder{
     public static int valid = 0;
     public static int updated = 0;
 
-    public ExcelDecoder(File file, int startRow) throws Exception{
+    public ExcelDecoder(File file, int startRow,double max_allowed_modification) throws Exception{
         this.file = file;
+        this.decoder= new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
+        this.max_allowed_modi_digits = (int)Math.max(Math.ceil(Math.log10(1/max_allowed_modification)),3);
+        System.out.println("[Accepted Modification Length] "+ this.max_allowed_modi_digits);
         this.startRow = startRow;
         this.fileVersion = file.getName().substring(file.getName().lastIndexOf("."));
 
@@ -65,18 +74,18 @@ public class ExcelDecoder extends AbstractDecoder{
         this.getSheetsRowAndCol();
 
 //        filesize = Integer.parseInt((this.wb).getProperties().getCoreProperties().getDescription());
-        ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
-        UserDefinedFileAttributeView userDefined = Files.getFileAttributeView(Paths.get(file.getPath()), UserDefinedFileAttributeView.class);
-        try {
-            userDefined.read("num_packages", buf);
-        }catch(Exception e){
-            throw new Exception("The file does not contain watermark.");
-        }
-        buf.flip();
-        filesize = Integer.parseInt(Charset.defaultCharset().decode(buf).toString());
-        if(filesize==0){
-            throw new Exception("Filesize equals to 0. Please check!");
-        }
+//        ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
+//        UserDefinedFileAttributeView userDefined = Files.getFileAttributeView(Paths.get(file.getPath()), UserDefinedFileAttributeView.class);
+//        try {
+//            userDefined.read("num_packages", buf);
+//        }catch(Exception e){
+//            throw new Exception("The file does not contain watermark.");
+//        }
+//        buf.flip();
+//        filesize = Integer.parseInt(Charset.defaultCharset().decode(buf).toString());
+//        if(filesize==0){
+//            throw new Exception("Filesize equals to 0. Please check!");
+//        }
 
 
         if(fileVersion.equals(".csv")){
@@ -93,10 +102,8 @@ public class ExcelDecoder extends AbstractDecoder{
                     else
                         csvArray[i][j] = strs[j];
             }
-        }else{
-            // EXCEL
-//            filesize = Integer.parseInt(getExactValue(startRow-1,exclCol[0]));
         }
+
     }
 
     public String getExactValue(int row,int col){
@@ -138,11 +145,33 @@ public class ExcelDecoder extends AbstractDecoder{
         }
     }
 
-    public void decode(int row,int filesize){
+    public void getFileSize(){
+
+        for(int i=startRow;i<exclRow[0];i++){
+            decode(i,KEY_POLYNOMIAL);
+        }
+        for(int key:map.keySet()){
+            treemap.put(map.get(key),key);
+        }
+        filesize = (treemap.get(treemap.lastKey())+1)*2;
+        System.out.println(">> Filesize: " + filesize + " ("+treemap.lastKey()+")");
+    }
+
+    public void decode(int row,int mode){
+        if(row_contain_len.contains(row)){
+            //说明是隐藏水印长度的行，已经检测过了
+            return;
+        }
+        List<Integer> src_blocks = new LinkedList<>();
         String key = getExactValue(row, keyIndex).toString();
         //init src_blocks and key for pseudo-random
 //        decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
-        List<Integer> src_blocks = decoder.getSrcBlocks(filesize,key,1);
+        if(mode==Settings.DATA_POLYNOMIAL)
+            src_blocks = decoder.getSrcBlocks(filesize,key,1);
+        else
+            decoder.buildPrng(key);
+//        else
+//            decoder.prng = new Sampler(Settings.rand_K, Settings.DEFAULT_DELTA, Settings.DEFAULT_C);
         //get dynamically embedment: calculate total sum
         // A-Z a-z同样去除
 
@@ -179,7 +208,7 @@ public class ExcelDecoder extends AbstractDecoder{
             if(remainLen-len<0)
                 len = remainLen;
 
-             List<Object> list = decoder.extract_excel(((Integer)row).toString(),entry.getValue(),len);
+             List<Object> list = decoder.extract_excel(((Integer)row).toString(),entry.getValue(),len,this.max_allowed_modi_digits);
              int retrieve = (int)list.get(0);
              debug += (String)list.get(1);
 
@@ -193,30 +222,41 @@ public class ExcelDecoder extends AbstractDecoder{
             if(remainLen<=0)    break;
         }
         int real_embed_data = decodeInt>>(Settings.DEFAULT_EMBEDLEN-Settings.DEFAULT_DATALEN);
+        String crc_code = Util.dec2bin(decodeInt,7);
+        if(mode==Settings.DATA_POLYNOMIAL) System.out.println("Debug Extract: EmbeddedAt-> "+debug+"  origin->"+ decodeInt+" data->" + crc_code + " sourceBlock->" + src_blocks.get(0) + " ROW: "+row);
 
-        System.out.println("Debug Extract: EmbeddedAt-> "+debug+"  origin->"+ decodeInt+" data->" + real_embed_data + " sourceBlock->" + src_blocks.get(0) + " ROW: "+row);
+        if (Utils.cyclic.CyclicCoder.decode(decodeInt,mode) != -1) {
 
-        if (Utils.cyclic.CyclicCoder.decode(decodeInt) != -1) {
-            System.out.println("Valid Package.");
+            if(mode==Settings.DATA_POLYNOMIAL) {
+                //隐藏水印数据
+                System.out.println("Valid Package.");
+                if (decoder.consume_block_excel(src_blocks, real_embed_data)) {
+                    decoder.received_packs++;
+                    if (decoder.is_done()) {
+                        success_time++;
+                        System.out.println("--> Decoded Successfully <--... The ExcelWatermarkHelper is now successfully retrieved. Time: " + success_time);
+                        List<Integer> buff = decoder.bytes_dump();
 
-            if(decoder.consume_block_excel(src_blocks,real_embed_data)) {
-                decoder.received_packs++;
-                if (decoder.is_done()) {
-                    success_time++;
-                    System.out.println("--> Decoded Successfully <--... The ExcelWatermarkHelper is now successfully retrieved. Time: " + success_time);
-                    List<Integer> buff = decoder.bytes_dump();
-
-                    List<String> res = Utils.StrBinaryTurn.stream2String(buff);
-                    //分别保存中英文的可能结果
-                    secret_data.add(res.get(0));
-                    secret_data_chinese.add(res.get(1));
-                    decoder.succeed_and_init();
-                } else {
-                    System.out.println("Need more Packs...Received: " + decoder.received_packs);
+                        List<String> res = Utils.StrBinaryTurn.stream2String(buff);
+                        //分别保存中英文的可能结果
+                        secret_data.add(res.get(0));
+                        secret_data_chinese.add(res.get(1));
+                        decoder.succeed_and_init();
+                    } else {
+                        System.out.println("Need more Packs...Received: " + decoder.received_packs);
+                    }
                 }
+            }else{
+                //隐藏水印长度
+                System.out.println("[Detected length/row] " + real_embed_data+" / "+row+" "+crc_code);
+                map.put(real_embed_data,map.getOrDefault(real_embed_data,0)+1);
+                row_contain_len.add(row);
             }
         }else{
-            System.out.println("Invalid Package.Skipped...");
+            if(mode==Settings.DATA_POLYNOMIAL)
+                System.out.println("Invalid Package.Skipped...");
+//            else
+//                System.out.println(crc_code);
         }
 
     }
@@ -248,7 +288,7 @@ public class ExcelDecoder extends AbstractDecoder{
                 if(validLen >= Setting.Settings.DEFAULT_MINLEN_EXCEL)
                     //不足以嵌入信息，并且当前value没有出现过
                     objCol.add(object.toString());
-                objColwithoutLen.add((object.toString().length()<=2)?object.toString():object.toString().substring(0,2));
+                objColwithoutLen.add((object.toString().length()<=this.max_allowed_modi_digits)?object.toString():object.toString().substring(0,this.max_allowed_modi_digits));
             }
 
             double match = ((double)objColwithoutLen.size())/col.size();double matchWithLen = ((double)objCol.size())/col.size();
@@ -293,12 +333,11 @@ public class ExcelDecoder extends AbstractDecoder{
 
 //        WatermarkUtils watermarkUtils = new WatermarkUtils(new File(filePath));
         keyIndex = findKeyIndex();
-
+        getFileSize();
         //Embedment
-        decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
         for(int i=startRow;i<exclRow[0];i++){//固定第一个sheet
             //Embedment;i++){
-            decode(i, filesize);
+            decode(i,Settings.DATA_POLYNOMIAL);
         }
 
 //        return this.secret_data;

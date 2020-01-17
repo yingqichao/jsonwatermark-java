@@ -12,7 +12,7 @@ import java.util.List;
 public class MainExtract_excel {
     public static boolean Extract(String filename,String append,String filePath,int startRow,int[] args) throws Exception{
 
-        ExcelDecoder extract = new ExcelDecoder(new File(filePath),startRow);
+        ExcelDecoder extract = new ExcelDecoder(new File(filePath),startRow,0.05);
         System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
         try {
             extract.run(filePath,args);
@@ -44,8 +44,8 @@ public class MainExtract_excel {
     }
 
     public static void main(String[] s) throws Exception{
-        String filename = "6";//ta_cb_person_heatmap_collect_deleted
-        String append = ".csv";
+        String filename = "long";//ta_cb_person_heatmap_collect_deleted
+        String append = ".xlsx";
         int[] args = new int[]{};
 
 

@@ -319,6 +319,10 @@ public class Util {
                 tmp = '0'+tmp;
             result.append(tmp);
         }
+        if(!isContainChinese(str)&&result.length()/16!=0){
+            while(result.length()%16!=0)
+                result.append('0');
+        }
 //        System.out.println(result);
         return result.toString();
     }

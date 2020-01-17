@@ -29,7 +29,7 @@ public class GeneralEmbedding {
 
         if(append.equals(".xlsx") || append.equals(".xls") || append.equals(".csv")){
             System.out.println("[Service Started] Excel watermarking detected...");
-            ExcelEncoder embed = new ExcelEncoder(binarySeq, filePath, 1);
+            ExcelEncoder embed = new ExcelEncoder(binarySeq, filePath, 1,0.05);
             try {
 //            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
                 embed.run(filePath, "src//embedded_results//" + filename + "_embedded" + append,args);

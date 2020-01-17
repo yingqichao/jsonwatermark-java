@@ -1,5 +1,7 @@
 package GeneralHelper;
 
+import Setting.Settings;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,6 +95,7 @@ public class Sampler {
         return Math.min(this.K,index + 1);
     }
 
+    public void setK(int K){ this.K = K;}
     public void setSeed(int seed){ this.state = seed;}
 
     public List<Integer> get_src_blocks(Integer seed){
@@ -103,15 +106,22 @@ public class Sampler {
         if(seed!=null)  this.state = seed;
         int blockseed = (int)this.state;
         int d = sample_d();
-        int have = 0;
+        int have = 0;int total = 0;int buff = 0;
         Set<Integer> nums = new HashSet<>();
         while (have < d) {
             int num = get_next() % this.K;//#Use Pseudo Random 2 nd
+            total++;
             if(!nums.contains(num)) {
                 nums.add(num);
-                have += 1;
+                have++;
             }
         }
+        while(total<= Settings.reserved_space){
+            buff = get_next();
+            total++;
+        }
+        System.out.println(buff);
+
         res.add(blockseed);res.add(d);
         res.addAll(nums);
 

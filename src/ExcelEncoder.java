@@ -42,6 +42,7 @@ public class ExcelEncoder extends AbstractEncoder {
     int[] exclCol = null;
     int sheetNum = -1;
     int startRow = 0;
+    int max_allowed_modi_digits = 3;
     Set<Integer> banColList = new HashSet<>();
 
 
@@ -61,8 +62,10 @@ public class ExcelEncoder extends AbstractEncoder {
 //        this.getSheetsRowAndCol();
 //    }
 
-    public ExcelEncoder(String f_bytes,String file,int startRow) {
+    public ExcelEncoder(String f_bytes,String file,int startRow,double max_allowed_modification) {
         super(f_bytes);
+        this.max_allowed_modi_digits = (int)Math.max(Math.ceil(Math.log10(1/max_allowed_modification)),3);
+        System.out.println("[Accepted Modification Length] "+ this.max_allowed_modi_digits);
         this.startRow = startRow;
         this.file = new File(file);
         this.fileVersion = this.file.getName().substring(this.file.getName().lastIndexOf("."));
@@ -171,11 +174,11 @@ public class ExcelEncoder extends AbstractEncoder {
                 }
 
 //                (this.wb).getProperties().getCoreProperties().setDescription(((Integer)this.solitionGenerator.K).toString());
-                ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
-                buf.put(((Integer)this.solitionGenerator.K).toString().getBytes()) ;
-                buf.flip();
-                UserDefinedFileAttributeView userDefined = Files.getFileAttributeView(Paths.get(outpath), UserDefinedFileAttributeView.class);
-                userDefined.write("num_packages",buf);
+//                ByteBuffer buf = ByteBuffer.allocateDirect(10) ;
+//                buf.put(((Integer)this.solitionGenerator.K).toString().getBytes()) ;
+//                buf.flip();
+//                UserDefinedFileAttributeView userDefined = Files.getFileAttributeView(Paths.get(outpath), UserDefinedFileAttributeView.class);
+//                userDefined.write("num_packages",buf);
 
 //
 
@@ -219,7 +222,7 @@ public class ExcelEncoder extends AbstractEncoder {
                 if(validLen >= Setting.Settings.DEFAULT_MINLEN_EXCEL)
                     //不足以嵌入信息，并且当前value没有出现过
                     objCol.add(object.toString());
-                objColwithoutLen.add((object.toString().length()<=2)?object.toString():object.toString().substring(0,2));
+                objColwithoutLen.add((object.toString().length()<=this.max_allowed_modi_digits)?object.toString():object.toString().substring(0,this.max_allowed_modi_digits));
             }
 
             double match = ((double)objColwithoutLen.size())/col.size();double matchWithLen = ((double)objCol.size())/col.size();
@@ -269,16 +272,27 @@ public class ExcelEncoder extends AbstractEncoder {
 
     public boolean encoder(int row) throws Exception{
         //prepare
-        int sheet = 0;int debug1 = 0;
+        List<Integer> list = new LinkedList<>();
         this.seed = Util.BKDRHash(getExactValue(row,keyIndex),131);
-
+//        if(row%Settings.row_for_water_len==0)
+//            this.solitionGenerator.setK(Settings.rand_K);
         this.solitionGenerator.setSeed(this.seed);
-        List<Integer> list = this.solitionGenerator.get_src_blocks(null);
-        int block_data = 0;
-        for(int i=2;i<list.size();i++)
-            block_data ^= this.blocks[list.get(i)];
 
-        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(block_data),Settings.DEFAULT_EMBEDLEN);
+        int block_data = 0;int key = 0;
+        if(row%Settings.row_for_water_len!=0) {
+            //正常嵌入数据的行
+            list = this.solitionGenerator.get_src_blocks(null);
+            key = Settings.DATA_POLYNOMIAL;
+            for (int i = 2; i < list.size(); i++)
+                block_data ^= this.blocks[list.get(i)];
+        }else{
+            //否则是隐藏水印长度的行，水印长度也由4bit构成
+            list = this.solitionGenerator.get_src_blocks(null);
+            key = Settings.KEY_POLYNOMIAL;
+            block_data = this.solitionGenerator.K/2-1;
+        }
+
+        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(block_data,key),Settings.DEFAULT_EMBEDLEN);
         // dynamically embedment: calculate total sum
         // A-Z a-z同样去除
 
@@ -323,7 +337,10 @@ public class ExcelEncoder extends AbstractEncoder {
             if(beginInd>=crc_text.length())    break;
         }
 
-        System.out.println("Debug Embed: EmbeddedAt-> "+debug+" origin->"+Util.bin2dec(crc_text)+" data->" + Util.bin2dec(crc_text.substring(0,Settings.DEFAULT_DATALEN)) + " sourceBlock->" + list.get(2) + " ROW: "+row);
+//        if(row%Settings.row_for_water_len==0)
+//            this.solitionGenerator.setK(this.K);
+        //if(row%Settings.row_for_water_len!=0)
+            System.out.println(((row%Settings.row_for_water_len==0)?">":"")+"Debug Embed: EmbeddedAt-> "+debug+" origin->"+crc_text+" data->" + Util.bin2dec(crc_text.substring(0,Settings.DEFAULT_DATALEN)) + " ROW: "+row);
 
         return true;
     }
@@ -343,9 +360,9 @@ public class ExcelEncoder extends AbstractEncoder {
                 startFrom++;
             }
 
-            //前两位暂存
-            buffer = value.substring(0,startFrom+2);
-            newvalue = new StringBuilder(value.substring(startFrom+2));
+            //前几位暂存
+            buffer = value.substring(0,startFrom+this.max_allowed_modi_digits);
+            newvalue = new StringBuilder(value.substring(startFrom+this.max_allowed_modi_digits));
 
 //            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
         }else if(Util.isNumeric(value)){
@@ -362,9 +379,9 @@ public class ExcelEncoder extends AbstractEncoder {
                 startFrom++;
             }
 
-            //前两位暂存
-            buffer = value.substring(0,startFrom+2);
-            newvalue = new StringBuilder(value.substring(startFrom+2));
+            //前几位暂存
+            buffer = value.substring(0,startFrom+this.max_allowed_modi_digits);
+            newvalue = new StringBuilder(value.substring(startFrom+this.max_allowed_modi_digits));
 
 //            first = value.charAt(startFrom);newvalue.deleteCharAt(0);
 //            dotIndex = newvalue.indexOf(".");
@@ -375,11 +392,7 @@ public class ExcelEncoder extends AbstractEncoder {
 
 //        Set<Integer> duplicateSet = new HashSet<>(0);
         int embedded = 0;
-        //前两位暂存
-//        first = newvalue.substring(0,2);
-//        newvalue.deleteCharAt(0);newvalue.deleteCharAt(0);
 
-//        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(waterSeq),Settings.DEFAULT_EMBEDLEN);
         String crc_text = waterSeq;
 
         String debug = new String();

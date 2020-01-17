@@ -34,7 +34,7 @@ public class GeneralExtraction {
     //        String[] Keys = {"id", "name", "time", "phone", "date"};
 
 
-                ExcelDecoder extract = new ExcelDecoder(new File(filePath), startRow);
+                ExcelDecoder extract = new ExcelDecoder(new File(filePath), startRow,0.05);
                 System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
 
                     extract.run(filePath,args);
