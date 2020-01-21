@@ -35,8 +35,10 @@ public class ExcelEncoder extends AbstractEncoder {
 
     String[][] csvArray;
 
+    //显示包数量的数组，8bit，如16表示为15的二进制，为00001111，则进一步表示为
+    int[] length_represent = new int[4];
 
-    int keyIndex = 0;
+    TreeSet<Integer> keyIndex = new TreeSet<>();
 
     int[] exclRow = null;
     int[] exclCol = null;
@@ -44,6 +46,10 @@ public class ExcelEncoder extends AbstractEncoder {
     int startRow = 0;
     int max_allowed_modi_digits = 3;
     Set<Integer> banColList = new HashSet<>();
+
+    boolean MODE;
+    TreeSet<Integer> redundant = new TreeSet<>();
+    int length_need = 0;
 
 
 //    public ExcelEncoder(int seed, double c, double delta, String f_bytes,File file,int startRow) {
@@ -62,8 +68,9 @@ public class ExcelEncoder extends AbstractEncoder {
 //        this.getSheetsRowAndCol();
 //    }
 
-    public ExcelEncoder(String f_bytes,String file,int startRow,double max_allowed_modification) {
+    public ExcelEncoder(String f_bytes,String file,int startRow,double max_allowed_modification,boolean isLong) {
         super(f_bytes);
+        this.MODE = isLong;
         this.max_allowed_modi_digits = (int)Math.max(Math.ceil(Math.log10(1/max_allowed_modification)),3);
         System.out.println("[Accepted Modification Length] "+ this.max_allowed_modi_digits);
         this.startRow = startRow;
@@ -81,7 +88,7 @@ public class ExcelEncoder extends AbstractEncoder {
         if(this.fileVersion.equals(".csv")){
             // CSV
             csvArray = new String[exclRow[0]][exclCol[0]];
-            for(int i=0;i<exclRow[0];i++){
+            for(int i=startRow;i<exclRow[0];i++){
                 String[] strs1 = csvData.get(i).split(",");String[] strs2 = csvData.get(i).split("\t");
 
                 String[] strs = (strs1.length>=strs2.length)?strs1:strs2;
@@ -106,7 +113,7 @@ public class ExcelEncoder extends AbstractEncoder {
             for (int i = 0; i < this.sheetNum; i++) {
                 exclRow[i] = this.wb.getSheetAt(i).getPhysicalNumberOfRows();
                 if (0 != exclRow[i]) {
-                    for (int j = startRow; j < min(exclRow[i], 20); j++) {
+                    for (int j = startRow; j < exclRow[i]; j++) {
                         exclCol[i] = max(this.wb.getSheetAt(i).getRow(j).getPhysicalNumberOfCells(), exclCol[i]);
                     }
                 }
@@ -132,7 +139,7 @@ public class ExcelEncoder extends AbstractEncoder {
 //            WatermarkUtils embeddingUint = new WatermarkUtils(new File(filePath));
 
 
-            keyIndex = findKeyIndex();
+            findKeyIndex();
 //            keyIndex = keyCols.get(0);
 //            keyCols.remove(0);
 
@@ -202,34 +209,41 @@ public class ExcelEncoder extends AbstractEncoder {
         double thresh = 0.0;//int valid = 0;
         double maxMatch = 0;//double firstMatch = 0;
         double matchLen = 0;
+        boolean firstMethod = true;
+        int sumLen = 0;TreeMap<Integer,Integer> shortest = new TreeMap<>();
 
-        for(int colIndex = 0; colIndex < this.exclCol[sheetIndex]; colIndex++){
-            Set<String> objCol = new HashSet<>();Set<String> objColwithoutLen = new HashSet<>();
+        for (int colIndex = 0; colIndex < this.exclCol[sheetIndex]; colIndex++) {
+            Set<String> objCol = new HashSet<>();
+            Set<String> objColwithoutLen = new HashSet<>();
             List<Object> col = new LinkedList<>();
-            if(csvData.size()==0) {
+            if (csvData.size() == 0) {
                 // EXCEL
-                col = this.excl.getColValues(this.wb, sheetIndex, colIndex, 20);
-            }else{
+                col = this.excl.getColValues(this.wb, sheetIndex, colIndex);
+            } else {
                 // CSV
-                for(int i=startRow;i<exclRow[0];i++)
+                for (int i = startRow; i < exclRow[0]; i++)
                     col.add(csvArray[i][colIndex]);
             }
-            for(Object object:col){
-                if(object==null)
+            for (Object object : col) {
+                if (object == null)
                     continue;
-                int validLen = object.toString().replaceAll("[^A-Za-z0-9]","").length();
+                int validLen = object.toString().replaceAll("[^A-Za-z0-9]", "").length();
 //                totalLen += validLen;
-                if(validLen >= Setting.Settings.DEFAULT_MINLEN_EXCEL)
+                if (validLen >= Setting.Settings.DEFAULT_MINLEN_EXCEL)
                     //不足以嵌入信息，并且当前value没有出现过
                     objCol.add(object.toString());
-                objColwithoutLen.add((object.toString().length()<=this.max_allowed_modi_digits)?object.toString():object.toString().substring(0,this.max_allowed_modi_digits));
+                objColwithoutLen.add((object.toString().length() <= this.max_allowed_modi_digits) ? object.toString() : object.toString().substring(0, this.max_allowed_modi_digits));
+                sumLen+=object.toString().length();
             }
 
-            double match = ((double)objColwithoutLen.size())/col.size();double matchWithLen = ((double)objCol.size())/col.size();
-            //maxMatch = Math.max(maxMatch,match);
-            if(match>=thresh && match>=maxMatch){
+            shortest.put(sumLen,colIndex);
 
-                if(match>maxMatch || matchWithLen<matchLen){
+            double match = ((double) objColwithoutLen.size()) / col.size();
+            double matchWithLen = ((double) objCol.size()) / col.size();
+            //maxMatch = Math.max(maxMatch,match);
+            if (match >= thresh && match >= maxMatch) {
+
+                if (match > maxMatch || matchWithLen < matchLen) {
                     matchLen = matchWithLen;
                     keyCol = colIndex;
                 }
@@ -243,18 +257,150 @@ public class ExcelEncoder extends AbstractEncoder {
 //            }
         }
 
-        if(keyCol==-1){
-            System.out.println("[Warning] Using a longer key");
-            throw new Exception("[Warning] No valid key index found...Embedding was aborted...");
+        //##########Strategy 1
+//        if(firstMethod) {
+
+            if (keyCol == -1) {
+                System.out.println("[Warning] Using a longer key");
+                throw new Exception("[Warning] No valid key index found...Embedding was aborted...");
 //            keyCol = firstThresh;
 //            maxMatch = firstMatch;
+
+            }
+
+            System.out.println("The selected col is COL: " + keyCol + " with maxMatch " + maxMatch);
+//        }
+
+        //##########Strategy 2:找两列重复最小的，合并起来
+//        int colNum = 1;
+//        while(maxMatch<0.5&&colNum<2){
+//            int shortCol = shortest.get(shortest.firstKey());Set<String> hash = new HashSet<>();
+//            List<Object> col = new LinkedList<>();
+//            if (csvData.size() == 0) {
+//                // EXCEL
+//                col = this.excl.getColValues(this.wb, sheetIndex, shortCol);
+//            } else {
+//                // CSV
+//                for (int i = startRow; i < exclRow[0]; i++)
+//                    col.add(csvArray[i][shortCol]);
+//            }
+//            for (Object object : col) {
+//                if (object == null)
+//                    continue;
+//
+//                hash.add((object.toString().length() <= this.max_allowed_modi_digits) ? object.toString() : object.toString().substring(0, this.max_allowed_modi_digits));
+//
+//            }
+//            colNum++;shortest.remove(shortest.firstKey());
+//        }
+
+        //##########Strategy 3:适当修改关联列
+        Map<String,Integer> objCol = new HashMap<>();
+        if(!banColList.contains(keyCol)){
+            List<Object> col = new LinkedList<>();
+            if (csvData.size() == 0) {
+                // EXCEL
+                col = this.excl.getColValues(this.wb, sheetIndex, keyCol);
+            } else {
+                // CSV
+                for (int i = startRow; i < exclRow[0]; i++)
+                    col.add(csvArray[i][keyCol]);
+            }
+            for (Object object : col) {
+                if (object == null)
+                    continue;
+                objCol.put(object.toString(),objCol.getOrDefault(object.toString(),0)+1);
+
+            }
+            int modified = 0;
+            for (int i = startRow; i < exclRow[0]; i++) {
+                String str = getExactValue(i, keyCol);
+                if(objCol.containsKey(str) && objCol.get(str)>1 && Util.isNumeric(str) && Util.lengthQualify(str,this.max_allowed_modi_digits)>0){
+                    //遇到重复，尝试修改
+                    StringBuilder builder = new StringBuilder(str);
+                    for(int j=this.max_allowed_modi_digits;j<str.length();j++){
+                        //对于数字：统一向下取结果
+                        char ori = builder.charAt(j);int k = (ori%2==0)?1:0;
+                        builder.setCharAt(j, (char) (ori - ori % 2 + k));
+                        String newstr = builder.toString();
+                        if(!objCol.containsKey(newstr)){
+                            objCol.put(str,objCol.get(str)-1);
+                            objCol.put(newstr,1);
+                            if(csvData.size()==0) {
+                                this.excl.writeWorkBookAt(this.wb, 0, i, keyCol, newstr);
+                            }else{
+                                csvArray[i][keyCol] = newstr;
+                            }
+                            modified++;
+                            break;
+                        }
+                        builder.setCharAt(j, ori);
+                    }
+                }
+            }
+            System.out.println("After Modification, maxMatch: " + ((double)objCol.size())/exclRow[0]+", modified: "+modified);
 
         }
 
 
-        System.out.println("The selected col is COL: "+keyCol+" with maxMatch "+maxMatch);
+        keyIndex.add(keyCol);
 
+        int name_collide = 0;int hash_collide = 0;int length_collide = 0;int last_used_redundant = -1;
+        length_need = Math.max(1,exclRow[0]/Settings.row_for_water_len);
+        //计算有多少可以嵌入的数据包
+        Set<Integer> seeds = new HashSet<>();Set<String> names = new HashSet<>();
+        for(int i=startRow;i<exclRow[0];i++) {
+            String name = "";
+            for(int index:keyIndex)
+                name+=getExactValue(i, index);
+            int seed = Util.BKDRHash(name, 131);
+//            if(i%Settings.row_for_water_len==0)
+//                continue;
+            if(names.contains(name) || seeds.contains(seed)){
+                if(names.contains(name))
+                    name_collide++;
+                else
+                    hash_collide++;
 
+                if(length_need>0) {
+                    if(last_used_redundant==-1 || i-last_used_redundant>=Settings.row_for_water_len*0.75){
+
+                        //需要两个用作嵌入水印长度的冗余行之间空开足够多距离
+                        last_used_redundant = i;
+                        redundant.add(i);
+                        length_need--;
+                    }
+                }
+                continue;
+            }
+
+            int totalLen = 0;
+            for (int col = 0; col < exclCol[0]; col++) {
+                //不是关键列，也不在banList里
+                if (!keyIndex.contains(col) && !banColList.contains(col)) {
+                    String str = getExactValue(i, col);
+                    if (Util.isNumeric(str)) {//Util.isInteger(str) &&
+                        //新规定要求只能在float或者int中嵌入数据
+                        //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
+                        if (Double.parseDouble(str) != 0 && Util.lengthQualify(str, this.max_allowed_modi_digits) > 0) {
+                            totalLen += Util.lengthQualify(str, this.max_allowed_modi_digits);
+                        }
+                    }
+                }
+            }
+            int validLen = Settings.DEFAULT_EMBEDLEN;
+            if (totalLen >= validLen) {
+                //长度足够
+                names.add(name);seeds.add(seed);
+            }else{
+                length_collide++;
+            }
+        }
+        System.out.println("---------------------------");
+        System.out.println("[Num of valid packages] "+seeds.size()+"/"+exclRow[0]);
+        System.out.println("Name Collide: "+name_collide+"/ Seed_Collide: "+hash_collide+"/ Length_Collide: "+length_collide);
+        System.out.println("len: "+(this.solitionGenerator.K/2-1));
+        System.out.println("---------------------------");
         return keyCol;
     }
 
@@ -273,26 +419,33 @@ public class ExcelEncoder extends AbstractEncoder {
     public boolean encoder(int row) throws Exception{
         //prepare
         List<Integer> list = new LinkedList<>();
-        this.seed = Util.BKDRHash(getExactValue(row,keyIndex),131);
+        String name = "";
+        for(int key:keyIndex)
+            name+=getExactValue(row,key);
+        this.seed = Util.BKDRHash(name,131);
 //        if(row%Settings.row_for_water_len==0)
 //            this.solitionGenerator.setK(Settings.rand_K);
         this.solitionGenerator.setSeed(this.seed);
 
-        int block_data = 0;int key = 0;
-        if(row%Settings.row_for_water_len!=0) {
+        int block_data = 0;boolean isNormal;
+        if(redundant.contains(row) || (length_need>0 && row%Settings.row_for_water_len==0)) {
+            //否则是隐藏水印长度的行，水印长度也由4bit构成
+            if(redundant.add(row)){
+                length_need--;
+            }
+            list = this.solitionGenerator.get_src_blocks(null);
+            isNormal = Settings.LENGTH;
+            block_data = this.solitionGenerator.K/2-1;
+
+        }else{
             //正常嵌入数据的行
             list = this.solitionGenerator.get_src_blocks(null);
-            key = Settings.DATA_POLYNOMIAL;
+            isNormal = Settings.NORMAL;
             for (int i = 2; i < list.size(); i++)
                 block_data ^= this.blocks[list.get(i)];
-        }else{
-            //否则是隐藏水印长度的行，水印长度也由4bit构成
-            list = this.solitionGenerator.get_src_blocks(null);
-            key = Settings.KEY_POLYNOMIAL;
-            block_data = this.solitionGenerator.K/2-1;
         }
 
-        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(block_data,key),Settings.DEFAULT_EMBEDLEN);
+        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(block_data,isNormal,MODE),(!isNormal&&MODE)?Settings.DEFAULT_EMBEDLEN_LONGMODE:Settings.DEFAULT_EMBEDLEN);
         // dynamically embedment: calculate total sum
         // A-Z a-z同样去除
 
@@ -302,19 +455,20 @@ public class ExcelEncoder extends AbstractEncoder {
         int totalLen = 0;List<Integer> eachLen = new LinkedList<>();
         for(int col=0;col<exclCol[0];col++){
             //不是关键列，也不在banList里
-            if(col!=keyIndex && ! banColList.contains(col)) {
+            if(!keyIndex.contains(col) && ! banColList.contains(col)) {
                 String str = getExactValue(row, col);
                 if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据
                     //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
-                    if(Double.parseDouble(str)!=0 && Util.lengthQualify(str,3)>0) {
-                        totalLen += Util.lengthQualify(str,3);
+                    if(Double.parseDouble(str)!=0 && Util.lengthQualify(str,this.max_allowed_modi_digits)>0) {
+                        totalLen += Util.lengthQualify(str,this.max_allowed_modi_digits);
                         pq.offer(new AbstractMap.SimpleEntry<>(col, str));
                     }
                 }
             }
         }
-        if(totalLen<Settings.DEFAULT_EMBEDLEN){
+        int validLen = (!isNormal && MODE)?Settings.DEFAULT_EMBEDLEN_LONGMODE:Settings.DEFAULT_EMBEDLEN;
+        if(totalLen<validLen){
             //表示当前行可以用来嵌入信息的总长度不够，一般都不会执行的
             System.out.println("[SKIPPED PACK] Total length of row "+row+" is not enough!");
             valid--;
@@ -329,7 +483,7 @@ public class ExcelEncoder extends AbstractEncoder {
         while(pq.size()!=0){
             Map.Entry<Integer,String> entry = pq.poll();
             //data embedment according to length of value
-            int len = (int)Math.ceil(crc_text.length()*Util.lengthQualify(entry.getValue().toString(),3)/(double)totalLen);
+            int len = (int)Math.ceil(crc_text.length()*Util.lengthQualify(entry.getValue().toString(),this.max_allowed_modi_digits)/(double)totalLen);
 
             debug += modify(row,entry.getKey(),entry.getValue(),crc_text.substring(beginInd,Math.min(beginInd+len,crc_text.length())));
 
@@ -340,7 +494,7 @@ public class ExcelEncoder extends AbstractEncoder {
 //        if(row%Settings.row_for_water_len==0)
 //            this.solitionGenerator.setK(this.K);
         //if(row%Settings.row_for_water_len!=0)
-            System.out.println(((row%Settings.row_for_water_len==0)?">":"")+"Debug Embed: EmbeddedAt-> "+debug+" origin->"+crc_text+" data->" + Util.bin2dec(crc_text.substring(0,Settings.DEFAULT_DATALEN)) + " ROW: "+row);
+            System.out.println(((isNormal)?"":">")+"Debug Embed: EmbeddedAt-> "+debug+" origin->"+crc_text+" data->" + Util.bin2dec(crc_text.substring(0,Settings.DEFAULT_DATALEN)) + " ROW: "+row);
 
         return true;
     }

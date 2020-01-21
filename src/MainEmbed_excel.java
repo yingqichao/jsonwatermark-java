@@ -1,3 +1,4 @@
+import Setting.Settings;
 import Utils.Util;
 
 import java.io.File;
@@ -21,7 +22,7 @@ public class MainEmbed_excel {
 
         String filePath = "src//resources//"+foldname+"//"+filename+append;
         System.out.println("\n================= Embed from file " + "\"" + filePath + "\" =================");
-        ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,1,0.05);
+        ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,1,0.05, Settings.LONG);
         try {
 //            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
             embed.run(filePath,"src//embedded_results//" + filename + "_embedded" + append,args);

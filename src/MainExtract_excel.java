@@ -4,6 +4,8 @@ import org.apache.poi.POIXMLProperties;
 import java.io.File;
 import java.util.List;
 
+import static Setting.Settings.LONG;
+
 /**
  * @author Qichao Ying
  * @date 2019/8/7 15:50
@@ -12,7 +14,7 @@ import java.util.List;
 public class MainExtract_excel {
     public static boolean Extract(String filename,String append,String filePath,int startRow,int[] args) throws Exception{
 
-        ExcelDecoder extract = new ExcelDecoder(new File(filePath),startRow,0.05);
+        ExcelDecoder extract = new ExcelDecoder(new File(filePath),startRow,0.05,LONG);
         System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
         try {
             extract.run(filePath,args);

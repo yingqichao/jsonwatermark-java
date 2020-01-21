@@ -156,20 +156,20 @@ public class Util {
 //# }
 
     public static int BKDRHash(String str,Integer seed){
-        int hash = 0;if(seed==null) seed = 131;
+        long hash = 0;if(seed==null) seed = 131;
         for(char ch:str.toCharArray()){
-            int ans = 0;
-            if(ch>='a' && ch<='z'){
-                ans = ch-'a';
-            }else if(ch>='A' && ch<='Z'){
-                ans = ch-'A';
-            }else if(ch>='0' && ch<='9'){
-                ans = ch-'0';
-            }
+            int ans = ch;
+//            if(ch>='a' && ch<='z'){
+//                ans = ch-'a';
+//            }else if(ch>='A' && ch<='Z'){
+//                ans = ch-'A';
+//            }else if(ch>='0' && ch<='9'){
+//                ans = ch-'0';
+//            }
             hash = hash * seed + ans;
             hash = hash & 0x7FFFFFFF;
         }
-        return hash;
+        return (int)hash;
     }
 
     public static Map<String,String> readFakeJSON(String filename){
@@ -194,14 +194,14 @@ public class Util {
 
     }
 
-    public static int lengthQualify(String str,int minLength){
+    public static int lengthQualify(String str,int max_allowed_modi_digits){
         StringBuilder b1 = new StringBuilder(str);
         // 去除前缀的0
         while(b1.length()!=0 && (b1.charAt(0)=='-' || b1.charAt(0)=='.' || b1.charAt(0)=='0')){
             b1.deleteCharAt(0);
         }
 
-        return b1.toString().replaceAll("[^0-9]+", "").length()-2;
+        return b1.toString().replaceAll("[^0-9]+", "").length()-max_allowed_modi_digits;
     }
 
     public static JsonElement replaceKey(JsonElement source,Map<String, String> rep,String prefix,String curr,int arrayCount,String newTagName,String packageNumName,int isRoot) {
@@ -323,6 +323,11 @@ public class Util {
             while(result.length()%16!=0)
                 result.append('0');
         }
+
+        //现规定传过去的长度至少为1，也即2个中文，所以需要至少补到32位
+        while(result.length()<32)
+            result.append('0');
+
 //        System.out.println(result);
         return result.toString();
     }

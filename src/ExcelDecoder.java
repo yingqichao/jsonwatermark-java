@@ -20,8 +20,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.*;
 
-import static Setting.Settings.DEFAULT_EMBEDLEN;
-import static Setting.Settings.KEY_POLYNOMIAL;
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 
@@ -51,13 +49,17 @@ public class ExcelDecoder extends AbstractDecoder{
     int sheetNum = -1;
     int filesize = 0;
     Set<Integer> banColList = new HashSet<>();
-
+    Set<Integer> redundant = new HashSet<>();
+    int length_need = 0;
     public static int sum = 0;
     public static int valid = 0;
     public static int updated = 0;
 
-    public ExcelDecoder(File file, int startRow,double max_allowed_modification) throws Exception{
+    boolean MODE;
+
+    public ExcelDecoder(File file, int startRow,double max_allowed_modification,boolean isLong) throws Exception{
         this.file = file;
+        this.MODE = isLong;
         this.decoder= new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
         this.max_allowed_modi_digits = (int)Math.max(Math.ceil(Math.log10(1/max_allowed_modification)),3);
         System.out.println("[Accepted Modification Length] "+ this.max_allowed_modi_digits);
@@ -148,16 +150,20 @@ public class ExcelDecoder extends AbstractDecoder{
     public void getFileSize(){
 
         for(int i=startRow;i<exclRow[0];i++){
-            decode(i,KEY_POLYNOMIAL);
+            decode(i,Settings.LENGTH);
         }
         for(int key:map.keySet()){
             treemap.put(map.get(key),key);
         }
         filesize = (treemap.get(treemap.lastKey())+1)*2;
+        if(filesize==2) {
+            treemap.remove(treemap.lastKey());
+            filesize = (treemap.get(treemap.lastKey()) + 1) * 2;
+        }
         System.out.println(">> Filesize: " + filesize + " ("+treemap.lastKey()+")");
     }
 
-    public void decode(int row,int mode){
+    public void decode(int row,boolean isNormal){
         if(row_contain_len.contains(row)){
             //说明是隐藏水印长度的行，已经检测过了
             return;
@@ -166,7 +172,7 @@ public class ExcelDecoder extends AbstractDecoder{
         String key = getExactValue(row, keyIndex).toString();
         //init src_blocks and key for pseudo-random
 //        decoder = new LtDecoder(Settings.DEFAULT_C,Settings.DEFAULT_DELTA);
-        if(mode==Settings.DATA_POLYNOMIAL)
+        if(isNormal)
             src_blocks = decoder.getSrcBlocks(filesize,key,1);
         else
             decoder.buildPrng(key);
@@ -185,26 +191,27 @@ public class ExcelDecoder extends AbstractDecoder{
                 if(Util.isNumeric(str)) {//Util.isInteger(str) &&
                     //新规定要求只能在float或者int中嵌入数据
                     //数据为0不做嵌入，且修改幅度不可以超过0.05，也即前两位不考虑嵌入
-                    if(Double.parseDouble(str)!=0 && Util.lengthQualify(str,3)>0) {
-                        totalLen += Util.lengthQualify(str,3);
+                    if(Double.parseDouble(str)!=0 && Util.lengthQualify(str,this.max_allowed_modi_digits)>0) {
+                        totalLen += Util.lengthQualify(str,this.max_allowed_modi_digits);
                         pq.offer(new AbstractMap.SimpleEntry<>(col, str));
                     }
                 }
             }
         }
         //data extraction
-        if(totalLen<Settings.DEFAULT_EMBEDLEN){
+        int validLen = (!isNormal && MODE)?Settings.DEFAULT_EMBEDLEN_LONGMODE:Settings.DEFAULT_EMBEDLEN;
+        if(totalLen<validLen){
             //表示当前行可以用来嵌入信息的总长度不够，一般都不会执行的
             System.out.println("[SKIPPED PACK] Total length of row "+row+" is not enough!");
 
             return;
         }
-        String debug = new String();
-        int remainLen = DEFAULT_EMBEDLEN;int decodeInt = 0;
+        String debug = new String();int decodeInt = 0;
+        int remainLen = validLen;
         while(pq.size()!=0){
             Map.Entry<Integer,String> entry = pq.poll();
             //data embedment according to length of value
-            int len = (int)Math.ceil(DEFAULT_EMBEDLEN*Util.lengthQualify(entry.getValue().toString(),3)/(double)totalLen);
+            int len = (int)Math.ceil(validLen*Util.lengthQualify(entry.getValue().toString(),this.max_allowed_modi_digits)/(double)totalLen);
             if(remainLen-len<0)
                 len = remainLen;
 
@@ -221,13 +228,15 @@ public class ExcelDecoder extends AbstractDecoder{
 
             if(remainLen<=0)    break;
         }
-        int real_embed_data = decodeInt>>(Settings.DEFAULT_EMBEDLEN-Settings.DEFAULT_DATALEN);
-        String crc_code = Util.dec2bin(decodeInt,7);
-        if(mode==Settings.DATA_POLYNOMIAL) System.out.println("Debug Extract: EmbeddedAt-> "+debug+"  origin->"+ decodeInt+" data->" + crc_code + " sourceBlock->" + src_blocks.get(0) + " ROW: "+row);
+        int real_embed_data = decodeInt>>((!isNormal && MODE)?Settings.DEFAULT_EMBEDLEN_LONGMODE-Settings.DEFAULT_DATALEN_LONGMODE:Settings.DEFAULT_EMBEDLEN-Settings.DEFAULT_DATALEN);
+        String crc_code = Util.dec2bin(decodeInt,(!isNormal&&MODE)?Settings.DEFAULT_EMBEDLEN_LONGMODE:Settings.DEFAULT_EMBEDLEN);
+        if(!isNormal)
+            System.out.println(crc_code);
+        if(isNormal) System.out.println("Debug Extract: EmbeddedAt-> "+debug+"  origin->"+ decodeInt+" data->" + crc_code + " sourceBlock->" + src_blocks.get(0) + " ROW: "+row);
 
-        if (Utils.cyclic.CyclicCoder.decode(decodeInt,mode) != -1) {
+        if (Utils.cyclic.CyclicCoder.decode(decodeInt,isNormal,MODE) != -1) {
 
-            if(mode==Settings.DATA_POLYNOMIAL) {
+            if(isNormal) {
                 //隐藏水印数据
                 System.out.println("Valid Package.");
                 if (decoder.consume_block_excel(src_blocks, real_embed_data)) {
@@ -253,7 +262,7 @@ public class ExcelDecoder extends AbstractDecoder{
                 row_contain_len.add(row);
             }
         }else{
-            if(mode==Settings.DATA_POLYNOMIAL)
+            if(isNormal)
                 System.out.println("Invalid Package.Skipped...");
 //            else
 //                System.out.println(crc_code);
@@ -274,7 +283,7 @@ public class ExcelDecoder extends AbstractDecoder{
             List<Object> col = new LinkedList<>();
             if(csvData.size()==0) {
                 // EXCEL
-                col = this.excl.getColValues(this.wb, sheetIndex, colIndex, 20);
+                col = this.excl.getColValues(this.wb, sheetIndex, colIndex);
             }else{
                 // CSV
                 for(int i=startRow;i<exclRow[0];i++)
@@ -337,7 +346,7 @@ public class ExcelDecoder extends AbstractDecoder{
         //Embedment
         for(int i=startRow;i<exclRow[0];i++){//固定第一个sheet
             //Embedment;i++){
-            decode(i,Settings.DATA_POLYNOMIAL);
+            decode(i,Settings.NORMAL);
         }
 
 //        return this.secret_data;

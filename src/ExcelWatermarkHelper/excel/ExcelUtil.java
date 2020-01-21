@@ -116,16 +116,16 @@ public class ExcelUtil {
      * @param posCol : 需要读取的浮点数列索引
      * @return : 提取出的列元数据
      */
-    public List<Object> getColValues(Workbook wb, int sheetIndex, int posCol){
-        int row = wb.getSheetAt(sheetIndex).getPhysicalNumberOfRows();
-        List<Object> colValue = new LinkedList<Object>();
-
-        for(int i = 0; i < row; i++) {
-            Cell cell = wb.getSheetAt(sheetIndex).getRow(i).getCell(posCol);
-            colValue.add(getCellValue(wb, cell));
-        }
-        return colValue ;
-    }
+//    public List<Object> getColValues(Workbook wb, int sheetIndex, int posCol){
+//        int row = wb.getSheetAt(sheetIndex).getPhysicalNumberOfRows();
+//        List<Object> colValue = new LinkedList<Object>();
+//
+//        for(int i = 0; i < row; i++) {
+//            Cell cell = wb.getSheetAt(sheetIndex).getRow(i).getCell(posCol);
+//            colValue.add(getCellValue(wb, cell));
+//        }
+//        return colValue ;
+//    }
 
     public List<Object> getRowValues(Workbook wb, int sheetIndex, int posRow){
         int row = wb.getSheetAt(sheetIndex).getPhysicalNumberOfRows();
@@ -153,8 +153,8 @@ public class ExcelUtil {
      * @param cellNum : 需要读取的前cellNum行元数据
      * @return : 提取出的前cellNum个元数据
      */
-    public List<Object> getColValues(Workbook wb, int sheetIndex, int posCol, int cellNum){
-        int row = min(wb.getSheetAt(sheetIndex).getPhysicalNumberOfRows(), cellNum);
+    public List<Object> getColValues(Workbook wb, int sheetIndex, int posCol){
+        int row = wb.getSheetAt(sheetIndex).getPhysicalNumberOfRows();
         List<Object> colValue = new LinkedList<Object>();
 
         for(int i = 0; i < row; i++) {

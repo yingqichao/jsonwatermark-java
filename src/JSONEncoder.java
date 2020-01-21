@@ -104,7 +104,7 @@ public class JSONEncoder extends AbstractEncoder {
 //        String crc_text = Util.toBinary(waterSeq,Setting.Settings.DEFAULT_DATALEN);
 //        crc_text += Util.crc_remainder(crc_text,null,null);
 
-        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(waterSeq,Settings.DATA_POLYNOMIAL),Settings.DEFAULT_EMBEDLEN);
+        String crc_text = Util.dec2bin(Utils.cyclic.CyclicCoder.encode(waterSeq,Settings.NORMAL,Settings.SHORT),Settings.DEFAULT_EMBEDLEN);
 
         int debug = 0;
 

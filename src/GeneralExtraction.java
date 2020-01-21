@@ -1,3 +1,4 @@
+import Setting.Settings;
 import Utils.Util;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -34,7 +35,7 @@ public class GeneralExtraction {
     //        String[] Keys = {"id", "name", "time", "phone", "date"};
 
 
-                ExcelDecoder extract = new ExcelDecoder(new File(filePath), startRow,0.05);
+                ExcelDecoder extract = new ExcelDecoder(new File(filePath), startRow,0.05, Settings.LONG);
                 System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
 
                     extract.run(filePath,args);

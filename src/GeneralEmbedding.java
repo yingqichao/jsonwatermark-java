@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.util.HashSet;
 import java.util.Set;
 
+import static Setting.Settings.LONG;
+
 /**
  * @author Qichao Ying
  * @date 2019/8/16 12:32
@@ -29,7 +31,7 @@ public class GeneralEmbedding {
 
         if(append.equals(".xlsx") || append.equals(".xls") || append.equals(".csv")){
             System.out.println("[Service Started] Excel watermarking detected...");
-            ExcelEncoder embed = new ExcelEncoder(binarySeq, filePath, 1,0.05);
+            ExcelEncoder embed = new ExcelEncoder(binarySeq, filePath, 1,0.05,LONG);
             try {
 //            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
                 embed.run(filePath, "src//embedded_results//" + filename + "_embedded" + append,args);
