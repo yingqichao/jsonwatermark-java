@@ -4,13 +4,17 @@ import Setting.Settings;
 
 public class CyclicCoder {
 	private static final int IRREDUCIBLE_POLYNOMIAL = 0b1011;
+	private static final int dig = 3;
 	private static final int IRREDUCIBLE_POLYNOMIAL_packageNum = 0b1101;
+	//private static final int IRREDUCIBLE_POLYNOMIAL_packageNum = 0b10011;//(10,6),g(x)=x4+x+1
+	private static final int dig_packageNum = 3;
+	//X^8+X^7+X^6+X^4+1 (15,7)
 	private static BinaryDivider binaryDivider = new BinaryDivider();
 	
 
 	public static int encode(int signal,int mode) {
 		int key = (mode== Settings.DATA_POLYNOMIAL)?IRREDUCIBLE_POLYNOMIAL:IRREDUCIBLE_POLYNOMIAL_packageNum;
-		int G = signal << 3;
+		int G = signal << ((mode== Settings.DATA_POLYNOMIAL)?dig:dig_packageNum);
 		
 		DivResult divResult = binaryDivider.div(G, key);
 		int F = G | divResult.getRemainder();
@@ -33,7 +37,8 @@ public class CyclicCoder {
 //			sourceSignal ^= (1 << errorPosition);
 //		}
 
-		return (binaryDivider.div(signal, key).getRemainder() > 1)?-1:(sourceSignal >> 3);
+		return (binaryDivider.div(signal, key).getRemainder() > 1)?-1:
+				(sourceSignal >> ((mode== Settings.DATA_POLYNOMIAL)?dig:dig_packageNum));
 	}
 
 }
