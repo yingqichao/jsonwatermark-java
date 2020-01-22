@@ -23,18 +23,26 @@ public class UnitTest {
 //        FileOwnerAttributeView ownerView = Files.getFileAttributeView(testPath, FileOwnerAttributeView.class);
 //        System.out.println("文件所有者：" + ownerView.getOwner());
 
-//        int block_data = 16;int key = Settings.KEY_POLYNOMIAL;
-//        //int res = Utils.cyclic.CyclicCoder.encode(block_data,key);
-//        int res = Util.bin2dec("1111111");
-//        String crc_text = Util.dec2bin(res, Settings.DEFAULT_EMBEDLEN_LENGTH);
-//        System.out.println("Test Encode: "+crc_text);
-//
-//        System.out.println((Utils.cyclic.CyclicCoder.decode(res,key)==-1)?"False":"True "+Utils.cyclic.CyclicCoder.decode(res,key));
-        TreeSet<Integer> set = new TreeSet<>();
-        for(int i=0;i<10;i++)
-            set.add(i);
-        for(int i:set)
-            System.out.println(i);
+        int block_data = Util.bin2dec("0110101000");
+        //int res = Utils.cyclic.CyclicCoder.encode(block_data,key);
+//        int res = Util.bin2dec("001010");
+//        String crc_text = Util.dec2bin(res, 10);
+//        int crc_text = Utils.cyclic.CyclicCoder.encode(block_data,Settings.LENGTH,Settings.LONG);
+//        System.out.println("Test Encode: "+Util.dec2bin(crc_text,10));
+        int res = Utils.cyclic.CyclicCoder.decode_without_correction(block_data,Settings.LENGTH,Settings.LONG);
+        System.out.println((res==-1)?"False":"True-"+Util.dec2bin(res,6));
+
+
+        //batch
+        int correct = 0;
+        for(int i=0;i<Math.pow(2,10);i++){
+            if(Utils.cyclic.CyclicCoder.decode_without_correction(i,Settings.LENGTH,Settings.LONG)!=-1) {
+                correct++;
+//                System.out.println(Util.dec2bin(i,7));
+            }
+        }
+        System.out.println("Correct: "+correct);
+
 
     }
 }

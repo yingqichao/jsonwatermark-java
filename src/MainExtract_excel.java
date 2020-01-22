@@ -2,6 +2,7 @@ import Utils.Util;
 import org.apache.poi.POIXMLProperties;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 import static Setting.Settings.LONG;
@@ -12,20 +13,18 @@ import static Setting.Settings.LONG;
  * @Description DEFAULT
  */
 public class MainExtract_excel {
-    public static boolean Extract(String filename,String append,String filePath,int startRow,int[] args) throws Exception{
+    public static List<String> Extract(String filename,String append,String filePath,int startRow,int[] args) throws Exception{
 
-        ExcelDecoder extract = new ExcelDecoder(new File(filePath),startRow,0.05,LONG);
+        ExcelDecoder extract = new ExcelDecoder(new File(filePath),0.05,LONG);
         System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
         try {
-            extract.run(filePath,args);
+            List<String> res = extract.run(filePath,args);
 
-            List<String> list = extract.getEnglishResult();
-            List<String> chinese_list = extract.getChineseResult();
+//            List<String> list = extract.getEnglishResult();
+//            List<String> chinese_list = extract.getChineseResult();
 
 
-            printer.print(list,chinese_list);
-
-            return true;
+            return res;
 
 //            System.out.println("-----------提取得到的信息是------------");
 //            //打印提取结果
@@ -40,7 +39,7 @@ public class MainExtract_excel {
 //            }
         }catch(Exception e){
             e.printStackTrace();
-            return false;
+            return new LinkedList<>();
         }
 
     }
@@ -60,7 +59,11 @@ public class MainExtract_excel {
         String wmStr = Util.readWatermark("src//watermark.txt");
         String filePath = "src//embedded_results//"+filename+"_embedded"+append;
 
-        Extract(filename,append,filePath,0,args);
+        List<String> result = Extract(filename,append,filePath,0,args);
+
+        System.out.println("------------------------");
+        System.out.println("英文参考： "+result.get(0));
+        System.out.println("中文参考： "+result.get(1));
 
     }
 }

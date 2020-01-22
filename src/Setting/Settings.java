@@ -13,6 +13,7 @@ public class Settings {
     public static String packageNumName = "packageNum";
     public static double max_allowed_modification = 0.01;
     public static int row_for_water_len = 20;
+    public static double keyCol_thresh = 0.5;
 
     public static boolean NORMAL = true;
     public static boolean LENGTH = false;
