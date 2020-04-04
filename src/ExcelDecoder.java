@@ -157,6 +157,8 @@ public class ExcelDecoder extends AbstractDecoder{
         for(int key:map.keySet()){
             treemap.put(map.get(key),key);
         }
+        while(treemap.get(treemap.lastKey())==0||treemap.get(treemap.lastKey())==15)
+            treemap.remove(treemap.lastKey());
         filesize = (treemap.get(treemap.lastKey())+1)*4;
         if(filesize==2) {
             treemap.remove(treemap.lastKey());
