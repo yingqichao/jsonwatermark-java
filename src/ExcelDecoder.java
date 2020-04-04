@@ -39,6 +39,7 @@ public class ExcelDecoder extends AbstractDecoder{
     int startRow = 0;
 
     Set<Integer> row_contain_len = new HashSet<>();
+    Map<Integer,Set<Integer>> row_contain_len_map = new HashMap<>();
 
     //for CSV only
     List<String> csvData = new ArrayList<>();
@@ -162,11 +163,13 @@ public class ExcelDecoder extends AbstractDecoder{
             filesize = (treemap.get(treemap.lastKey()) + 1) * 4;
         }
         System.out.println(">> Filesize: " + filesize + " ("+treemap.lastKey()+")");
+        row_contain_len = row_contain_len_map.get(treemap.get(treemap.lastKey()));
     }
 
     public void decode(int row,boolean isNormal){
         if(row_contain_len.contains(row)){
             //说明是隐藏水印长度的行，已经检测过了
+            System.out.println("Skipped");
             return;
         }
         List<Integer> src_blocks = new LinkedList<>();
@@ -207,7 +210,7 @@ public class ExcelDecoder extends AbstractDecoder{
         int validLen = (!isNormal && MODE)?Settings.DEFAULT_EMBEDLEN_LONGMODE:Settings.DEFAULT_EMBEDLEN;
         if(totalLen<validLen){
             //表示当前行可以用来嵌入信息的总长度不够，一般都不会执行的
-            System.out.println("[SKIPPED PACK] Total length of row "+row+" is not enough!");
+            System.out.println("[SKIPPED PACK] Total length of row "+row+" is not enough! Length:"+totalLen);
 
             return;
         }
@@ -265,7 +268,10 @@ public class ExcelDecoder extends AbstractDecoder{
                 //隐藏水印长度
                 System.out.println("[Detected length/row] " + real_embed_data+" / "+row+" "+crc_code);
                 map.put(real_embed_data,map.getOrDefault(real_embed_data,0)+1);
-                row_contain_len.add(row);
+//                row_contain_len.add(row);
+                Set<Integer> contain_len = row_contain_len_map.getOrDefault(real_embed_data,new HashSet<>());
+                contain_len.add(row);
+                row_contain_len_map.put(real_embed_data,contain_len);
             }
         }else{
             if(isNormal)
@@ -441,13 +447,13 @@ public class ExcelDecoder extends AbstractDecoder{
                     hash_collide++;
 
                 if(length_need>0) {
-                    if(last_used_redundant==-1 || i-last_used_redundant>=Settings.row_for_water_len*0.75){
+//                    if(last_used_redundant==-1 || i-last_used_redundant>=Settings.row_for_water_len*0.75){
 
                         //需要两个用作嵌入水印长度的冗余行之间空开足够多距离
                         last_used_redundant = i;
                         redundant.add(i);
                         length_need--;
-                    }
+//                    }
                 }
                 continue;
             }

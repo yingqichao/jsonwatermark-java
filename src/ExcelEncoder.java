@@ -353,7 +353,7 @@ public class ExcelEncoder extends AbstractEncoder {
 
 
         int name_collide = 0;int hash_collide = 0;int length_collide = 0;int last_used_redundant = -1;
-        length_need = Math.max(1,exclRow[0]/Settings.row_for_water_len);
+        length_need = Math.max(5,exclRow[0]/Settings.row_for_water_len);
         //计算有多少可以嵌入的数据包
         Set<Integer> seeds = new HashSet<>();Set<String> names = new HashSet<>();
         for(int i=startRow;i<exclRow[0];i++) {
@@ -364,20 +364,20 @@ public class ExcelEncoder extends AbstractEncoder {
             int seed = Util.BKDRHash(name, 131);
 //            if(i%Settings.row_for_water_len==0)
 //                continue;
-            if(names.contains(name) || seeds.contains(seed)){
+            if(i%5==4 || names.contains(name) || seeds.contains(seed)){
                 if(names.contains(name))
                     name_collide++;
                 else
                     hash_collide++;
 
                 if(length_need>0) {
-                    if(last_used_redundant==-1 || i-last_used_redundant>=Settings.row_for_water_len*0.75){
+//                    if(last_used_redundant==-1 || i-last_used_redundant>=Settings.row_for_water_len*0.75){
 
                         //需要两个用作嵌入水印长度的冗余行之间空开足够多距离
                         last_used_redundant = i;
                         redundant.add(i);
                         length_need--;
-                    }
+//                    }
                 }
                 continue;
             }

@@ -22,7 +22,7 @@ public class MainEmbed_excel {
 
         String filePath = "src//resources//"+foldname+"//"+filename+append;
         System.out.println("\n================= Embed from file " + "\"" + filePath + "\" =================");
-        ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,0.05, Settings.LONG);
+        ExcelEncoder embed = new ExcelEncoder(binarySeq,filePath,0.05, Settings.SHORT);
         try {
 //            FileOutputStream out = new FileOutputStream("src//embedded_results//" + filename + "_embedded" + append);
             embed.run(filePath,"src//embedded_results//" + filename + "_embedded" + append,args);
@@ -40,7 +40,7 @@ public class MainEmbed_excel {
 
         int[] args = new int[]{};
         String foldname = "EXCEL";
-        String filename = "long";
+        String filename = "3";
         String append = ".xlsx";
         String waterPath = "src//watermark.txt";
         Embed(foldname,filename,append,waterPath,args);

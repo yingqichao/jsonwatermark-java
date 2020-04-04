@@ -67,7 +67,10 @@ public class CyclicCoder {
 		int digit = (!isNormal && isLong)?dig_long:dig_short;
 
 		int remain = signal;
+		int time = 0;
 		while(remain>=polynomial){
+			time++;
+			if(time>100)	return -1;
 			int divider = polynomial;
 			while((divider<<1)<=remain)
 				divider<<=1;

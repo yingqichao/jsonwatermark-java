@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static Setting.Settings.LONG;
+import static Setting.Settings.SHORT;
 
 /**
  * @author Qichao Ying
@@ -15,7 +16,7 @@ import static Setting.Settings.LONG;
 public class MainExtract_excel {
     public static List<String> Extract(String filename,String append,String filePath,int startRow,int[] args) throws Exception{
 
-        ExcelDecoder extract = new ExcelDecoder(new File(filePath),0.05,LONG);
+        ExcelDecoder extract = new ExcelDecoder(new File(filePath),0.05,SHORT);
         System.out.println("\n================= Extract from file " + "\"" + filePath + "\" =================");
         try {
             List<String> res = extract.run(filePath,args);
@@ -45,7 +46,7 @@ public class MainExtract_excel {
     }
 
     public static void main(String[] s) throws Exception{
-        String filename = "long";//ta_cb_person_heatmap_collect_deleted
+        String filename = "3";//ta_cb_person_heatmap_collect_deleted
         String append = ".xlsx";
         int[] args = new int[]{};
 
